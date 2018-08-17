@@ -116,7 +116,7 @@ m_depthStencilBuffer(0),
 m_colorBuffer       (0),
 m_width             (0),
 m_height            (0),
-m_context           (NULL),
+m_context           (nullptr),
 m_textureId         (0),
 m_multisample       (false),
 m_stencil           (false)

@@ -601,7 +601,7 @@ void GlContext::cleanupUnsharedResources()
 
     // If this context is already active there is no need to save it
     if (contextToRestore == this)
-        contextToRestore = NULL;
+        contextToRestore = nullptr;
 
     // Make this context active so resources can be freed
     setActive(true);

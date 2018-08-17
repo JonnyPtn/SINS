@@ -421,7 +421,7 @@ bool SoundStream::fillAndPushBuffer(unsigned int bufferNum, bool immediateLoop)
         if (!m_loop)
         {
             // Not looping: Mark this buffer as ending with 0 and request stop
-            if (data.samples != NULL && data.sampleCount != 0)
+            if (data.samples != nullptr && data.sampleCount != 0)
                 m_bufferSeeks[bufferNum] = 0;
             requestStop = true;
             break;
@@ -432,7 +432,7 @@ bool SoundStream::fillAndPushBuffer(unsigned int bufferNum, bool immediateLoop)
         m_bufferSeeks[bufferNum] = onLoop();
 
         // If we got data, break and process it, else try to fill the buffer once again
-        if (data.samples != NULL && data.sampleCount != 0)
+        if (data.samples != nullptr && data.sampleCount != 0)
             break;
 
         // If immediateLoop is specified, we have to immediately adjust the sample count

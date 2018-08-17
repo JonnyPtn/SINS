@@ -181,7 +181,7 @@ bool JoystickImpl::isConnected(unsigned int index)
 bool JoystickImpl::open(unsigned int index)
 {
     m_index = index;
-    m_hat = NULL;
+    m_hat = nullptr;
     Location deviceLoc = m_locationIDs[index]; // The device we need to load
 
     // Get all devices
@@ -333,9 +333,9 @@ void JoystickImpl::close()
         CFRelease(axis.second);
     m_axis.clear();
 
-    if (m_hat != NULL)
+    if (m_hat != nullptr)
         CFRelease(m_hat);
-    m_hat = NULL;
+    m_hat = nullptr;
 
     // And we unregister this joystick
     m_locationIDs[m_index] = 0;
@@ -355,7 +355,7 @@ JoystickCaps JoystickImpl::getCapabilities() const
         caps.axes[static_cast<size_t>(axis.first)] = true;
     }
     
-    if (m_hat != NULL) {
+    if (m_hat != nullptr) {
         caps.axes[static_cast<std::size_t>(Joystick::Axis::PovX)] = true;
         caps.axes[static_cast<std::size_t>(Joystick::Axis::PovY)] = true;
     }
@@ -464,7 +464,7 @@ JoystickState JoystickImpl::update()
     //   West / 6          Null  / 8         East / 2
     //   South-West / 5    South / 4   South-East / 3
     //
-    if (m_hat != NULL)
+    if (m_hat != nullptr)
     {
         IOHIDValueRef value = 0;
         IOHIDDeviceGetValue(IOHIDElementGetDevice(m_hat), m_hat, &value);

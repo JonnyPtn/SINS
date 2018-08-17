@@ -258,17 +258,17 @@ static int Load_EXT_blend_func_separate()
     return numFailed;
 }
 
-void (GL_FUNCPTR *sf_ptrc_glBindBufferARB)(GLenum, GLuint) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glBufferDataARB)(GLenum, GLsizeiptrARB, const void*, GLenum) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glBufferSubDataARB)(GLenum, GLintptrARB, GLsizeiptrARB, const void*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glDeleteBuffersARB)(GLsizei, const GLuint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGenBuffersARB)(GLsizei, GLuint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetBufferParameterivARB)(GLenum, GLenum, GLint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetBufferPointervARB)(GLenum, GLenum, void**) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetBufferSubDataARB)(GLenum, GLintptrARB, GLsizeiptrARB, void*) = NULL;
-GLboolean (GL_FUNCPTR *sf_ptrc_glIsBufferARB)(GLuint) = NULL;
-void* (GL_FUNCPTR *sf_ptrc_glMapBufferARB)(GLenum, GLenum) = NULL;
-GLboolean (GL_FUNCPTR *sf_ptrc_glUnmapBufferARB)(GLenum) = NULL;
+void (GL_FUNCPTR *sf_ptrc_glBindBufferARB)(GLenum, GLuint) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glBufferDataARB)(GLenum, GLsizeiptrARB, const void*, GLenum) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glBufferSubDataARB)(GLenum, GLintptrARB, GLsizeiptrARB, const void*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glDeleteBuffersARB)(GLsizei, const GLuint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGenBuffersARB)(GLsizei, GLuint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetBufferParameterivARB)(GLenum, GLenum, GLint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetBufferPointervARB)(GLenum, GLenum, void**) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetBufferSubDataARB)(GLenum, GLintptrARB, GLsizeiptrARB, void*) = nullptr;
+GLboolean (GL_FUNCPTR *sf_ptrc_glIsBufferARB)(GLuint) = nullptr;
+void* (GL_FUNCPTR *sf_ptrc_glMapBufferARB)(GLenum, GLenum) = nullptr;
+GLboolean (GL_FUNCPTR *sf_ptrc_glUnmapBufferARB)(GLenum) = nullptr;
 
 static int Load_ARB_vertex_buffer_object()
 {
@@ -321,45 +321,45 @@ static int Load_ARB_vertex_buffer_object()
     return numFailed;
 }
 
-void (GL_FUNCPTR *sf_ptrc_glAttachObjectARB)(GLhandleARB, GLhandleARB) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glCompileShaderARB)(GLhandleARB) = NULL;
-GLhandleARB (GL_FUNCPTR *sf_ptrc_glCreateProgramObjectARB)() = NULL;
-GLhandleARB (GL_FUNCPTR *sf_ptrc_glCreateShaderObjectARB)(GLenum) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glDeleteObjectARB)(GLhandleARB) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glDetachObjectARB)(GLhandleARB, GLhandleARB) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetActiveUniformARB)(GLhandleARB, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLcharARB*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetAttachedObjectsARB)(GLhandleARB, GLsizei, GLsizei*, GLhandleARB*) = NULL;
-GLhandleARB (GL_FUNCPTR *sf_ptrc_glGetHandleARB)(GLenum) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetInfoLogARB)(GLhandleARB, GLsizei, GLsizei*, GLcharARB*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetObjectParameterfvARB)(GLhandleARB, GLenum, GLfloat*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetObjectParameterivARB)(GLhandleARB, GLenum, GLint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetShaderSourceARB)(GLhandleARB, GLsizei, GLsizei*, GLcharARB*) = NULL;
-GLint (GL_FUNCPTR *sf_ptrc_glGetUniformLocationARB)(GLhandleARB, const GLcharARB*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetUniformfvARB)(GLhandleARB, GLint, GLfloat*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glGetUniformivARB)(GLhandleARB, GLint, GLint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glLinkProgramARB)(GLhandleARB) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glShaderSourceARB)(GLhandleARB, GLsizei, const GLcharARB**, const GLint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform1fARB)(GLint, GLfloat) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform1fvARB)(GLint, GLsizei, const GLfloat*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform1iARB)(GLint, GLint) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform1ivARB)(GLint, GLsizei, const GLint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform2fARB)(GLint, GLfloat, GLfloat) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform2fvARB)(GLint, GLsizei, const GLfloat*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform2iARB)(GLint, GLint, GLint) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform2ivARB)(GLint, GLsizei, const GLint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform3fARB)(GLint, GLfloat, GLfloat, GLfloat) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform3fvARB)(GLint, GLsizei, const GLfloat*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform3iARB)(GLint, GLint, GLint, GLint) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform3ivARB)(GLint, GLsizei, const GLint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform4fARB)(GLint, GLfloat, GLfloat, GLfloat, GLfloat) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform4fvARB)(GLint, GLsizei, const GLfloat*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform4iARB)(GLint, GLint, GLint, GLint, GLint) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniform4ivARB)(GLint, GLsizei, const GLint*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniformMatrix2fvARB)(GLint, GLsizei, GLboolean, const GLfloat*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniformMatrix3fvARB)(GLint, GLsizei, GLboolean, const GLfloat*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUniformMatrix4fvARB)(GLint, GLsizei, GLboolean, const GLfloat*) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glUseProgramObjectARB)(GLhandleARB) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glValidateProgramARB)(GLhandleARB) = NULL;
+void (GL_FUNCPTR *sf_ptrc_glAttachObjectARB)(GLhandleARB, GLhandleARB) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glCompileShaderARB)(GLhandleARB) = nullptr;
+GLhandleARB (GL_FUNCPTR *sf_ptrc_glCreateProgramObjectARB)() = nullptr;
+GLhandleARB (GL_FUNCPTR *sf_ptrc_glCreateShaderObjectARB)(GLenum) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glDeleteObjectARB)(GLhandleARB) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glDetachObjectARB)(GLhandleARB, GLhandleARB) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetActiveUniformARB)(GLhandleARB, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLcharARB*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetAttachedObjectsARB)(GLhandleARB, GLsizei, GLsizei*, GLhandleARB*) = nullptr;
+GLhandleARB (GL_FUNCPTR *sf_ptrc_glGetHandleARB)(GLenum) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetInfoLogARB)(GLhandleARB, GLsizei, GLsizei*, GLcharARB*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetObjectParameterfvARB)(GLhandleARB, GLenum, GLfloat*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetObjectParameterivARB)(GLhandleARB, GLenum, GLint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetShaderSourceARB)(GLhandleARB, GLsizei, GLsizei*, GLcharARB*) = nullptr;
+GLint (GL_FUNCPTR *sf_ptrc_glGetUniformLocationARB)(GLhandleARB, const GLcharARB*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetUniformfvARB)(GLhandleARB, GLint, GLfloat*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glGetUniformivARB)(GLhandleARB, GLint, GLint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glLinkProgramARB)(GLhandleARB) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glShaderSourceARB)(GLhandleARB, GLsizei, const GLcharARB**, const GLint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform1fARB)(GLint, GLfloat) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform1fvARB)(GLint, GLsizei, const GLfloat*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform1iARB)(GLint, GLint) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform1ivARB)(GLint, GLsizei, const GLint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform2fARB)(GLint, GLfloat, GLfloat) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform2fvARB)(GLint, GLsizei, const GLfloat*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform2iARB)(GLint, GLint, GLint) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform2ivARB)(GLint, GLsizei, const GLint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform3fARB)(GLint, GLfloat, GLfloat, GLfloat) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform3fvARB)(GLint, GLsizei, const GLfloat*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform3iARB)(GLint, GLint, GLint, GLint) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform3ivARB)(GLint, GLsizei, const GLint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform4fARB)(GLint, GLfloat, GLfloat, GLfloat, GLfloat) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform4fvARB)(GLint, GLsizei, const GLfloat*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform4iARB)(GLint, GLint, GLint, GLint, GLint) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniform4ivARB)(GLint, GLsizei, const GLint*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniformMatrix2fvARB)(GLint, GLsizei, GLboolean, const GLfloat*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniformMatrix3fvARB)(GLint, GLsizei, GLboolean, const GLfloat*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUniformMatrix4fvARB)(GLint, GLsizei, GLboolean, const GLfloat*) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glUseProgramObjectARB)(GLhandleARB) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glValidateProgramARB)(GLhandleARB) = nullptr;
 
 static int Load_ARB_shader_objects()
 {
@@ -881,7 +881,7 @@ static int Load_EXT_framebuffer_blit()
     return numFailed;
 }
 
-void (GL_FUNCPTR *sf_ptrc_glRenderbufferStorageMultisampleEXT)(GLenum, GLsizei, GLenum, GLsizei, GLsizei) = NULL;
+void (GL_FUNCPTR *sf_ptrc_glRenderbufferStorageMultisampleEXT)(GLenum, GLsizei, GLenum, GLsizei, GLsizei) = nullptr;
 
 static int Load_EXT_framebuffer_multisample()
 {
@@ -894,7 +894,7 @@ static int Load_EXT_framebuffer_multisample()
     return numFailed;
 }
 
-void (GL_FUNCPTR *sf_ptrc_glCopyBufferSubData)(GLenum, GLenum, GLintptr, GLintptr, GLsizeiptr) = NULL;
+void (GL_FUNCPTR *sf_ptrc_glCopyBufferSubData)(GLenum, GLenum, GLintptr, GLintptr, GLsizeiptr) = nullptr;
 
 static int Load_ARB_copy_buffer()
 {
@@ -907,10 +907,10 @@ static int Load_ARB_copy_buffer()
     return numFailed;
 }
 
-void (GL_FUNCPTR *sf_ptrc_glFramebufferTextureARB)(GLenum, GLenum, GLuint, GLint) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glFramebufferTextureFaceARB)(GLenum, GLenum, GLuint, GLint, GLenum) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glFramebufferTextureLayerARB)(GLenum, GLenum, GLuint, GLint, GLint) = NULL;
-void (GL_FUNCPTR *sf_ptrc_glProgramParameteriARB)(GLuint, GLenum, GLint) = NULL;
+void (GL_FUNCPTR *sf_ptrc_glFramebufferTextureARB)(GLenum, GLenum, GLuint, GLint) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glFramebufferTextureFaceARB)(GLenum, GLenum, GLuint, GLint, GLenum) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glFramebufferTextureLayerARB)(GLenum, GLenum, GLuint, GLint, GLint) = nullptr;
+void (GL_FUNCPTR *sf_ptrc_glProgramParameteriARB)(GLuint, GLenum, GLint) = nullptr;
 
 static int Load_ARB_geometry_shader4()
 {
@@ -944,14 +944,14 @@ typedef struct sfogl_StrToExtMap_s
 } sfogl_StrToExtMap;
 
 static sfogl_StrToExtMap ExtensionMap[20] = {
-    {"GL_SGIS_texture_edge_clamp", &sfogl_ext_SGIS_texture_edge_clamp, NULL},
-    {"GL_EXT_texture_edge_clamp", &sfogl_ext_EXT_texture_edge_clamp, NULL},
+    {"GL_SGIS_texture_edge_clamp", &sfogl_ext_SGIS_texture_edge_clamp, nullptr},
+    {"GL_EXT_texture_edge_clamp", &sfogl_ext_EXT_texture_edge_clamp, nullptr},
     {"GL_EXT_blend_minmax", &sfogl_ext_EXT_blend_minmax, Load_EXT_blend_minmax},
     {"GL_EXT_blend_subtract", &sfogl_ext_EXT_blend_subtract, nullptr},
     {"GL_ARB_multitexture", &sfogl_ext_ARB_multitexture, Load_ARB_multitexture},
     {"GL_EXT_blend_func_separate", &sfogl_ext_EXT_blend_func_separate, Load_EXT_blend_func_separate},
     {"GL_ARB_vertex_buffer_object", &sfogl_ext_ARB_vertex_buffer_object, Load_ARB_vertex_buffer_object},
-    {"GL_ARB_shading_language_100", &sfogl_ext_ARB_shading_language_100, NULL},
+    {"GL_ARB_shading_language_100", &sfogl_ext_ARB_shading_language_100, nullptr},
     {"GL_ARB_shader_objects", &sfogl_ext_ARB_shader_objects, Load_ARB_shader_objects},
     {"GL_ARB_vertex_shader", &sfogl_ext_ARB_vertex_shader, Load_ARB_vertex_shader},
     {"GL_ARB_fragment_shader", &sfogl_ext_ARB_fragment_shader, nullptr},
@@ -959,7 +959,7 @@ static sfogl_StrToExtMap ExtensionMap[20] = {
     {"GL_EXT_blend_equation_separate", &sfogl_ext_EXT_blend_equation_separate, Load_EXT_blend_equation_separate},
     {"GL_EXT_texture_sRGB", &sfogl_ext_EXT_texture_sRGB, nullptr},
     {"GL_EXT_framebuffer_object", &sfogl_ext_EXT_framebuffer_object, Load_EXT_framebuffer_object},
-    {"GL_EXT_packed_depth_stencil", &sfogl_ext_EXT_packed_depth_stencil, NULL},
+    {"GL_EXT_packed_depth_stencil", &sfogl_ext_EXT_packed_depth_stencil, nullptr},
     {"GL_EXT_framebuffer_blit", &sfogl_ext_EXT_framebuffer_blit, Load_EXT_framebuffer_blit},
     {"GL_EXT_framebuffer_multisample", &sfogl_ext_EXT_framebuffer_multisample, Load_EXT_framebuffer_multisample},
     {"GL_ARB_copy_buffer", &sfogl_ext_ARB_copy_buffer, Load_ARB_copy_buffer},

@@ -376,7 +376,7 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
         drawPrimitives(vertexBuffer.getPrimitiveType(), firstVertex, vertexCount);
 
         // Unbind vertex buffer
-        VertexBuffer::bind(NULL);
+        VertexBuffer::bind(nullptr);
 
         cleanupDraw(states);
 
@@ -523,7 +523,7 @@ void RenderTarget::resetGLStates()
             applyShader(nullptr);
 
         if (vertexBufferAvailable)
-            glCheck(VertexBuffer::bind(NULL));
+            glCheck(VertexBuffer::bind(nullptr));
 
         m_cache.texCoordsArrayEnabled = true;
 
@@ -713,12 +713,12 @@ void RenderTarget::cleanupDraw(const RenderStates& states)
 {
     // Unbind the shader, if any
     if (states.shader)
-        applyShader(NULL);
+        applyShader(nullptr);
 
     // If the texture we used to draw belonged to a RenderTexture, then forcibly unbind that texture.
     // This prevents a bug where some drivers do not clear RenderTextures properly.
     if (states.texture && states.texture->m_fboAttachment)
-        applyTexture(NULL);
+        applyTexture(nullptr);
 
     // Re-enable the cache at the end of the draw if it was disabled
     m_cache.enable = true;
