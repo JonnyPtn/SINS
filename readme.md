@@ -3,9 +3,11 @@
 [![Travis build](https://travis-ci.org/JonnyPtn/SFML.svg?branch=travis)](https://travis-ci.org/JonnyPtn/SFML)
 [![Appveyor build](https://ci.appveyor.com/api/projects/status/fu85b1nln28jhnpr/branch/travis?svg=true)](https://ci.appveyor.com/project/JonnyPtn/sfml/branch/travis)
 
-# SFML — Simple and Fast Multimedia Library
+# SINS — SINS Is Not SFML
 
 SFML is a simple, fast, cross-platform and object-oriented multimedia API. It provides access to windowing, graphics, audio and network. It is written in C++, and has bindings for various languages such as C, .Net, Ruby, Python.
+
+**SINS is NOT SFML! And for complete clarity, it's not an attempt to undermine SFML in anyway. SFML is a fantastic library, you should use it.**
 
 ## Authors
 
