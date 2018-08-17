@@ -34,6 +34,7 @@
 #include <string>
 #include <set>
 #include <utility>
+#include <memory>
 #include <mutex>
 #include <cstdlib>
 #include <cstring>
