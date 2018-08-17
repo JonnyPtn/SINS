@@ -40,15 +40,15 @@ int main()
         {
             switch (event.type)
             {
-                case sf::Event::Closed:
+                case sf::Event::Type::Closed:
                     window.close();
                     break;
-                case sf::Event::Resized:
+                case sf::Event::Type::Resized:
                     view.setSize(event.size.width, event.size.height);
                     view.setCenter(event.size.width/2, event.size.height/2);
                     window.setView(view);
                     break;
-                case sf::Event::TouchBegan:
+                case sf::Event::Type::TouchBegan:
                     if (event.touch.finger == 0)
                     {
                         image.setPosition(event.touch.x, event.touch.y);

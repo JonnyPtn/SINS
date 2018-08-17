@@ -251,7 +251,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
 
     // GL_QUADS is unavailable on OpenGL ES
     #ifdef SFML_OPENGL_ES
-        if (type == Quads)
+        if (type == PrimitiveType::Quads)
         {
             err() << "sf::Quads primitive type is not supported on OpenGL ES platforms, drawing skipped" << std::endl;
             return;
@@ -351,7 +351,7 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
 
     // GL_QUADS is unavailable on OpenGL ES
     #ifdef SFML_OPENGL_ES
-        if (vertexBuffer.getPrimitiveType() == Quads)
+        if (vertexBuffer.getPrimitiveType() == PrimitiveType::Quads)
         {
             err() << "sf::Quads primitive type is not supported on OpenGL ES platforms, drawing skipped" << std::endl;
             return;
