@@ -76,18 +76,18 @@ namespace sf
 {
 ////////////////////////////////////////////////////////////
 Text::Text() :
-m_string             (),
-m_font               (NULL),
-m_characterSize      (30),
+m_string            (),
+m_font              (nullptr),
+m_characterSize     (30),
 m_letterSpacingFactor(1.f),
 m_lineSpacingFactor  (1.f),
-m_style              (Regular),
-m_fillColor          (255, 255, 255),
-m_outlineColor       (0, 0, 0),
-m_outlineThickness   (0),
-m_vertices           (Triangles),
-m_outlineVertices    (Triangles),
-m_bounds             (),
+m_style             (Regular),
+m_fillColor         (255, 255, 255),
+m_outlineColor      (0, 0, 0),
+m_outlineThickness  (0),
+m_vertices          (PrimitiveType::Triangles),
+m_outlineVertices   (PrimitiveType::Triangles),
+m_bounds            (),
 m_geometryNeedUpdate (false),
 m_fontTextureId      (0)
 {
@@ -97,18 +97,18 @@ m_fontTextureId      (0)
 
 ////////////////////////////////////////////////////////////
 Text::Text(const String& string, const Font& font, unsigned int characterSize) :
-m_string             (string),
-m_font               (&font),
-m_characterSize      (characterSize),
+m_string            (string),
+m_font              (&font),
+m_characterSize     (characterSize),
 m_letterSpacingFactor(1.f),
 m_lineSpacingFactor  (1.f),
-m_style              (Regular),
-m_fillColor          (255, 255, 255),
-m_outlineColor       (0, 0, 0),
-m_outlineThickness   (0),
-m_vertices           (Triangles),
-m_outlineVertices    (Triangles),
-m_bounds             (),
+m_style             (Regular),
+m_fillColor         (255, 255, 255),
+m_outlineColor      (0, 0, 0),
+m_outlineThickness  (0),
+m_vertices          (PrimitiveType::Triangles),
+m_outlineVertices   (PrimitiveType::Triangles),
+m_bounds            (),
 m_geometryNeedUpdate (true),
 m_fontTextureId      (0)
 {
@@ -433,8 +433,8 @@ void Text::ensureGeometryUpdate() const
     float letterSpacing   = ( whitespaceWidth / 3.f ) * ( m_letterSpacingFactor - 1.f );
     whitespaceWidth      += letterSpacing;
     float lineSpacing     = m_font->getLineSpacing(m_characterSize) * m_lineSpacingFactor;
-    float x               = 0.f;
-    float y               = static_cast<float>(m_characterSize);
+    float x      = 0.f;
+    float y      = static_cast<float>(m_characterSize);
 
     // Create one quad for each character
     float minX = static_cast<float>(m_characterSize);

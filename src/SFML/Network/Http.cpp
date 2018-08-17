@@ -39,8 +39,7 @@ namespace
     // Convert a string to lower case
     std::string toLower(std::string str)
     {
-        for (std::string::iterator i = str.begin(); i != str.end(); ++i)
-            *i = static_cast<char>(std::tolower(*i));
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
         return str;
     }
 }
@@ -107,11 +106,11 @@ std::string Http::Request::prepare() const
     std::string method;
     switch (m_method)
     {
-        case Get:    method = "GET";    break;
-        case Post:   method = "POST";   break;
-        case Head:   method = "HEAD";   break;
-        case Put:    method = "PUT";    break;
-        case Delete: method = "DELETE"; break;
+        case Method::Get:    method = "GET";    break;
+        case Method::Post:   method = "POST";   break;
+        case Method::Head:   method = "HEAD";   break;
+        case Method::Put:    method = "PUT";    break;
+        case Method::Delete: method = "DELETE"; break;
     }
 
     // Write the first line containing the request type
@@ -119,9 +118,9 @@ std::string Http::Request::prepare() const
     out << "HTTP/" << m_majorVersion << "." << m_minorVersion << "\r\n";
 
     // Write fields
-    for (FieldTable::const_iterator i = m_fields.begin(); i != m_fields.end(); ++i)
+    for (const auto& field : m_fields)
     {
-        out << i->first << ": " << i->second << "\r\n";
+        out << field.first << ": " << field.second << "\r\n";
     }
 
     // Use an extra \r\n to separate the header from the body
@@ -143,7 +142,7 @@ bool Http::Request::hasField(const std::string& field) const
 
 ////////////////////////////////////////////////////////////
 Http::Response::Response() :
-m_status      (ConnectionFailed),
+m_status      (Status::ConnectionFailed),
 m_majorVersion(0),
 m_minorVersion(0)
 {
@@ -214,7 +213,7 @@ void Http::Response::parse(const std::string& data)
         else
         {
             // Invalid HTTP version
-            m_status = InvalidResponse;
+            m_status = Status::InvalidResponse;
             return;
         }
     }
@@ -228,7 +227,7 @@ void Http::Response::parse(const std::string& data)
     else
     {
         // Invalid status code
-        m_status = InvalidResponse;
+        m_status = Status::InvalidResponse;
         return;
     }
 
@@ -368,7 +367,7 @@ Http::Response Http::sendRequest(const Http::Request& request, Time timeout)
         out << toSend.m_body.size();
         toSend.setField("Content-Length", out.str());
     }
-    if ((toSend.m_method == Request::Post) && !toSend.hasField("Content-Type"))
+    if ((toSend.m_method == Request::Method::Post) && !toSend.hasField("Content-Type"))
     {
         toSend.setField("Content-Type", "application/x-www-form-urlencoded");
     }
@@ -381,7 +380,7 @@ Http::Response Http::sendRequest(const Http::Request& request, Time timeout)
     Response received;
 
     // Connect the socket to the host
-    if (m_connection.connect(m_host, m_port, timeout) == Socket::Done)
+    if (m_connection.connect(m_host, m_port, timeout) == Socket::Status::Done)
     {
         // Convert the request to string and send it through the connected socket
         std::string requestStr = toSend.prepare();
@@ -389,13 +388,13 @@ Http::Response Http::sendRequest(const Http::Request& request, Time timeout)
         if (!requestStr.empty())
         {
             // Send it through the socket
-            if (m_connection.send(requestStr.c_str(), requestStr.size()) == Socket::Done)
+            if (m_connection.send(requestStr.c_str(), requestStr.size()) == Socket::Status::Done)
             {
                 // Wait for the server's response
                 std::string receivedStr;
                 std::size_t size = 0;
                 char buffer[1024];
-                while (m_connection.receive(buffer, sizeof(buffer), size) == Socket::Done)
+                while (m_connection.receive(buffer, sizeof(buffer), size) == Socket::Status::Done)
                 {
                     receivedStr.append(buffer, buffer + size);
                 }

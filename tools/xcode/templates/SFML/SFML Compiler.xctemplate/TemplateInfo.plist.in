@@ -25,7 +25,7 @@ subject to the following restrictions:
  -->
 
 <!--
-     This template defines :
+     This template defines:
       - the compiler & std lib
       - the supported arch (only 64 bit)
       - some other target's settings (e.g. warnings flags)
@@ -82,6 +82,16 @@ subject to the following restrictions:
 
                 <key>LIBRARY_SEARCH_PATHS</key>
                 <string> /usr/local/lib/ $(inherited) </string>
+
+                <!-- Use Clang and libc++ -->
+                <key>GCC_VERSION</key>
+                <string>com.apple.compilers.llvm.clang.1_0</string>
+
+                <key>CLANG_CXX_LANGUAGE_STANDARD</key>
+                <string>gnu++14</string>
+
+                <key>CLANG_CXX_LIBRARY</key>
+                <string>libc++</string>
             </dict>
 
             <key>Configurations</key>

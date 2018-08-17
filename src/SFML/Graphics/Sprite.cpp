@@ -35,7 +35,7 @@ namespace sf
 {
 ////////////////////////////////////////////////////////////
 Sprite::Sprite() :
-m_texture    (NULL),
+m_texture    (nullptr),
 m_textureRect()
 {
 }
@@ -43,7 +43,7 @@ m_textureRect()
 
 ////////////////////////////////////////////////////////////
 Sprite::Sprite(const Texture& texture) :
-m_texture    (NULL),
+m_texture    (nullptr),
 m_textureRect()
 {
     setTexture(texture);
@@ -52,7 +52,7 @@ m_textureRect()
 
 ////////////////////////////////////////////////////////////
 Sprite::Sprite(const Texture& texture, const IntRect& rectangle) :
-m_texture    (NULL),
+m_texture    (nullptr),
 m_textureRect()
 {
     setTexture(texture);
@@ -140,7 +140,7 @@ void Sprite::draw(RenderTarget& target, RenderStates states) const
     {
         states.transform *= getTransform();
         states.texture = m_texture;
-        target.draw(m_vertices, 4, TriangleStrip, states);
+        target.draw(m_vertices, 4, PrimitiveType::TriangleStrip, states);
     }
 }
 

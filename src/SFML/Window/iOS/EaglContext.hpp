@@ -55,7 +55,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Create a new context, not associated to a window
     ///
-    /// \param shared Context to share the new one with (can be NULL)
+    /// \param shared Context to share the new one with (can be nullptr)
     ///
     ////////////////////////////////////////////////////////////
     EaglContext(EaglContext* shared);
@@ -88,7 +88,7 @@ public:
     /// \brief Destructor
     ///
     ////////////////////////////////////////////////////////////
-    ~EaglContext();
+    ~EaglContext() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Recreate the render buffers of the context
@@ -105,7 +105,7 @@ public:
     /// \brief Display what has been rendered to the context so far
     ///
     ////////////////////////////////////////////////////////////
-    virtual void display();
+    void display() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Enable or disable vertical synchronization
@@ -118,7 +118,7 @@ public:
     /// \param enabled: True to enable v-sync, false to deactivate
     ///
     ////////////////////////////////////////////////////////////
-    virtual void setVerticalSyncEnabled(bool enabled);
+    void setVerticalSyncEnabled(bool enabled) override;
 
 protected:
 
@@ -131,15 +131,15 @@ protected:
     /// \return True on success, false if any error happened
     ///
     ////////////////////////////////////////////////////////////
-    virtual bool makeCurrent(bool current);
+    bool makeCurrent(bool current) override;
 
 private:
 
     ////////////////////////////////////////////////////////////
     /// \brief Create the context
     ///
-    /// \param shared       Context to share the new one with (can be NULL)
-    /// \param window       Window to attach the context to (can be NULL)
+    /// \param shared       Context to share the new one with (can be nullptr)
+    /// \param window       Window to attach the context to (can be nullptr)
     /// \param bitsPerPixel Pixel depth, in bits per pixel
     /// \param settings     Creation parameters
     ///

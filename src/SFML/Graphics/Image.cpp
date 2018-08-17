@@ -41,15 +41,11 @@ namespace sf
 Image::Image() :
 m_size(0, 0)
 {
-
 }
 
 
 ////////////////////////////////////////////////////////////
-Image::~Image()
-{
-
-}
+Image::~Image() = default;
 
 
 ////////////////////////////////////////////////////////////
@@ -61,7 +57,7 @@ void Image::create(unsigned int width, unsigned int height, const Color& color)
         std::vector<Uint8> newPixels(width * height * 4);
     
         // Fill it with the specified color
-        Uint8* ptr = &newPixels[0];
+        Uint8* ptr = newPixels.data();
         Uint8* end = ptr + newPixels.size();
         while (ptr < end)
         {
@@ -126,8 +122,8 @@ bool Image::loadFromFile(const std::string& filename)
 
     #else
 
-        priv::ResourceStream stream(filename);
-        return loadFromStream(stream);
+        m_stream = std::make_shared<priv::ResourceStream>(filename);
+        return loadFromStream(*std::static_pointer_cast<priv::ResourceStream*>(m_stream));
 
     #endif
 }
@@ -168,7 +164,7 @@ void Image::createMaskFromColor(const Color& color, Uint8 alpha)
     if (!m_pixels.empty())
     {
         // Replace the alpha of the pixels that match the transparent color
-        Uint8* ptr = &m_pixels[0];
+        Uint8* ptr = m_pixels.data();
         Uint8* end = ptr + m_pixels.size();
         while (ptr < end)
         {
@@ -219,8 +215,8 @@ void Image::copy(const Image& source, unsigned int destX, unsigned int destY, co
     int          rows      = height;
     int          srcStride = source.m_size.x * 4;
     int          dstStride = m_size.x * 4;
-    const Uint8* srcPixels = &source.m_pixels[0] + (srcRect.left + srcRect.top * source.m_size.x) * 4;
-    Uint8*       dstPixels = &m_pixels[0] + (destX + destY * m_size.x) * 4;
+    const Uint8* srcPixels = source.m_pixels.data() + (srcRect.left + srcRect.top * source.m_size.x) * 4;
+    Uint8*       dstPixels = m_pixels.data() + (destX + destY * m_size.x) * 4;
 
     // Copy the pixels
     if (applyAlpha)
@@ -283,12 +279,12 @@ const Uint8* Image::getPixelsPtr() const
 {
     if (!m_pixels.empty())
     {
-        return &m_pixels[0];
+        return m_pixels.data();
     }
     else
     {
         err() << "Trying to access the pixels of an empty image" << std::endl;
-        return NULL;
+        return nullptr;
     }
 }
 

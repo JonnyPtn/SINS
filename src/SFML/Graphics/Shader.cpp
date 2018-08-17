@@ -33,8 +33,6 @@
 #include <SFML/Graphics/GLCheck.hpp>
 #include <SFML/Window/Context.hpp>
 #include <SFML/System/InputStream.hpp>
-#include <SFML/System/Mutex.hpp>
-#include <SFML/System/Lock.hpp>
 #include <SFML/System/Err.hpp>
 #include <fstream>
 #include <vector>
@@ -56,28 +54,6 @@
 
 namespace
 {
-    sf::Mutex maxTextureUnitsMutex;
-    sf::Mutex isAvailableMutex;
-
-    GLint checkMaxTextureUnits()
-    {
-        GLint maxUnits = 0;
-        glCheck(glGetIntegerv(GLEXT_GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxUnits));
-
-        return maxUnits;
-    }
-
-    // Retrieve the maximum number of texture units available
-    GLint getMaxTextureUnits()
-    {
-        // TODO: Remove this lock when it becomes unnecessary in C++11
-        sf::Lock lock(maxTextureUnitsMutex);
-
-        static GLint maxUnits = checkMaxTextureUnits();
-
-        return maxUnits;
-    }
-
     // Read the contents of a file into an array of char
     bool getFileContents(const std::string& filename, std::vector<char>& buffer)
     {
@@ -90,7 +66,7 @@ namespace
             {
                 file.seekg(0, std::ios_base::beg);
                 buffer.resize(static_cast<std::size_t>(size));
-                file.read(&buffer[0], size);
+                file.read(buffer.data(), size);
             }
             buffer.push_back('\0');
             return true;
@@ -110,7 +86,7 @@ namespace
         {
             buffer.resize(static_cast<std::size_t>(size));
             stream.seek(0);
-            sf::Int64 read = stream.read(&buffer[0], size);
+            sf::Int64 read = stream.read(buffer.data(), size);
             success = (read == size);
         }
         buffer.push_back('\0');
@@ -251,12 +227,12 @@ bool Shader::loadFromFile(const std::string& filename, Type type)
     }
 
     // Compile the shader program
-    if (type == Vertex)
-        return compile(&shader[0], NULL, NULL);
-    else if (type == Geometry)
-        return compile(NULL, &shader[0], NULL);
+    if (type == Type::Vertex)
+        return compile(shader.data(), nullptr, nullptr);
+    else if (type == Type::Geometry)
+        return compile(nullptr, shader.data(), nullptr);
     else
-        return compile(NULL, NULL, &shader[0]);
+        return compile(nullptr, nullptr, shader.data());
 }
 
 
@@ -280,7 +256,7 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
     }
 
     // Compile the shader program
-    return compile(&vertexShader[0], NULL, &fragmentShader[0]);
+    return compile(vertexShader.data(), nullptr, fragmentShader.data());
 }
 
 
@@ -312,7 +288,7 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
     }
 
     // Compile the shader program
-    return compile(&vertexShader[0], &geometryShader[0], &fragmentShader[0]);
+    return compile(vertexShader.data(), geometryShader.data(), fragmentShader.data());
 }
 
 
@@ -320,12 +296,12 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
 bool Shader::loadFromMemory(const std::string& shader, Type type)
 {
     // Compile the shader program
-    if (type == Vertex)
-        return compile(shader.c_str(), NULL, NULL);
-    else if (type == Geometry)
-        return compile(NULL, shader.c_str(), NULL);
+    if (type == Type::Vertex)
+        return compile(shader.c_str(), nullptr, nullptr);
+    else if (type == Type::Geometry)
+        return compile(nullptr, shader.c_str(), nullptr);
     else
-        return compile(NULL, NULL, shader.c_str());
+        return compile(nullptr, nullptr, shader.c_str());
 }
 
 
@@ -333,7 +309,7 @@ bool Shader::loadFromMemory(const std::string& shader, Type type)
 bool Shader::loadFromMemory(const std::string& vertexShader, const std::string& fragmentShader)
 {
     // Compile the shader program
-    return compile(vertexShader.c_str(), NULL, fragmentShader.c_str());
+    return compile(vertexShader.c_str(), nullptr, fragmentShader.c_str());
 }
 
 
@@ -357,12 +333,12 @@ bool Shader::loadFromStream(InputStream& stream, Type type)
     }
 
     // Compile the shader program
-    if (type == Vertex)
-        return compile(&shader[0], NULL, NULL);
-    else if (type == Geometry)
-        return compile(NULL, &shader[0], NULL);
+    if (type == Type::Vertex)
+        return compile(shader.data(), nullptr, nullptr);
+    else if (type == Type::Geometry)
+        return compile(nullptr, shader.data(), nullptr);
     else
-        return compile(NULL, NULL, &shader[0]);
+        return compile(nullptr, nullptr, shader.data());
 }
 
 
@@ -386,7 +362,7 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& fragme
     }
 
     // Compile the shader program
-    return compile(&vertexShader[0], NULL, &fragmentShader[0]);
+    return compile(vertexShader.data(), nullptr, fragmentShader.data());
 }
 
 
@@ -418,7 +394,7 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& geomet
     }
 
     // Compile the shader program
-    return compile(&vertexShader[0], &geometryShader[0], &fragmentShader[0]);
+    return compile(vertexShader.data(), geometryShader.data(), fragmentShader.data());
 }
 
 
@@ -556,7 +532,15 @@ void Shader::setUniform(const std::string& name, const Texture& texture)
             if (it == m_textures.end())
             {
                 // New entry, make sure there are enough texture units
-                GLint maxUnits = getMaxTextureUnits();
+                static const auto maxUnits = []
+                {
+                    // Retrieve the maximum number of texture units available
+                    GLint maxUnits = 0;
+                    glCheck(glGetIntegerv(GLEXT_GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxUnits));
+
+                    return maxUnits;
+                }();
+
                 if (m_textures.size() + 1 >= static_cast<std::size_t>(maxUnits))
                 {
                     err() << "Impossible to use texture \"" << name << "\" for shader: all available texture units are used" << std::endl;
@@ -773,26 +757,19 @@ void Shader::bind(const Shader* shader)
 ////////////////////////////////////////////////////////////
 bool Shader::isAvailable()
 {
-    Lock lock(isAvailableMutex);
-
-    static bool checked = false;
-    static bool available = false;
-
-    if (!checked)
+    static const auto available = []
     {
-        checked = true;
-
         TransientContextLock contextLock;
 
         // Make sure that extensions are initialized
         sf::priv::ensureExtensionsInit();
 
-        available = GLEXT_multitexture         &&
-                    GLEXT_shading_language_100 &&
-                    GLEXT_shader_objects       &&
-                    GLEXT_vertex_shader        &&
-                    GLEXT_fragment_shader;
-    }
+        return GLEXT_multitexture         &&
+               GLEXT_shading_language_100 &&
+               GLEXT_shader_objects       &&
+               GLEXT_vertex_shader        &&
+               GLEXT_fragment_shader;
+    }();
 
     return available;
 }
@@ -801,22 +778,15 @@ bool Shader::isAvailable()
 ////////////////////////////////////////////////////////////
 bool Shader::isGeometryAvailable()
 {
-    Lock lock(isAvailableMutex);
-
-    static bool checked = false;
-    static bool available = false;
-
-    if (!checked)
+    static const auto available = []
     {
-        checked = true;
-
         TransientContextLock contextLock;
 
         // Make sure that extensions are initialized
         sf::priv::ensureExtensionsInit();
 
-        available = isAvailable() && GLEXT_geometry_shader4;
-    }
+        return isAvailable() && GLEXT_geometry_shader4;
+    }();
 
     return available;
 }
@@ -865,7 +835,7 @@ bool Shader::compile(const char* vertexShaderCode, const char* geometryShaderCod
         // Create and compile the shader
         GLEXT_GLhandle vertexShader;
         glCheck(vertexShader = GLEXT_glCreateShaderObject(GLEXT_GL_VERTEX_SHADER));
-        glCheck(GLEXT_glShaderSource(vertexShader, 1, &vertexShaderCode, NULL));
+        glCheck(GLEXT_glShaderSource(vertexShader, 1, &vertexShaderCode, nullptr));
         glCheck(GLEXT_glCompileShader(vertexShader));
 
         // Check the compile log
@@ -892,7 +862,7 @@ bool Shader::compile(const char* vertexShaderCode, const char* geometryShaderCod
     {
         // Create and compile the shader
         GLEXT_GLhandle geometryShader = GLEXT_glCreateShaderObject(GLEXT_GL_GEOMETRY_SHADER);
-        glCheck(GLEXT_glShaderSource(geometryShader, 1, &geometryShaderCode, NULL));
+        glCheck(GLEXT_glShaderSource(geometryShader, 1, &geometryShaderCode, nullptr));
         glCheck(GLEXT_glCompileShader(geometryShader));
 
         // Check the compile log
@@ -920,7 +890,7 @@ bool Shader::compile(const char* vertexShaderCode, const char* geometryShaderCod
         // Create and compile the shader
         GLEXT_GLhandle fragmentShader;
         glCheck(fragmentShader = GLEXT_glCreateShaderObject(GLEXT_GL_FRAGMENT_SHADER));
-        glCheck(GLEXT_glShaderSource(fragmentShader, 1, &fragmentShaderCode, NULL));
+        glCheck(GLEXT_glShaderSource(fragmentShader, 1, &fragmentShaderCode, nullptr));
         glCheck(GLEXT_glCompileShader(fragmentShader));
 
         // Check the compile log

@@ -38,7 +38,6 @@ namespace priv
 {
 ////////////////////////////////////////////////////////////
 RenderTextureImplDefault::RenderTextureImplDefault() :
-m_context(0),
 m_width  (0),
 m_height (0)
 {
@@ -72,7 +71,7 @@ bool RenderTextureImplDefault::create(unsigned int width, unsigned int height, u
     m_height = height;
 
     // Create the in-memory OpenGL context
-    m_context = new Context(settings, width, height);
+    m_context = std::make_unique<Context>(ContextSettings(depthBuffer ? 32 : 0), width, height);
 
     return true;
 }

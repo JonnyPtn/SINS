@@ -138,20 +138,20 @@ namespace
     {
         switch (usage)
         {
-            case HUG_X:  return sf::Joystick::X;
-            case HUG_Y:  return sf::Joystick::Y;
-            case HUG_Z:  return sf::Joystick::Z;
-            case HUG_RZ: return sf::Joystick::R;
-            case HUG_RX: return sf::Joystick::U;
-            case HUG_RY: return sf::Joystick::V;
+            case HUG_X:  return static_cast<int>(sf::Joystick::Axis::X);
+            case HUG_Y:  return static_cast<int>(sf::Joystick::Axis::Y);
+            case HUG_Z:  return static_cast<int>(sf::Joystick::Axis::Z);
+            case HUG_RZ: return static_cast<int>(sf::Joystick::Axis::R);
+            case HUG_RX: return static_cast<int>(sf::Joystick::Axis::U);
+            case HUG_RY: return static_cast<int>(sf::Joystick::Axis::V);
             default:     return -1;
         }
     }
 
     void hatValueToSfml(int value, sf::priv::JoystickState& state)
     {
-        state.axes[sf::Joystick::PovX] = hatValueMap[value].first;
-        state.axes[sf::Joystick::PovY] = hatValueMap[value].second;
+        state.axes[static_cast<size_t>(sf::Joystick::Axis::PovX)] = hatValueMap[value].first;
+        state.axes[static_cast<size_t>(sf::Joystick::Axis::PovY)] = hatValueMap[value].second;
     }
 }
 
@@ -163,7 +163,7 @@ namespace priv
 ////////////////////////////////////////////////////////////
 void JoystickImpl::initialize()
 {
-    hid_init(NULL);
+    hid_init(nullptr);
 
     // Do an initial scan
     updatePluggedList();
@@ -266,8 +266,8 @@ JoystickCaps JoystickImpl::getCapabilities() const
 
                 if (usage == HUG_HAT_SWITCH)
                 {
-                    caps.axes[Joystick::PovX] = true;
-                    caps.axes[Joystick::PovY] = true;
+                    caps.axes[static_cast<size_t>(Joystick::Axis::PovX)] = true;
+                    caps.axes[static_cast<size_t>(Joystick::Axis::PovY)] = true;
                 }
                 else if (axis != -1)
                 {
@@ -293,7 +293,7 @@ Joystick::Identification JoystickImpl::getIdentification() const
 ////////////////////////////////////////////////////////////
 JoystickState JoystickImpl::JoystickImpl::update()
 {
-    while (read(m_file, &m_buffer[0], m_length) == m_length)
+    while (read(m_file, m_buffer.data(), m_length) == m_length)
     {
         hid_data_t data = hid_start_parse(m_desc, 1 << hid_input, m_id);
 
@@ -312,11 +312,11 @@ JoystickState JoystickImpl::JoystickImpl::update()
 
                 if (usage == HUP_BUTTON)
                 {
-                    m_state.buttons[buttonIndex++] = hid_get_data(&m_buffer[0], &item);
+                    m_state.buttons[buttonIndex++] = hid_get_data(m_buffer.data(), &item);
                 }
                 else if (usage == HUP_GENERIC_DESKTOP)
                 {
-                    int value = hid_get_data(&m_buffer[0], &item);
+                    int value = hid_get_data(m_buffer.data(), &item);
                     int axis = usageToAxis(usage);
 
                     if (usage == HUG_HAT_SWITCH)

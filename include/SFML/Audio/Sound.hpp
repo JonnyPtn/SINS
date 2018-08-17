@@ -72,7 +72,7 @@ public:
     /// \brief Destructor
     ///
     ////////////////////////////////////////////////////////////
-    ~Sound();
+    ~Sound() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Start or resume playing the sound
@@ -158,7 +158,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Get the audio buffer attached to the sound
     ///
-    /// \return Sound buffer attached to the sound (can be NULL)
+    /// \return Sound buffer attached to the sound (can be nullptr)
     ///
     ////////////////////////////////////////////////////////////
     const SoundBuffer* getBuffer() const;

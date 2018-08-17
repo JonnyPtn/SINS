@@ -106,7 +106,7 @@ namespace
     {
         PTCHAR buffer;
 
-        if (FormatMessage(FORMAT_MESSAGE_MAX_WIDTH_MASK | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, error, 0, reinterpret_cast<PTCHAR>(&buffer), 0, NULL) == 0)
+        if (FormatMessage(FORMAT_MESSAGE_MAX_WIDTH_MASK | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, error, 0, reinterpret_cast<PTCHAR>(&buffer), 0, nullptr) == 0)
             return "Unknown error.";
 
         sf::String message = buffer;
@@ -156,7 +156,7 @@ namespace
         TCHAR keyData[256];
         DWORD keyDataSize = sizeof(keyData);
 
-        result = RegQueryValueEx(currentKey, subkey.c_str(), NULL, NULL, reinterpret_cast<LPBYTE>(keyData), &keyDataSize);
+        result = RegQueryValueEx(currentKey, subkey.c_str(), nullptr, nullptr, reinterpret_cast<LPBYTE>(keyData), &keyDataSize);
         RegCloseKey(currentKey);
 
         if (result != ERROR_SUCCESS)
@@ -179,7 +179,7 @@ namespace
 
         keyDataSize = sizeof(keyData);
 
-        result = RegQueryValueEx(currentKey, REGSTR_VAL_JOYOEMNAME, NULL, NULL, reinterpret_cast<LPBYTE>(keyData), &keyDataSize);
+        result = RegQueryValueEx(currentKey, REGSTR_VAL_JOYOEMNAME, nullptr, nullptr, reinterpret_cast<LPBYTE>(keyData), &keyDataSize);
         RegCloseKey(currentKey);
 
         if (result != ERROR_SUCCESS)
@@ -306,14 +306,14 @@ JoystickCaps JoystickImpl::getCapabilities() const
     if (caps.buttonCount > Joystick::ButtonCount)
         caps.buttonCount = Joystick::ButtonCount;
 
-    caps.axes[Joystick::X]    = true;
-    caps.axes[Joystick::Y]    = true;
-    caps.axes[Joystick::Z]    = (m_caps.wCaps & JOYCAPS_HASZ) != 0;
-    caps.axes[Joystick::R]    = (m_caps.wCaps & JOYCAPS_HASR) != 0;
-    caps.axes[Joystick::U]    = (m_caps.wCaps & JOYCAPS_HASU) != 0;
-    caps.axes[Joystick::V]    = (m_caps.wCaps & JOYCAPS_HASV) != 0;
-    caps.axes[Joystick::PovX] = (m_caps.wCaps & JOYCAPS_HASPOV) != 0;
-    caps.axes[Joystick::PovY] = (m_caps.wCaps & JOYCAPS_HASPOV) != 0;
+    caps.axes[static_cast<size_t>(Joystick::Axis::X)]    = true;
+    caps.axes[static_cast<size_t>(Joystick::Axis::Y)]    = true;
+    caps.axes[static_cast<size_t>(Joystick::Axis::Z)]    = (m_caps.wCaps & JOYCAPS_HASZ) != 0;
+    caps.axes[static_cast<size_t>(Joystick::Axis::R)]    = (m_caps.wCaps & JOYCAPS_HASR) != 0;
+    caps.axes[static_cast<size_t>(Joystick::Axis::U)]    = (m_caps.wCaps & JOYCAPS_HASU) != 0;
+    caps.axes[static_cast<size_t>(Joystick::Axis::V)]    = (m_caps.wCaps & JOYCAPS_HASV) != 0;
+    caps.axes[static_cast<size_t>(Joystick::Axis::PovX)] = (m_caps.wCaps & JOYCAPS_HASPOV) != 0;
+    caps.axes[static_cast<size_t>(Joystick::Axis::PovY)] = (m_caps.wCaps & JOYCAPS_HASPOV) != 0;
 
     return caps;
 }
@@ -345,24 +345,24 @@ JoystickState JoystickImpl::update()
         state.connected = true;
 
         // Axes
-        state.axes[Joystick::X] = (pos.dwXpos - (m_caps.wXmax + m_caps.wXmin) / 2.f) * 200.f / (m_caps.wXmax - m_caps.wXmin);
-        state.axes[Joystick::Y] = (pos.dwYpos - (m_caps.wYmax + m_caps.wYmin) / 2.f) * 200.f / (m_caps.wYmax - m_caps.wYmin);
-        state.axes[Joystick::Z] = (pos.dwZpos - (m_caps.wZmax + m_caps.wZmin) / 2.f) * 200.f / (m_caps.wZmax - m_caps.wZmin);
-        state.axes[Joystick::R] = (pos.dwRpos - (m_caps.wRmax + m_caps.wRmin) / 2.f) * 200.f / (m_caps.wRmax - m_caps.wRmin);
-        state.axes[Joystick::U] = (pos.dwUpos - (m_caps.wUmax + m_caps.wUmin) / 2.f) * 200.f / (m_caps.wUmax - m_caps.wUmin);
-        state.axes[Joystick::V] = (pos.dwVpos - (m_caps.wVmax + m_caps.wVmin) / 2.f) * 200.f / (m_caps.wVmax - m_caps.wVmin);
+        state.axes[static_cast<size_t>(Joystick::Axis::X)] = (pos.dwXpos - (m_caps.wXmax + m_caps.wXmin) / 2.f) * 200.f / (m_caps.wXmax - m_caps.wXmin);
+        state.axes[static_cast<size_t>(Joystick::Axis::Y)] = (pos.dwYpos - (m_caps.wYmax + m_caps.wYmin) / 2.f) * 200.f / (m_caps.wYmax - m_caps.wYmin);
+        state.axes[static_cast<size_t>(Joystick::Axis::Z)] = (pos.dwZpos - (m_caps.wZmax + m_caps.wZmin) / 2.f) * 200.f / (m_caps.wZmax - m_caps.wZmin);
+        state.axes[static_cast<size_t>(Joystick::Axis::R)] = (pos.dwRpos - (m_caps.wRmax + m_caps.wRmin) / 2.f) * 200.f / (m_caps.wRmax - m_caps.wRmin);
+        state.axes[static_cast<size_t>(Joystick::Axis::U)] = (pos.dwUpos - (m_caps.wUmax + m_caps.wUmin) / 2.f) * 200.f / (m_caps.wUmax - m_caps.wUmin);
+        state.axes[static_cast<size_t>(Joystick::Axis::V)] = (pos.dwVpos - (m_caps.wVmax + m_caps.wVmin) / 2.f) * 200.f / (m_caps.wVmax - m_caps.wVmin);
 
         // Special case for POV, it is given as an angle
         if (pos.dwPOV != 0xFFFF)
         {
             float angle = pos.dwPOV / 18000.f * 3.141592654f;
-            state.axes[Joystick::PovX] = std::sin(angle) * 100;
-            state.axes[Joystick::PovY] = std::cos(angle) * 100;
+            state.axes[static_cast<size_t>(Joystick::Axis::PovX)] = std::sin(angle) * 100;
+            state.axes[static_cast<size_t>(Joystick::Axis::PovY)] = std::cos(angle) * 100;
         }
         else
         {
-            state.axes[Joystick::PovX] = 0;
-            state.axes[Joystick::PovY] = 0;
+            state.axes[static_cast<size_t>(Joystick::Axis::PovX)] = 0;
+            state.axes[static_cast<size_t>(Joystick::Axis::PovY)] = 0;
         }
 
         // Buttons

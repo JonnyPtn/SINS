@@ -45,8 +45,8 @@ namespace
         CFIndex length = CFStringGetLength(cfString);
         std::vector<char> str(length);
         CFIndex maxSize = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8);
-        CFStringGetCString(cfString, &str[0], maxSize, kCFStringEncodingUTF8);
-        return &str[0];
+        CFStringGetCString(cfString, str.data(), maxSize, kCFStringEncodingUTF8);
+        return str.data();
     }
 
     // Get HID device property key as a string
@@ -136,7 +136,7 @@ bool JoystickImpl::isConnected(unsigned int index)
             // Get all devices
             CFSetRef devices = HIDJoystickManager::getInstance().copyJoysticks();
 
-            if (devices != NULL)
+            if (devices != nullptr)
             {
                 CFIndex size = CFSetGetCount(devices);
                 if (size > 0)
@@ -186,7 +186,7 @@ bool JoystickImpl::open(unsigned int index)
 
     // Get all devices
     CFSetRef devices = HIDJoystickManager::getInstance().copyJoysticks();
-    if (devices == NULL)
+    if (devices == nullptr)
         return false;
 
     // Get a usable copy of the joysticks devices.
@@ -214,9 +214,9 @@ bool JoystickImpl::open(unsigned int index)
     m_identification.productId = getDeviceUint(self, CFSTR(kIOHIDProductIDKey), m_index);
 
     // Get a list of all elements attached to the device.
-    CFArrayRef elements = IOHIDDeviceCopyMatchingElements(self, NULL, kIOHIDOptionsTypeNone);
+    CFArrayRef elements = IOHIDDeviceCopyMatchingElements(self, nullptr, kIOHIDOptionsTypeNone);
 
-    if (elements == NULL)
+    if (elements == nullptr)
     {
         CFRelease(devices);
         return false;
@@ -306,9 +306,9 @@ bool JoystickImpl::open(unsigned int index)
     // Retain all these objects for personal use
     for (ButtonsVector::iterator it(m_buttons.begin()); it != m_buttons.end(); ++it)
         CFRetain(*it);
-    for (AxisMap::iterator it(m_axis.begin()); it != m_axis.end(); ++it)
-        CFRetain(it->second);
-    if (m_hat != NULL)
+    for (auto& axis : m_axis)
+        CFRetain(axis.second);
+    if (m_hat != nullptr)
         CFRetain(m_hat);
 
     // Note: we didn't retain element in the switch because we might have multiple
@@ -329,8 +329,8 @@ void JoystickImpl::close()
         CFRelease(*it);
     m_buttons.clear();
 
-    for (AxisMap::iterator it(m_axis.begin()); it != m_axis.end(); ++it)
-        CFRelease(it->second);
+    for (auto& axis : m_axis)
+        CFRelease(axis.second);
     m_axis.clear();
 
     if (m_hat != NULL)
@@ -351,9 +351,10 @@ JoystickCaps JoystickImpl::getCapabilities() const
     caps.buttonCount = m_buttons.size();
 
     // Axis:
-    for (AxisMap::const_iterator it(m_axis.begin()); it != m_axis.end(); ++it)
-        caps.axes[it->first] = true;
-
+    for (const auto& axis : m_axis) {
+        caps.axes[static_cast<size_t>(axis.first)] = true;
+    }
+    
     if (m_hat != NULL)
         caps.axes[Joystick::PovX] = caps.axes[Joystick::PovY] = true;
 
@@ -383,7 +384,7 @@ JoystickState JoystickImpl::update()
 
     // Get all devices
     CFSetRef devices = HIDJoystickManager::getInstance().copyJoysticks();
-    if (devices == NULL)
+    if (devices == nullptr)
         return disconnectedState;
 
     // Get a usable copy of the joysticks devices.
@@ -425,10 +426,10 @@ JoystickState JoystickImpl::update()
     }
 
     // Update axes' state
-    for (AxisMap::iterator it = m_axis.begin(); it != m_axis.end(); ++it)
+    for (auto& axis : m_axis)
     {
         IOHIDValueRef value = 0;
-        IOHIDDeviceGetValue(IOHIDElementGetDevice(it->second), it->second, &value);
+        IOHIDDeviceGetValue(IOHIDElementGetDevice(axis.second), axis.second, &value);
 
         // Check for plug out.
         if (!value)
@@ -446,13 +447,13 @@ JoystickState JoystickImpl::update()
         // This method might not be very accurate (the "0 position" can be
         // slightly shift with some device) but we don't care because most
         // of devices are so sensitive that this is not relevant.
-        double  physicalMax   = IOHIDElementGetPhysicalMax(it->second);
-        double  physicalMin   = IOHIDElementGetPhysicalMin(it->second);
+        double  physicalMax   = IOHIDElementGetPhysicalMax(axis.second);
+        double  physicalMin   = IOHIDElementGetPhysicalMin(axis.second);
         double  scaledMin     = -100;
         double  scaledMax     =  100;
         double  physicalValue = IOHIDValueGetScaledValue(value, kIOHIDValueScaleTypePhysical);
         float   scaledValue   = (((physicalValue - physicalMin) * (scaledMax - scaledMin)) / (physicalMax - physicalMin)) + scaledMin;
-        state.axes[it->first] = scaledValue;
+        state.axes[static_cast<size_t>(axis.first)] = scaledValue;
     }
 
     // Update POV/Hat state. Assuming model described in `open`, values are:

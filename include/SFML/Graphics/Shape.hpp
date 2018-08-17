@@ -49,7 +49,7 @@ public:
     /// \brief Virtual destructor
     ///
     ////////////////////////////////////////////////////////////
-    virtual ~Shape();
+    ~Shape() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Change the source texture of the shape
@@ -60,7 +60,7 @@ public:
     /// a pointer to the one that you passed to this function.
     /// If the source texture is destroyed and the shape tries to
     /// use it, the behavior is undefined.
-    /// \a texture can be NULL to disable texturing.
+    /// \a texture can be nullptr to disable texturing.
     /// If \a resetRect is true, the TextureRect property of
     /// the shape is automatically adjusted to the size of the new
     /// texture. If it is false, the texture rect is left unchanged.
@@ -134,7 +134,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Get the source texture of the shape
     ///
-    /// If the shape has no source texture, a NULL pointer is returned.
+    /// If the shape has no source texture, a nullptr pointer is returned.
     /// The returned pointer is const, which means that you can't
     /// modify the texture when you retrieve it with this function.
     ///
@@ -274,7 +274,7 @@ private:
     /// \param states Current render states
     ///
     ////////////////////////////////////////////////////////////
-    virtual void draw(RenderTarget& target, RenderStates states) const;
+    void draw(RenderTarget& target, RenderStates states) const override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Update the fill vertices' color

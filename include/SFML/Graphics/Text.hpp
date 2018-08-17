@@ -272,7 +272,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Get the text's font
     ///
-    /// If the text has no font attached, a NULL pointer is returned.
+    /// If the text has no font attached, a nullptr pointer is returned.
     /// The returned pointer is const, which means that you
     /// cannot modify the font when you get it from this function.
     ///
@@ -421,7 +421,7 @@ private:
     /// \param states Current render states
     ///
     ////////////////////////////////////////////////////////////
-    virtual void draw(RenderTarget& target, RenderStates states) const;
+    void draw(RenderTarget& target, RenderStates states) const override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Make sure the text's geometry is updated

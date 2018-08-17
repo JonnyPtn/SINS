@@ -33,13 +33,12 @@
 #include <SFML/Graphics/VertexBuffer.hpp>
 #include <SFML/Graphics/GLCheck.hpp>
 #include <SFML/Window/Context.hpp>
-#include <SFML/System/Mutex.hpp>
-#include <SFML/System/Lock.hpp>
 #include <SFML/System/Err.hpp>
 #include <cassert>
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <mutex>
 
 
 // GL_QUADS is unavailable on OpenGL ES, thus we need to define GL_QUADS ourselves
@@ -87,16 +86,16 @@ namespace
     {
         switch (blendFactor)
         {
-            case sf::BlendMode::Zero:             return GL_ZERO;
-            case sf::BlendMode::One:              return GL_ONE;
-            case sf::BlendMode::SrcColor:         return GL_SRC_COLOR;
-            case sf::BlendMode::OneMinusSrcColor: return GL_ONE_MINUS_SRC_COLOR;
-            case sf::BlendMode::DstColor:         return GL_DST_COLOR;
-            case sf::BlendMode::OneMinusDstColor: return GL_ONE_MINUS_DST_COLOR;
-            case sf::BlendMode::SrcAlpha:         return GL_SRC_ALPHA;
-            case sf::BlendMode::OneMinusSrcAlpha: return GL_ONE_MINUS_SRC_ALPHA;
-            case sf::BlendMode::DstAlpha:         return GL_DST_ALPHA;
-            case sf::BlendMode::OneMinusDstAlpha: return GL_ONE_MINUS_DST_ALPHA;
+            case sf::BlendMode::Factor::Zero:             return GL_ZERO;
+            case sf::BlendMode::Factor::One:              return GL_ONE;
+            case sf::BlendMode::Factor::SrcColor:         return GL_SRC_COLOR;
+            case sf::BlendMode::Factor::OneMinusSrcColor: return GL_ONE_MINUS_SRC_COLOR;
+            case sf::BlendMode::Factor::DstColor:         return GL_DST_COLOR;
+            case sf::BlendMode::Factor::OneMinusDstColor: return GL_ONE_MINUS_DST_COLOR;
+            case sf::BlendMode::Factor::SrcAlpha:         return GL_SRC_ALPHA;
+            case sf::BlendMode::Factor::OneMinusSrcAlpha: return GL_ONE_MINUS_SRC_ALPHA;
+            case sf::BlendMode::Factor::DstAlpha:         return GL_DST_ALPHA;
+            case sf::BlendMode::Factor::OneMinusDstAlpha: return GL_ONE_MINUS_DST_ALPHA;
         }
 
         sf::err() << "Invalid value for sf::BlendMode::Factor! Fallback to sf::BlendMode::Zero." << std::endl;
@@ -110,9 +109,9 @@ namespace
     {
         switch (blendEquation)
         {
-            case sf::BlendMode::Add:             return GLEXT_GL_FUNC_ADD;
-            case sf::BlendMode::Subtract:        return GLEXT_GL_FUNC_SUBTRACT;
-            case sf::BlendMode::ReverseSubtract: return GLEXT_GL_FUNC_REVERSE_SUBTRACT;
+            case sf::BlendMode::Equation::Add:             return GLEXT_GL_FUNC_ADD;
+            case sf::BlendMode::Equation::Subtract:        return GLEXT_GL_FUNC_SUBTRACT;
+            case sf::BlendMode::Equation::ReverseSubtract: return GLEXT_GL_FUNC_REVERSE_SUBTRACT;
         }
 
         sf::err() << "Invalid value for sf::BlendMode::Equation! Fallback to sf::BlendMode::Add." << std::endl;
@@ -147,7 +146,7 @@ void RenderTarget::clear(const Color& color)
     if (isActive(m_id) || setActive(true))
     {
         // Unbind texture to fix RenderTexture preventing clear
-        applyTexture(NULL);
+        applyTexture(nullptr);
 
         glCheck(glClearColor(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f));
         glCheck(glClear(GL_COLOR_BUFFER_BIT));
@@ -519,9 +518,9 @@ void RenderTarget::resetGLStates()
 
         // Apply the default SFML states
         applyBlendMode(BlendAlpha);
-        applyTexture(NULL);
+        applyTexture(nullptr);
         if (shaderAvailable)
-            applyShader(NULL);
+            applyShader(nullptr);
 
         if (vertexBufferAvailable)
             glCheck(VertexBuffer::bind(NULL));
@@ -603,18 +602,15 @@ void RenderTarget::applyBlendMode(const BlendMode& mode)
             glCheck(GLEXT_glBlendEquation(equationToGlConstant(mode.colorEquation)));
         }
     }
-    else if ((mode.colorEquation != BlendMode::Add) || (mode.alphaEquation != BlendMode::Add))
+    else if ((mode.colorEquation != BlendMode::Equation::Add) || (mode.alphaEquation != BlendMode::Equation::Add))
     {
-        static bool warned = false;
-
-        if (!warned)
+        static std::once_flag warned;
+        std::call_once(warned, []
         {
             err() << "OpenGL extension EXT_blend_minmax and/or EXT_blend_subtract unavailable" << std::endl;
             err() << "Selecting a blend equation not possible" << std::endl;
             err() << "Ensure that hardware acceleration is enabled if available" << std::endl;
-
-            warned = true;
-        }
+        });
     }
 
     m_cache.lastBlendMode = mode;
@@ -629,14 +625,14 @@ void RenderTarget::applyTransform(const Transform& transform)
     if (transform == Transform::Identity)
         glCheck(glLoadIdentity());
     else
-        glCheck(glLoadMatrixf(transform.getMatrix()));
+    glCheck(glLoadMatrixf(transform.getMatrix()));
 }
 
 
 ////////////////////////////////////////////////////////////
 void RenderTarget::applyTexture(const Texture* texture)
 {
-    Texture::bind(texture, Texture::Pixels);
+    Texture::bind(texture, Texture::CoordinateType::Pixels);
 
     m_cache.lastTextureId = texture ? texture->m_cacheId : 0;
 }

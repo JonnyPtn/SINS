@@ -31,23 +31,21 @@
 #include <SFML/Graphics/TextureSaver.hpp>
 #include <SFML/Window/Context.hpp>
 #include <SFML/Window/Window.hpp>
-#include <SFML/System/Mutex.hpp>
-#include <SFML/System/Lock.hpp>
 #include <SFML/System/Err.hpp>
 #include <cassert>
 #include <cstring>
+#include <mutex>
 
 
 namespace
 {
-    sf::Mutex idMutex;
-    sf::Mutex maximumSizeMutex;
+    std::mutex idMutex;
 
     // Thread-safe unique identifier generator,
     // is used for states cache (see RenderTarget)
     sf::Uint64 getUniqueId()
     {
-        sf::Lock lock(idMutex);
+        std::lock_guard<std::mutex> lock(idMutex);
 
         static sf::Uint64 id = 1; // start at 1, zero is "no texture"
 
@@ -166,29 +164,25 @@ bool Texture::create(unsigned int width, unsigned int height)
     // Make sure that the current texture binding will be preserved
     priv::TextureSaver save;
 
-    static bool textureEdgeClamp = GLEXT_texture_edge_clamp || GLEXT_EXT_texture_edge_clamp;
+    static const auto textureEdgeClamp = GLEXT_texture_edge_clamp || GLEXT_EXT_texture_edge_clamp;
 
     if (!m_isRepeated && !textureEdgeClamp)
     {
-        static bool warned = false;
-
-        if (!warned)
+        std::once_flag warned;
+        std::call_once(warned, []
         {
             err() << "OpenGL extension SGIS_texture_edge_clamp unavailable" << std::endl;
             err() << "Artifacts may occur along texture edges" << std::endl;
             err() << "Ensure that hardware acceleration is enabled if available" << std::endl;
-
-            warned = true;
-        }
+        });
     }
 
-    static bool textureSrgb = GLEXT_texture_sRGB;
+    static const auto textureSrgb = GLEXT_texture_sRGB;
 
     if (m_sRgb && !textureSrgb)
     {
-        static bool warned = false;
-
-        if (!warned)
+        std::once_flag warned;
+        std::call_once(warned, []
         {
 #ifndef SFML_OPENGL_ES
             err() << "OpenGL extension EXT_texture_sRGB unavailable" << std::endl;
@@ -196,16 +190,14 @@ bool Texture::create(unsigned int width, unsigned int height)
             err() << "OpenGL ES extension EXT_sRGB unavailable" << std::endl;
 #endif
             err() << "Automatic sRGB to linear conversion disabled" << std::endl;
-
-            warned = true;
-        }
+        });
 
         m_sRgb = false;
     }
 
     // Initialize the texture
     glCheck(glBindTexture(GL_TEXTURE_2D, m_texture));
-    glCheck(glTexImage2D(GL_TEXTURE_2D, 0, (m_sRgb ? GLEXT_GL_SRGB8_ALPHA8 : GL_RGBA), m_actualSize.x, m_actualSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+    glCheck(glTexImage2D(GL_TEXTURE_2D, 0, (m_sRgb ? GLEXT_GL_SRGB8_ALPHA8 : GL_RGBA), m_actualSize.x, m_actualSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
     glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
     glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
     glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_isSmooth ? GL_LINEAR : GL_NEAREST));
@@ -345,7 +337,7 @@ Image Texture::copyToImage() const
 
         glCheck(GLEXT_glBindFramebuffer(GLEXT_GL_FRAMEBUFFER, frameBuffer));
         glCheck(GLEXT_glFramebufferTexture2D(GLEXT_GL_FRAMEBUFFER, GLEXT_GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture, 0));
-        glCheck(glReadPixels(0, 0, m_size.x, m_size.y, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]));
+        glCheck(glReadPixels(0, 0, m_size.x, m_size.y, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
         glCheck(GLEXT_glDeleteFramebuffers(1, &frameBuffer));
 
         glCheck(GLEXT_glBindFramebuffer(GLEXT_GL_FRAMEBUFFER, previousFrameBuffer));
@@ -357,7 +349,7 @@ Image Texture::copyToImage() const
     {
         // Texture is not padded nor flipped, we can use a direct copy
         glCheck(glBindTexture(GL_TEXTURE_2D, m_texture));
-        glCheck(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]));
+        glCheck(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
     }
     else
     {
@@ -366,11 +358,11 @@ Image Texture::copyToImage() const
         // All the pixels will first be copied to a temporary array
         std::vector<Uint8> allPixels(m_actualSize.x * m_actualSize.y * 4);
         glCheck(glBindTexture(GL_TEXTURE_2D, m_texture));
-        glCheck(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, &allPixels[0]));
+        glCheck(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, allPixels.data()));
 
         // Then we copy the useful pixels from the temporary array to the final one
-        const Uint8* src = &allPixels[0];
-        Uint8* dst = &pixels[0];
+        const Uint8* src = allPixels.data();
+        Uint8* dst = pixels.data();
         int srcPitch = m_actualSize.x * 4;
         int dstPitch = m_size.x * 4;
 
@@ -393,7 +385,7 @@ Image Texture::copyToImage() const
 
     // Create the image
     Image image;
-    image.create(m_size.x, m_size.y, &pixels[0]);
+    image.create(m_size.x, m_size.y, pixels.data());
 
     return image;
 }
@@ -659,20 +651,17 @@ void Texture::setRepeated(bool repeated)
             // Make sure that the current texture binding will be preserved
             priv::TextureSaver save;
 
-            static bool textureEdgeClamp = GLEXT_texture_edge_clamp || GLEXT_EXT_texture_edge_clamp;
+            static const auto textureEdgeClamp = GLEXT_texture_edge_clamp || GLEXT_EXT_texture_edge_clamp;
 
             if (!m_isRepeated && !textureEdgeClamp)
             {
-                static bool warned = false;
-
-                if (!warned)
+                std::once_flag warned;
+                std::call_once(warned, []
                 {
                     err() << "OpenGL extension SGIS_texture_edge_clamp unavailable" << std::endl;
                     err() << "Artifacts may occur along texture edges" << std::endl;
                     err() << "Ensure that hardware acceleration is enabled if available" << std::endl;
-
-                    warned = true;
-                }
+                });
             }
 
             glCheck(glBindTexture(GL_TEXTURE_2D, m_texture));
@@ -746,7 +735,7 @@ void Texture::bind(const Texture* texture, CoordinateType coordinateType)
         glCheck(glBindTexture(GL_TEXTURE_2D, texture->m_texture));
 
         // Check if we need to define a special texture matrix
-        if ((coordinateType == Pixels) || texture->m_pixelsFlipped)
+        if ((coordinateType == CoordinateType::Pixels) || texture->m_pixelsFlipped)
         {
             GLfloat matrix[16] = {1.f, 0.f, 0.f, 0.f,
                                   0.f, 1.f, 0.f, 0.f,
@@ -755,7 +744,7 @@ void Texture::bind(const Texture* texture, CoordinateType coordinateType)
 
             // If non-normalized coordinates (= pixels) are requested, we need to
             // setup scale factors that convert the range [0 .. size] to [0 .. 1]
-            if (coordinateType == Pixels)
+            if (coordinateType == CoordinateType::Pixels)
             {
                 matrix[0] = 1.f / texture->m_actualSize.x;
                 matrix[5] = 1.f / texture->m_actualSize.y;
@@ -794,21 +783,17 @@ void Texture::bind(const Texture* texture, CoordinateType coordinateType)
 ////////////////////////////////////////////////////////////
 unsigned int Texture::getMaximumSize()
 {
-    Lock lock(maximumSizeMutex);
-
-    static bool checked = false;
-    static GLint size = 0;
-
-    if (!checked)
+    static const auto size = []
     {
-        checked = true;
-
         TransientContextLock lock;
 
+        GLint size;
         glCheck(glGetIntegerv(GL_MAX_TEXTURE_SIZE, &size));
-    }
 
-    return static_cast<unsigned int>(size);
+        return static_cast<unsigned int>(size);
+    }();
+
+    return size;
 }
 
 

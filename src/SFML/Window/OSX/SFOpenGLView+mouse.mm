@@ -135,7 +135,7 @@
     {
         NSPoint loc = [self cursorPositionFromEvent:theEvent];
 
-        if (button != sf::Mouse::ButtonCount)
+        if (button != sf::Mouse::Button::Count)
             m_requester->mouseDownAt(button, loc.x, loc.y);
     }
 }
@@ -180,7 +180,7 @@
     {
         NSPoint loc = [self cursorPositionFromEvent:theEvent];
 
-        if (button != sf::Mouse::ButtonCount)
+        if (button != sf::Mouse::Button::Count)
             m_requester->mouseUpAt(button, loc.x, loc.y);
     }
 }
@@ -408,12 +408,12 @@
 {
     switch ([event buttonNumber])
     {
-        case 0:     return sf::Mouse::Left;
-        case 1:     return sf::Mouse::Right;
-        case 2:     return sf::Mouse::Middle;
-        case 3:     return sf::Mouse::XButton1;
-        case 4:     return sf::Mouse::XButton2;
-        default:    return sf::Mouse::ButtonCount; // Never happens! (hopefully)
+        case 0:     return sf::Mouse::Button::Left;
+        case 1:     return sf::Mouse::Button::Right;
+        case 2:     return sf::Mouse::Button::Middle;
+        case 3:     return sf::Mouse::Button::XButton1;
+        case 4:     return sf::Mouse::Button::XButton2;
+        default:    return sf::Mouse::Button::Count; // Never happens! (hopefully)
     }
 }
 

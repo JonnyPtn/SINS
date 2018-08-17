@@ -30,7 +30,6 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/EglContext.hpp>
-#include <SFML/System/Mutex.hpp>
 #include <android/native_activity.h>
 #include <android/configuration.h>
 #include <EGL/egl.h>
@@ -38,6 +37,7 @@
 #include <map>
 #include <string>
 #include <fstream>
+#include <mutex>
 
 class SFML_SYSTEM_API LogcatStream : public std::streambuf
 {
@@ -69,14 +69,14 @@ struct ActivityStates
     void* savedState;
     size_t savedStateSize;
 
-    Mutex mutex;
+    std::mutex mutex;
 
     void (*forwardEvent)(const Event& event);
     int (*processEvent)(int fd, int events, void* data);
 
     std::map<int, Vector2i> touchEvents;
     Vector2i mousePosition;
-    bool isButtonPressed[Mouse::ButtonCount];
+    bool isButtonPressed[static_cast<size_t>(Mouse::Button::Count)];
 
     bool mainOver;
 
@@ -92,7 +92,7 @@ struct ActivityStates
     LogcatStream logcat;
 };
 
-SFML_SYSTEM_API ActivityStates* getActivity(ActivityStates* initializedStates=NULL, bool reset=false);
+SFML_SYSTEM_API ActivityStates* getActivity(ActivityStates* initializedStates=nullptr, bool reset=false);
 
 } // namespace priv
 } // namespace sf

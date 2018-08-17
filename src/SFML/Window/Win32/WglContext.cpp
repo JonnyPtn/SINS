@@ -28,19 +28,17 @@
 #include <SFML/Window/WindowImpl.hpp> // included first to avoid a warning about macro redefinition
 #include <SFML/OpenGL.hpp> // included second to avoid an error in WglExtensions.hpp
 #include <SFML/Window/Win32/WglContext.hpp>
-#include <SFML/System/ThreadLocalPtr.hpp>
-#include <SFML/System/Lock.hpp>
-#include <SFML/System/Mutex.hpp>
 #include <SFML/System/Err.hpp>
 #include <sstream>
 #include <vector>
+#include <mutex>
 
 
 namespace
 {
     // Some drivers are bugged and don't track the current HDC/HGLRC properly
     // In order to deactivate successfully, we need to track it ourselves as well
-    sf::ThreadLocalPtr<sf::priv::WglContext> currentContext(NULL);
+    thread_local sf::priv::WglContext* currentContext = nullptr;
 }
 
 
@@ -51,15 +49,13 @@ namespace priv
 ////////////////////////////////////////////////////////////
 void ensureExtensionsInit(HDC deviceContext)
 {
-    static bool initialized = false;
-    if (!initialized)
+    std::once_flag initialized;
+    std::call_once(initialized, [deviceContext]
     {
-        initialized = true;
-
         // We don't check the return value since the extension
         // flags are cleared even if loading fails
         sfwgl_LoadFunctions(deviceContext);
-    }
+    });
 }
 
 
@@ -68,7 +64,7 @@ String getErrorString(DWORD errorCode)
 {
     std::basic_ostringstream<TCHAR, std::char_traits<TCHAR> > ss;
     TCHAR errBuff[256];
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, errorCode, 0, errBuff, sizeof(errBuff), NULL);
+    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, errorCode, 0, errBuff, sizeof(errBuff), nullptr);
     ss << errBuff;
     String errMsg(ss.str());
 
@@ -78,10 +74,10 @@ String getErrorString(DWORD errorCode)
 
 ////////////////////////////////////////////////////////////
 WglContext::WglContext(WglContext* shared) :
-m_window       (NULL),
-m_pbuffer      (NULL),
-m_deviceContext(NULL),
-m_context      (NULL),
+m_window       (nullptr),
+m_pbuffer      (nullptr),
+m_deviceContext(nullptr),
+m_context      (nullptr),
 m_ownsWindow   (false)
 {
     // Save the creation settings
@@ -103,10 +99,10 @@ m_ownsWindow   (false)
 
 ////////////////////////////////////////////////////////////
 WglContext::WglContext(WglContext* shared, const ContextSettings& settings, const WindowImpl* owner, unsigned int bitsPerPixel) :
-m_window       (NULL),
-m_pbuffer      (NULL),
-m_deviceContext(NULL),
-m_context      (NULL),
+m_window       (nullptr),
+m_pbuffer      (nullptr),
+m_deviceContext(nullptr),
+m_context      (nullptr),
 m_ownsWindow   (false)
 {
     // Save the creation settings
@@ -128,10 +124,10 @@ m_ownsWindow   (false)
 
 ////////////////////////////////////////////////////////////
 WglContext::WglContext(WglContext* shared, const ContextSettings& settings, unsigned int width, unsigned int height) :
-m_window       (NULL),
-m_pbuffer      (NULL),
-m_deviceContext(NULL),
-m_context      (NULL),
+m_window       (nullptr),
+m_pbuffer      (nullptr),
+m_deviceContext(nullptr),
+m_context      (nullptr),
 m_ownsWindow   (false)
 {
     // Save the creation settings
@@ -162,8 +158,8 @@ WglContext::~WglContext()
     {
         if (currentContext == this)
         {
-            if (wglMakeCurrent(m_deviceContext, NULL) == TRUE)
-                currentContext = NULL;
+            if (wglMakeCurrent(m_deviceContext, nullptr) == TRUE)
+                currentContext = nullptr;
         }
 
         wglDeleteContext(m_context);
@@ -203,10 +199,11 @@ GlFunctionPointer WglContext::getFunction(const char* name)
             return address;
     }
 
-    static HMODULE module = NULL;
-
-    if (!module)
-        module = GetModuleHandleA("OpenGL32.dll");
+    static const auto module = []
+    {
+        return GetModuleHandleA("OpenGL32.dll");
+    }();
+        
 
     if (module)
         return reinterpret_cast<GlFunctionPointer>(GetProcAddress(module, reinterpret_cast<LPCSTR>(name)));
@@ -221,13 +218,13 @@ bool WglContext::makeCurrent(bool current)
     if (!m_deviceContext || !m_context)
         return false;
 
-    if (wglMakeCurrent(m_deviceContext, current ? m_context : NULL) == FALSE)
+    if (wglMakeCurrent(m_deviceContext, current ? m_context : nullptr) == FALSE)
     {
         err() << "Failed to " << (current ? "activate" : "deactivate") << " OpenGL context: " << getErrorString(GetLastError()).toAnsiString() << std::endl;
         return false;
     }
 
-    currentContext = (current ? this : NULL);
+    currentContext = (current ? this : nullptr);
 
     return true;
 }
@@ -254,15 +251,12 @@ void WglContext::setVerticalSyncEnabled(bool enabled)
     }
     else
     {
-        static bool warned = false;
-
-        if (!warned)
+        std::once_flag warned;
+        std::call_once(warned, []
         {
             // wglSwapIntervalEXT not supported
             err() << "Setting vertical sync not supported" << std::endl;
-
-            warned = true;
-        }
+        });
     }
 }
 
@@ -287,7 +281,7 @@ int WglContext::selectBestPixelFormat(HDC deviceContext, unsigned int bitsPerPix
         // Let's check how many formats are supporting our requirements
         int  formats[512];
         UINT nbFormats;
-        bool isValid = wglChoosePixelFormatARB(deviceContext, intAttributes, NULL, 512, formats, &nbFormats) != FALSE;
+        bool isValid = wglChoosePixelFormatARB(deviceContext, intAttributes, nullptr, 512, formats, &nbFormats) != FALSE;
 
         if (!isValid)
             err() << "Failed to enumerate pixel formats: " << getErrorString(GetLastError()).toAnsiString() << std::endl;
@@ -545,7 +539,7 @@ void WglContext::createSurface(WglContext* shared, unsigned int width, unsigned 
                     err() << "Failed to retrieve pixel buffer device context: " << getErrorString(GetLastError()).toAnsiString() << std::endl;
 
                     wglDestroyPbufferARB(m_pbuffer);
-                    m_pbuffer = NULL;
+                    m_pbuffer = nullptr;
                 }
             }
             else
@@ -562,7 +556,7 @@ void WglContext::createSurface(WglContext* shared, unsigned int width, unsigned 
         // with other contexts and thus wglShareLists would always fail
 
         // Create the hidden window
-        m_window = CreateWindowA("STATIC", "", WS_POPUP | WS_DISABLED, 0, 0, width, height, NULL, NULL, GetModuleHandle(NULL), NULL);
+        m_window = CreateWindowA("STATIC", "", WS_POPUP | WS_DISABLED, 0, 0, width, height, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
         ShowWindow(m_window, SW_HIDE);
         m_deviceContext = GetDC(m_window);
 
@@ -598,7 +592,7 @@ void WglContext::createContext(WglContext* shared)
     ContextSettings settings = m_settings;
 
     // Get the context to share display lists with
-    HGLRC sharedContext = shared ? shared->m_context : NULL;
+    HGLRC sharedContext = shared ? shared->m_context : nullptr;
 
     // Create the OpenGL context -- first try using wglCreateContextAttribsARB
     while (!m_context && m_settings.majorVersion)
@@ -642,23 +636,23 @@ void WglContext::createContext(WglContext* shared)
 
             if (sharedContext)
             {
-                static Mutex mutex;
-                Lock lock(mutex);
+                static std::mutex mutex;
+                std::lock_guard<std::mutex> lock(mutex);
 
                 if (currentContext == shared)
                 {
-                    if (wglMakeCurrent(shared->m_deviceContext, NULL) == FALSE)
+                    if (wglMakeCurrent(shared->m_deviceContext, nullptr) == FALSE)
                     {
                         err() << "Failed to deactivate shared context before sharing: " << getErrorString(GetLastError()).toAnsiString() << std::endl;
                         return;
                     }
 
-                    currentContext = NULL;
+                    currentContext = nullptr;
                 }
             }
 
             // Create the context
-            m_context = wglCreateContextAttribsARB(m_deviceContext, sharedContext, &attributes[0]);
+            m_context = wglCreateContextAttribsARB(m_deviceContext, sharedContext, attributes.data());
         }
         else
         {
@@ -712,18 +706,18 @@ void WglContext::createContext(WglContext* shared)
         if (sharedContext)
         {
             // wglShareLists doesn't seem to be thread-safe
-            static Mutex mutex;
-            Lock lock(mutex);
+            static std::mutex mutex;
+            std::lock_guard<std::mutex> lock(mutex);
 
             if (currentContext == shared)
             {
-                if (wglMakeCurrent(shared->m_deviceContext, NULL) == FALSE)
+                if (wglMakeCurrent(shared->m_deviceContext, nullptr) == FALSE)
                 {
                     err() << "Failed to deactivate shared context before sharing: " << getErrorString(GetLastError()).toAnsiString() << std::endl;
                     return;
                 }
 
-                currentContext = NULL;
+                currentContext = nullptr;
             }
 
             if (wglShareLists(sharedContext, m_context) == FALSE)

@@ -40,24 +40,18 @@ public:
 
     DefaultErrStreamBuf()
     {
-        // Allocate the write buffer
-        static const int size = 64;
-        char* buffer = new char[size];
-        setp(buffer, buffer + size);
+        setp(m_buffer, m_buffer + sizeof(m_buffer));
     }
 
-    ~DefaultErrStreamBuf()
+    ~DefaultErrStreamBuf() override
     {
         // Synchronize
-        sync();
-
-        // Delete the write buffer
-        delete[] pbase();
+        DefaultErrStreamBuf::sync();
     }
 
 private:
 
-    virtual int overflow(int character)
+    int overflow(int character) override
     {
         if ((character != EOF) && (pptr() != epptr()))
         {
@@ -77,7 +71,7 @@ private:
         }
     }
 
-    virtual int sync()
+    int sync() override
     {
         // Check if there is something into the write buffer
         if (pbase() != pptr())
@@ -92,6 +86,8 @@ private:
 
         return 0;
     }
+
+    char m_buffer[64];
 };
 }
 

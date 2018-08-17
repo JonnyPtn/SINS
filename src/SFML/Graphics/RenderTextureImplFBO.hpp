@@ -31,7 +31,7 @@
 #include <SFML/Graphics/RenderTextureImpl.hpp>
 #include <SFML/Window/Context.hpp>
 #include <SFML/Window/GlResource.hpp>
-#include <map>
+#include <memory>
 
 
 namespace sf
@@ -57,7 +57,7 @@ public:
     /// \brief Destructor
     ///
     ////////////////////////////////////////////////////////////
-    ~RenderTextureImplFBO();
+    ~RenderTextureImplFBO() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Check whether the system supports FBOs or not
@@ -86,9 +86,9 @@ private:
     ////////////////////////////////////////////////////////////
     /// \brief Create the render texture implementation
     ///
-    /// \param width      Width of the texture to render to
-    /// \param height     Height of the texture to render to
-    /// \param textureId  OpenGL identifier of the target texture
+    /// \param width       Width of the texture to render to
+    /// \param height      Height of the texture to render to
+    /// \param textureId   OpenGL identifier of the target texture
     /// \param settings   Context settings to create render-texture with
     ///
     /// \return True if creation has been successful
@@ -112,7 +112,7 @@ private:
     /// \return True on success, false on failure
     ///
     ////////////////////////////////////////////////////////////
-    virtual bool activate(bool active);
+    bool activate(bool active) override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Update the pixels of the target texture
@@ -120,7 +120,7 @@ private:
     /// \param textureId OpenGL identifier of the target texture
     ///
     ////////////////////////////////////////////////////////////
-    virtual void updateTexture(unsigned textureId);
+    void updateTexture(unsigned textureId) override;
 
     ////////////////////////////////////////////////////////////
     // Member data
