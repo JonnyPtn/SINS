@@ -29,14 +29,13 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/GLCheck.hpp>
-#include <SFML/System/Mutex.hpp>
-#include <SFML/System/Lock.hpp>
 #include <SFML/System/Err.hpp>
 #include <cstring>
+#include <mutex>
 
 namespace
 {
-    sf::Mutex isAvailableMutex;
+    std::mutex isAvailableMutex;
 
     GLenum usageToGlEnum(sf::VertexBuffer::Usage usage)
     {
@@ -56,7 +55,7 @@ namespace sf
 VertexBuffer::VertexBuffer() :
 m_buffer       (0),
 m_size         (0),
-m_primitiveType(Points),
+m_primitiveType(PrimitiveType::Points),
 m_usage        (Stream)
 {
 }
@@ -76,7 +75,7 @@ m_usage        (Stream)
 VertexBuffer::VertexBuffer(VertexBuffer::Usage usage) :
 m_buffer       (0),
 m_size         (0),
-m_primitiveType(Points),
+m_primitiveType(PrimitiveType::Points),
 m_usage        (usage)
 {
 }
@@ -332,7 +331,7 @@ VertexBuffer::Usage VertexBuffer::getUsage() const
 ////////////////////////////////////////////////////////////
 bool VertexBuffer::isAvailable()
 {
-    Lock lock(isAvailableMutex);
+    std::lock_guard<std::mutex> lock(isAvailableMutex);
 
     static bool checked = false;
     static bool available = false;

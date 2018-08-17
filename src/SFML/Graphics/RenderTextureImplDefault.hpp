@@ -57,7 +57,7 @@ public:
     /// \brief Destructor
     ///
     ////////////////////////////////////////////////////////////
-    ~RenderTextureImplDefault();
+    ~RenderTextureImplDefault() = default;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the maximum anti-aliasing level supported by the system

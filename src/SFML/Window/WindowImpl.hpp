@@ -276,7 +276,7 @@ private:
     JoystickState     m_joystickStates[Joystick::Count];                       ///< Previous state of the joysticks
     Vector3f          m_sensorValue[static_cast<size_t>(Sensor::Type::Count)]; ///< Previous value of the sensors
     float             m_joystickThreshold;                                     ///< Joystick threshold (minimum motion for "move" event to be generated)
-    float             m_previousAxes[Joystick::Count][Joystick::AxisCount];  ///< Position of each axis last time a move event triggered, in range [-100, 100]
+    float             m_previousAxes[Joystick::Count][static_cast<int>(Joystick::Axis::Count)];  ///< Position of each axis last time a move event triggered, in range [-100, 100]
 };
 
 } // namespace priv

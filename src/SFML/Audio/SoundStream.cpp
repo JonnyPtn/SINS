@@ -289,7 +289,7 @@ void SoundStream::streamData()
 
     // Create the buffers
     alCheck(alGenBuffers(BufferCount, m_buffers));
-    for (auto& buffer : m_endBuffers)
+    for (auto& buffer : m_buffers)
         buffer = NoLoop;
 
     // Fill the queue

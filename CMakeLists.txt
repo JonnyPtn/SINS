@@ -36,6 +36,9 @@ endif()
 if(NOT CMAKE_OSX_ARCHITECTURES)
     set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "macOS architecture to build; 64-bit is expected" FORCE)
 endif()
+if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "macOS deployement target; 10.9+ is expected" FORCE)
+endif()
 if(NOT CMAKE_OSX_SYSROOT)
     # query the path to the default SDK, will fail on non-macOS, but it's okay.
     execute_process(COMMAND xcodebuild -sdk macosx -version Path
@@ -498,7 +501,7 @@ elseif(SFML_OS_IOS)
         endif()
 
         if(SFML_BUILD_AUDIO)
-            install(FILES extlibs/libs-ios/libflac.a 
+            install(FILES extlibs/libs-ios/libflac.a
                           extlibs/libs-ios/libvorbis.a
                           extlibs/libs-ios/libogg.a
                           DESTINATION lib)

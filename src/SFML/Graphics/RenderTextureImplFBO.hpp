@@ -31,6 +31,7 @@
 #include <SFML/Graphics/RenderTextureImpl.hpp>
 #include <SFML/Window/Context.hpp>
 #include <SFML/Window/GlResource.hpp>
+#include <map>
 #include <memory>
 
 

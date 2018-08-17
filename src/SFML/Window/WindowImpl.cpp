@@ -88,7 +88,7 @@ m_joystickThreshold(0.1f)
     for (unsigned int i = 0; i < Joystick::Count; ++i)
     {
         m_joystickStates[i] = JoystickManager::getInstance().getState(i);
-        std::fill_n(m_previousAxes[i], static_cast<std::size_t>(Joystick::AxisCount), 0.f);
+        std::fill_n(m_previousAxes[i], static_cast<std::size_t>(Joystick::Axis::Count), 0.f);
     }
 
     // Get the initial sensor states
@@ -182,29 +182,29 @@ void WindowImpl::processJoystickEvents()
 
             // Clear previous axes positions
             if (connected)
-                std::fill_n(m_previousAxes[i], static_cast<std::size_t>(Joystick::AxisCount), 0.f);
+                std::fill_n(m_previousAxes[i], static_cast<std::size_t>(Joystick::Axis::Count), 0.f);
         }
 
         if (connected)
         {
             // Axes
-            for (auto j = 0u; j < static_cast<size_t>(Joystick::Axis::Count); ++j)
+            for (auto axisIndex = 0u; axisIndex < static_cast<size_t>(Joystick::Axis::Count); ++axisIndex)
             {
-                if (caps.axes[j])
+                if (caps.axes[axisIndex])
                 {
-                    Joystick::Axis axis = static_cast<Joystick::Axis>(j);
-                    float prevPos = m_previousAxes[i][axis];
-                    float currPos = m_joystickStates[i].axes[axis];
+                    Joystick::Axis axis = static_cast<Joystick::Axis>(axisIndex);
+                    float prevPos = m_previousAxes[i][axisIndex];
+                    float currPos = m_joystickStates[i].axes[axisIndex];
                     if (fabs(currPos - prevPos) >= m_joystickThreshold)
                     {
                         Event event;
                         event.type = Event::Type::JoystickMoved;
                         event.joystickMove.joystickId = i;
-                        event.joystickMove.axis = static_cast<Joystick::Axis>(j);
+                        event.joystickMove.axis = axis;
                         event.joystickMove.position = currPos;
                         pushEvent(event);
 
-                        m_previousAxes[i][axis] = currPos;
+                        m_previousAxes[i][axisIndex] = currPos;
                     }
                 }
             }

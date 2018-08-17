@@ -44,15 +44,6 @@ m_height (0)
 
 }
 
-
-////////////////////////////////////////////////////////////
-RenderTextureImplDefault::~RenderTextureImplDefault()
-{
-    // Destroy the context
-    delete m_context;
-}
-
-
 ////////////////////////////////////////////////////////////
 unsigned int RenderTextureImplDefault::getMaximumAntialiasingLevel()
 {
@@ -71,7 +62,7 @@ bool RenderTextureImplDefault::create(unsigned int width, unsigned int height, u
     m_height = height;
 
     // Create the in-memory OpenGL context
-    m_context = std::make_unique<Context>(ContextSettings(depthBuffer ? 32 : 0), width, height);
+    m_context = std::make_unique<Context>(settings, width, height);
 
     return true;
 }

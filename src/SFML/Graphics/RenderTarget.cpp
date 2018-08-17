@@ -52,13 +52,13 @@
 namespace
 {
     // Mutex to protect ID generation and our context-RenderTarget-map
-    sf::Mutex mutex;
+    std::mutex mutex;
 
     // Unique identifier, used for identifying RenderTargets when
     // tracking the currently active RenderTarget within a given context
     sf::Uint64 getUniqueId()
     {
-        sf::Lock lock(mutex);
+        std::lock_guard<std::mutex> lock(mutex);
 
         static sf::Uint64 id = 1; // start at 1, zero is "no RenderTarget"
 
@@ -392,7 +392,7 @@ bool RenderTarget::setActive(bool active)
 {
     // Mark this RenderTarget as active or no longer active in the tracking map
     {
-        sf::Lock lock(mutex);
+        std::lock_guard<std::mutex> lock(mutex);
 
         Uint64 contextId = Context::getActiveContextId();
 
@@ -701,7 +701,7 @@ void RenderTarget::drawPrimitives(PrimitiveType type, std::size_t firstVertex, s
     // Find the OpenGL primitive type
     static const GLenum modes[] = {GL_POINTS, GL_LINES, GL_LINE_STRIP, GL_TRIANGLES,
                                    GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_QUADS};
-    GLenum mode = modes[type];
+    GLenum mode = modes[static_cast<std::size_t>(type)];
 
     // Draw the primitives
     glCheck(glDrawArrays(mode, static_cast<GLint>(firstVertex), static_cast<GLsizei>(vertexCount)));

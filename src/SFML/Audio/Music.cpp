@@ -169,7 +169,7 @@ void Music::setLoopPoints(TimeSpan timePoints)
         setPlayingOffset(oldPos);
 
     // Resume
-    if (oldStatus == Playing)
+    if (oldStatus == Status::Playing)
         play();
 }
 
@@ -212,7 +212,7 @@ void Music::onSeek(Time timeOffset)
 Int64 Music::onLoop()
 {
     // Called by underlying SoundStream so we can determine where to loop.
-    Lock lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     Uint64 currentOffset = m_file.getSampleOffset();
     if (getLoop() && (m_loopSpan.length != 0) && (currentOffset == m_loopSpan.offset + m_loopSpan.length))
     {

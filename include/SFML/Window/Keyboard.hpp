@@ -151,7 +151,7 @@ public:
         F15,                                      ///< The F15 key
         Pause,                                    ///< The Pause key
 
-        KeyCount,     ///< Keep last -- the total number of keyboard keys
+        Count,     ///< Keep last -- the total number of keyboard keys
 
         // Deprecated values:
 

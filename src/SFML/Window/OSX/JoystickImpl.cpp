@@ -232,12 +232,12 @@ bool JoystickImpl::open(unsigned int index)
             case kHIDPage_GenericDesktop:
                 switch (IOHIDElementGetUsage(element))
                 {
-                    case kHIDUsage_GD_X:  m_axis[Joystick::X] = element; break;
-                    case kHIDUsage_GD_Y:  m_axis[Joystick::Y] = element; break;
-                    case kHIDUsage_GD_Z:  m_axis[Joystick::Z] = element; break;
-                    case kHIDUsage_GD_Rx: m_axis[Joystick::U] = element; break;
-                    case kHIDUsage_GD_Ry: m_axis[Joystick::V] = element; break;
-                    case kHIDUsage_GD_Rz: m_axis[Joystick::R] = element; break;
+                    case kHIDUsage_GD_X:  m_axis[Joystick::Axis::X] = element; break;
+                    case kHIDUsage_GD_Y:  m_axis[Joystick::Axis::Y] = element; break;
+                    case kHIDUsage_GD_Z:  m_axis[Joystick::Axis::Z] = element; break;
+                    case kHIDUsage_GD_Rx: m_axis[Joystick::Axis::U] = element; break;
+                    case kHIDUsage_GD_Ry: m_axis[Joystick::Axis::V] = element; break;
+                    case kHIDUsage_GD_Rz: m_axis[Joystick::Axis::R] = element; break;
 
                     case kHIDUsage_GD_Hatswitch:
                         // From §4.3 MiscellaneousControls of HUT v1.12:
@@ -355,8 +355,10 @@ JoystickCaps JoystickImpl::getCapabilities() const
         caps.axes[static_cast<size_t>(axis.first)] = true;
     }
     
-    if (m_hat != NULL)
-        caps.axes[Joystick::PovX] = caps.axes[Joystick::PovY] = true;
+    if (m_hat != NULL) {
+        caps.axes[static_cast<std::size_t>(Joystick::Axis::PovX)] = true;
+        caps.axes[static_cast<std::size_t>(Joystick::Axis::PovY)] = true;
+    }
 
     return caps;
 }
@@ -481,17 +483,17 @@ JoystickState JoystickImpl::update()
             case 1:
             case 2:
             case 3:
-               state.axes[Joystick::PovX] = +100;
+                state.axes[static_cast<std::size_t>(Joystick::Axis::PovX)] = +100;
                break;
 
              case 5:
              case 6:
              case 7:
-               state.axes[Joystick::PovX] = -100;
+                state.axes[static_cast<std::size_t>(Joystick::Axis::PovX)] = -100;
                break;
 
             default:
-               state.axes[Joystick::PovX] = 0;
+               state.axes[static_cast<std::size_t>(Joystick::Axis::PovX)] = 0;
                break;
         }
 
@@ -501,17 +503,17 @@ JoystickState JoystickImpl::update()
             case 0:
             case 1:
             case 7:
-               state.axes[Joystick::PovY] = +100;
+               state.axes[static_cast<std::size_t>(Joystick::Axis::PovY)] = +100;
                break;
 
              case 3:
              case 4:
              case 5:
-               state.axes[Joystick::PovY] = -100;
+               state.axes[static_cast<std::size_t>(Joystick::Axis::PovY)] = -100;
                break;
 
             default:
-               state.axes[Joystick::PovY] = 0;
+               state.axes[static_cast<std::size_t>(Joystick::Axis::PovY)] = 0;
                break;
         }
     }

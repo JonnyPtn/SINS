@@ -287,7 +287,6 @@ bool Font::loadFromStream(InputStream& stream)
     {
         err() << "Failed to load font from stream (failed to create the stroker)" << std::endl;
         FT_Done_Face(face);
-        delete rec;
         return false;
     }
 
@@ -297,7 +296,6 @@ bool Font::loadFromStream(InputStream& stream)
         err() << "Failed to load font from stream (failed to set the Unicode character set)" << std::endl;
         FT_Done_Face(face);
         FT_Stroker_Done(stroker);
-        delete rec;
         return false;
     }
 
