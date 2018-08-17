@@ -1572,15 +1572,15 @@ bool WindowImplX11::processEvent(XEvent& windowEvent)
         );
 
         if (iter != m_events.end())
-                {
-                    // If we don't want repeated events, remove the next KeyPress from the queue
-                    if (!m_keyRepeat)
+        {
+            // If we don't want repeated events, remove the next KeyPress from the queue
+            if (!m_keyRepeat)
                 m_events.erase(iter);
 
-                    // This KeyRelease is a repeated event and we don't want it
-                    return false;
-                }
-            }
+            // This KeyRelease is a repeated event and we don't want it
+            return false;
+        }
+    }
 
     // Convert the X11 event to a sf::Event
     switch (windowEvent.type)

@@ -351,9 +351,8 @@ JoystickCaps JoystickImpl::getCapabilities() const
     caps.buttonCount = m_buttons.size();
 
     // Axis:
-    for (const auto& axis : m_axis) {
+    for (const auto& axis : m_axis)
         caps.axes[static_cast<size_t>(axis.first)] = true;
-    }
     
     if (m_hat != nullptr) {
         caps.axes[static_cast<std::size_t>(Joystick::Axis::PovX)] = true;
