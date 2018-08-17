@@ -1,6 +1,7 @@
 [![SFML logo](https://www.sfml-dev.org/images/logo.png)](https://www.sfml-dev.org)
 
 [![Travis build](https://travis-ci.org/JonnyPtn/SFML.svg?branch=travis)](https://travis-ci.org/JonnyPtn/SFML)
+[![Appveyor build](https://ci.appveyor.com/api/projects/status/fu85b1nln28jhnpr/branch/travis?svg=true)](https://ci.appveyor.com/project/JonnyPtn/sfml/branch/travis)
 
 # SFML — Simple and Fast Multimedia Library
 
