@@ -1,6 +1,13 @@
+sudo: false
+dist: trusty
 language: c++
+
 addons:
   apt:
+    update: on
+    sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-precise-3.6
     packages:
     - cmake
     - libxrandr-dev
@@ -10,34 +17,49 @@ addons:
     - libvorbis-dev
     - libenet-dev
     - libgtk-3-dev
-    - clang
+    - g++-4.9
+    - clang-3.6
+
 before_script:
+- eval "${MATRIX_EVAL}"
 - mkdir build && cd build
 - cmake .. -G"$GENERATOR" $CMAKE_FLAGS
+
 script:
 - sudo cmake --build . --target install
+
 matrix:
-  fast_finish: true
   include:
+
+  # Linux - gcc 4.9
   - os: linux
-    compiler: gcc
+    compiler: gcc-4.9
     env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     - GENERATOR="Unix Makefiles"
     - CMAKE_FLAGS=""
+
+  # Linux - clang 3.4
   - os: linux
-    compiler: clang
+    compiler: clang-3.6
     env:
+    - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
     - GENERATOR="Unix Makefiles"
     - CMAKE_FLAGS=""
+
+  # macOS - Xcode 9
   - os: osx
     osx_image: xcode9
     env:
     - GENERATOR="Xcode"
     - CMAKE_FLAGS="-DSFML_BUILD_FRAMEWORKS=TRUE"
+
+  # iOS - Xcode 9
   - os: osx
     osx_image: xcode9
     env:
     - GENERATOR="Xcode"
     - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/iOS.toolchain.cmake"
 
-    
+notifications:
+  email: false
