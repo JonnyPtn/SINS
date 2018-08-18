@@ -5,9 +5,9 @@ build_script:
 - ps: >-
 
     md -Name build
-    
+
     cd build
 
-    cmake ..
+    cmake .. -DSFML_BUILD_EXAMPLES=TRUE
 
     cmake --build . --target install

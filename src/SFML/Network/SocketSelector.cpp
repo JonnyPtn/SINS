@@ -51,7 +51,7 @@ struct SocketSelector::SocketSelectorImpl
 
 ////////////////////////////////////////////////////////////
 SocketSelector::SocketSelector() :
-m_impl(new SocketSelectorImpl)
+m_impl(std::make_unique<SocketSelectorImpl>())
 {
     clear();
 }
@@ -59,17 +59,14 @@ m_impl(new SocketSelectorImpl)
 
 ////////////////////////////////////////////////////////////
 SocketSelector::SocketSelector(const SocketSelector& copy) :
-m_impl(new SocketSelectorImpl(*copy.m_impl))
+m_impl(std::make_unique<SocketSelectorImpl>(*copy.m_impl))
 {
 
 }
 
 
 ////////////////////////////////////////////////////////////
-SocketSelector::~SocketSelector()
-{
-    delete m_impl;
-}
+SocketSelector::~SocketSelector() = default;
 
 
 ////////////////////////////////////////////////////////////
@@ -165,7 +162,7 @@ bool SocketSelector::wait(Time timeout)
 
     // Wait until one of the sockets is ready for reading, or timeout is reached
     // The first parameter is ignored on Windows
-    int count = select(m_impl->maxSocket + 1, &m_impl->socketsReady, NULL, NULL, timeout != Time::Zero ? &time : NULL);
+    int count = select(m_impl->maxSocket + 1, &m_impl->socketsReady, nullptr, nullptr, timeout != Time::Zero ? &time : nullptr);
 
     return count > 0;
 }

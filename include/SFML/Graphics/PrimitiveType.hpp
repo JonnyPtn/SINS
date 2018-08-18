@@ -36,7 +36,7 @@ namespace sf
 /// and view.
 ///
 ////////////////////////////////////////////////////////////
-enum PrimitiveType
+enum class PrimitiveType : unsigned char
 {
     Points,        ///< List of individual points
     Lines,         ///< List of individual lines
@@ -45,11 +45,6 @@ enum PrimitiveType
     TriangleStrip, ///< List of connected triangles, a point uses the two previous points to form a triangle
     TriangleFan,   ///< List of connected triangles, a point uses the common center and the previous point to form a triangle
     Quads,         ///< List of individual quads (deprecated, don't work with OpenGL ES)
-
-    // Deprecated names
-    LinesStrip     = LineStrip,     ///< \deprecated Use LineStrip instead
-    TrianglesStrip = TriangleStrip, ///< \deprecated Use TriangleStrip instead
-    TrianglesFan   = TriangleFan    ///< \deprecated Use TriangleFan instead
 };
 
 } // namespace sf

@@ -33,7 +33,7 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <string>
 #include <vector>
-
+#include <memory>
 
 namespace sf
 {
@@ -263,8 +263,8 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    Vector2u           m_size;   ///< Image size
-    std::vector<Uint8> m_pixels; ///< Pixels of the image
+    Vector2u              m_size;   ///< Image size
+    std::vector<Uint8>    m_pixels; ///< Pixels of the image
 };
 
 } // namespace sf

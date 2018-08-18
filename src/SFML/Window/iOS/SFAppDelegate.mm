@@ -33,7 +33,7 @@
 namespace
 {
     // Save the global instance of the delegate
-    SFAppDelegate* delegateInstance = NULL;
+    SFAppDelegate* delegateInstance = nullptr;
 
     // Current touches positions
     std::vector<sf::Vector2i> touchPositions;
@@ -68,7 +68,7 @@ namespace
 - (void)runUserMain
 {
     // Arguments intentionally dropped, see comments in main in sfml-main
-    sfmlMain(0, NULL);
+    sfmlMain(0, nullptr);
 }
 
 
@@ -117,7 +117,7 @@ namespace
     if (self.sfWindow)
     {
         sf::Event event;
-        event.type = sf::Event::LostFocus;
+        event.type = sf::Event::Type::LostFocus;
         sfWindow->forwardEvent(event);
     }
 }
@@ -141,7 +141,7 @@ namespace
     if (self.sfWindow)
     {
         sf::Event event;
-        event.type = sf::Event::GainedFocus;
+        event.type = sf::Event::Type::GainedFocus;
         sfWindow->forwardEvent(event);
     }
 }
@@ -161,7 +161,7 @@ namespace
     if (self.sfWindow)
     {
         sf::Event event;
-        event.type = sf::Event::Closed;
+        event.type = sf::Event::Type::Closed;
         sfWindow->forwardEvent(event);
     }
 }
@@ -217,7 +217,7 @@ namespace
 
             // Send a Resized event to the current window
             sf::Event event;
-            event.type = sf::Event::Resized;
+            event.type = sf::Event::Type::Resized;
             event.size.width = size.x;
             event.size.height = size.y;
             sfWindow->forwardEvent(event);
@@ -258,7 +258,7 @@ namespace
     if (self.sfWindow)
     {
         sf::Event event;
-        event.type = sf::Event::TouchBegan;
+        event.type = sf::Event::Type::TouchBegan;
         event.touch.finger = index;
         event.touch.x = position.x;
         event.touch.y = position.y;
@@ -282,7 +282,7 @@ namespace
     if (self.sfWindow)
     {
         sf::Event event;
-        event.type = sf::Event::TouchMoved;
+        event.type = sf::Event::Type::TouchMoved;
         event.touch.finger = index;
         event.touch.x = position.x;
         event.touch.y = position.y;
@@ -302,7 +302,7 @@ namespace
     if (self.sfWindow)
     {
         sf::Event event;
-        event.type = sf::Event::TouchEnded;
+        event.type = sf::Event::Type::TouchEnded;
         event.touch.finger = index;
         event.touch.x = position.x * backingScaleFactor;
         event.touch.y = position.y * backingScaleFactor;
@@ -317,7 +317,7 @@ namespace
     if (self.sfWindow)
     {
         sf::Event event;
-        event.type = sf::Event::TextEntered;
+        event.type = sf::Event::Type::TextEntered;
         event.text.unicode = character;
         sfWindow->forwardEvent(event);
     }

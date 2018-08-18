@@ -27,7 +27,6 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Audio/Music.hpp>
 #include <SFML/Audio/ALCheck.hpp>
-#include <SFML/System/Lock.hpp>
 #include <SFML/System/Err.hpp>
 #include <fstream>
 
@@ -170,7 +169,7 @@ void Music::setLoopPoints(TimeSpan timePoints)
         setPlayingOffset(oldPos);
 
     // Resume
-    if (oldStatus == Playing)
+    if (oldStatus == Status::Playing)
         play();
 }
 
@@ -178,7 +177,7 @@ void Music::setLoopPoints(TimeSpan timePoints)
 ////////////////////////////////////////////////////////////
 bool Music::onGetData(SoundStream::Chunk& data)
 {
-    Lock lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
 
     std::size_t toFill = m_samples.size();
     Uint64 currentOffset = m_file.getSampleOffset();
@@ -191,8 +190,8 @@ bool Music::onGetData(SoundStream::Chunk& data)
         toFill = static_cast<std::size_t>(loopEnd - currentOffset);
 
     // Fill the chunk parameters
-    data.samples = &m_samples[0];
-    data.sampleCount = static_cast<std::size_t>(m_file.read(&m_samples[0], toFill));
+    data.samples = m_samples.data();
+    data.sampleCount = static_cast<std::size_t>(m_file.read(m_samples.data(), toFill));
     currentOffset += data.sampleCount;
 
     // Check if we have stopped obtaining samples or reached either the EOF or the loop end point
@@ -203,7 +202,8 @@ bool Music::onGetData(SoundStream::Chunk& data)
 ////////////////////////////////////////////////////////////
 void Music::onSeek(Time timeOffset)
 {
-    Lock lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
+
     m_file.seek(timeOffset);
 }
 
@@ -212,7 +212,7 @@ void Music::onSeek(Time timeOffset)
 Int64 Music::onLoop()
 {
     // Called by underlying SoundStream so we can determine where to loop.
-    Lock lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     Uint64 currentOffset = m_file.getSampleOffset();
     if (getLoop() && (m_loopSpan.length != 0) && (currentOffset == m_loopSpan.offset + m_loopSpan.length))
     {

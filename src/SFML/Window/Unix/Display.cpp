@@ -26,21 +26,20 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/System/Err.hpp>
-#include <SFML/System/Mutex.hpp>
-#include <SFML/System/Lock.hpp>
 #include <SFML/Window/Unix/Display.hpp>
 #include <X11/keysym.h>
 #include <cassert>
 #include <cstdlib>
+#include <mutex>
 #include <map>
 
 
 namespace
 {
     // The shared display and its reference counter
-    Display* sharedDisplay = NULL;
+    Display* sharedDisplay = nullptr;
     unsigned int referenceCount = 0;
-    sf::Mutex mutex;
+    std::mutex mutex;
 
     typedef std::map<std::string, Atom> AtomMap;
     AtomMap atoms;
@@ -53,11 +52,11 @@ namespace priv
 ////////////////////////////////////////////////////////////
 Display* OpenDisplay()
 {
-    Lock lock(mutex);
+    std::lock_guard<std::mutex> lock(mutex);
 
     if (referenceCount == 0)
     {
-        sharedDisplay = XOpenDisplay(NULL);
+        sharedDisplay = XOpenDisplay(nullptr);
 
         // Opening display failed: The best we can do at the moment is to output a meaningful error message
         // and cause an abnormal program termination
@@ -76,7 +75,7 @@ Display* OpenDisplay()
 ////////////////////////////////////////////////////////////
 void CloseDisplay(Display* display)
 {
-    Lock lock(mutex);
+    std::lock_guard<std::mutex> lock(mutex);
 
     assert(display == sharedDisplay);
 

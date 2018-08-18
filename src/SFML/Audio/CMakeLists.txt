@@ -88,3 +88,7 @@ endif()
 target_link_libraries(sfml-audio
                       PUBLIC sfml-system
                       PRIVATE Vorbis FLAC)
+
+if(SFML_OS_LINUX OR SFML_OS_FREEBSD)
+    target_link_libraries(sfml-audio PRIVATE pthread)
+endif()

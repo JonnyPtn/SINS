@@ -35,6 +35,7 @@
 #include <SFML/System/FileInputStream.hpp>
 #include <SFML/System/MemoryInputStream.hpp>
 #include <SFML/System/Err.hpp>
+#include <mutex>
 
 
 namespace
@@ -42,8 +43,8 @@ namespace
     // Register all the built-in readers and writers if not already done
     void ensureDefaultReadersWritersRegistered()
     {
-        static bool registered = false;
-        if (!registered)
+        static std::once_flag registered;
+        std::call_once(registered, []
         {
             sf::SoundFileFactory::registerReader<sf::priv::SoundFileReaderFlac>();
             sf::SoundFileFactory::registerWriter<sf::priv::SoundFileWriterFlac>();
@@ -51,8 +52,7 @@ namespace
             sf::SoundFileFactory::registerWriter<sf::priv::SoundFileWriterOgg>();
             sf::SoundFileFactory::registerReader<sf::priv::SoundFileReaderWav>();
             sf::SoundFileFactory::registerWriter<sf::priv::SoundFileWriterWav>();
-            registered = true;
-        }
+        });
     }
 }
 
@@ -63,7 +63,7 @@ SoundFileFactory::WriterFactoryArray SoundFileFactory::s_writers;
 
 
 ////////////////////////////////////////////////////////////
-SoundFileReader* SoundFileFactory::createReaderFromFilename(const std::string& filename)
+std::unique_ptr<SoundFileReader> SoundFileFactory::createReaderFromFilename(const std::string& filename)
 {
     // Register the built-in readers/writers on first call
     ensureDefaultReadersWritersRegistered();
@@ -72,25 +72,25 @@ SoundFileReader* SoundFileFactory::createReaderFromFilename(const std::string& f
     FileInputStream stream;
     if (!stream.open(filename)) {
         err() << "Failed to open sound file \"" << filename << "\" (couldn't open stream)" << std::endl;
-        return NULL;
+        return nullptr;
     }
 
     // Test the filename in all the registered factories
-    for (ReaderFactoryArray::const_iterator it = s_readers.begin(); it != s_readers.end(); ++it)
+    for (const auto& reader : s_readers)
     {
         stream.seek(0);
-        if (it->check(stream))
-            return it->create();
+        if (reader.check(stream))
+            return reader.create();
     }
 
     // No suitable reader found
     err() << "Failed to open sound file \"" << filename << "\" (format not supported)" << std::endl;
-    return NULL;
+    return nullptr;
 }
 
 
 ////////////////////////////////////////////////////////////
-SoundFileReader* SoundFileFactory::createReaderFromMemory(const void* data, std::size_t sizeInBytes)
+std::unique_ptr<SoundFileReader> SoundFileFactory::createReaderFromMemory(const void* data, std::size_t sizeInBytes)
 {
     // Register the built-in readers/writers on first call
     ensureDefaultReadersWritersRegistered();
@@ -100,55 +100,55 @@ SoundFileReader* SoundFileFactory::createReaderFromMemory(const void* data, std:
     stream.open(data, sizeInBytes);
 
     // Test the stream for all the registered factories
-    for (ReaderFactoryArray::const_iterator it = s_readers.begin(); it != s_readers.end(); ++it)
+    for (const auto& reader : s_readers)
     {
         stream.seek(0);
-        if (it->check(stream))
-            return it->create();
+        if (reader.check(stream))
+            return reader.create();
     }
 
     // No suitable reader found
     err() << "Failed to open sound file from memory (format not supported)" << std::endl;
-    return NULL;
+    return nullptr;
 }
 
 
 ////////////////////////////////////////////////////////////
-SoundFileReader* SoundFileFactory::createReaderFromStream(InputStream& stream)
+std::unique_ptr<SoundFileReader> SoundFileFactory::createReaderFromStream(InputStream& stream)
 {
     // Register the built-in readers/writers on first call
     ensureDefaultReadersWritersRegistered();
 
     // Test the stream for all the registered factories
-    for (ReaderFactoryArray::const_iterator it = s_readers.begin(); it != s_readers.end(); ++it)
+    for (const auto& reader : s_readers)
     {
         stream.seek(0);
-        if (it->check(stream))
-            return it->create();
+        if (reader.check(stream))
+            return reader.create();
     }
 
     // No suitable reader found
     err() << "Failed to open sound file from stream (format not supported)" << std::endl;
-    return NULL;
+    return nullptr;
 }
 
 
 ////////////////////////////////////////////////////////////
-SoundFileWriter* SoundFileFactory::createWriterFromFilename(const std::string& filename)
+std::unique_ptr<SoundFileWriter> SoundFileFactory::createWriterFromFilename(const std::string& filename)
 {
     // Register the built-in readers/writers on first call
     ensureDefaultReadersWritersRegistered();
 
     // Test the filename in all the registered factories
-    for (WriterFactoryArray::const_iterator it = s_writers.begin(); it != s_writers.end(); ++it)
+    for (const auto& writer : s_writers)
     {
-        if (it->check(filename))
-            return it->create();
+        if (writer.check(filename))
+            return writer.create();
     }
 
     // No suitable writer found
     err() << "Failed to open sound file \"" << filename << "\" (format not supported)" << std::endl;
-    return NULL;
+    return nullptr;
 }
 
 } // namespace sf

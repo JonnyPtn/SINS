@@ -131,7 +131,7 @@ bool SoundFileWriterOgg::open(const std::string& filename, unsigned int sampleRa
 void SoundFileWriterOgg::write(const Int16* samples, Uint64 count)
 {
     // Vorbis has issues with buffers that are too large, so we ask for 64K
-    static const int bufferSize = 65536;
+    constexpr auto bufferSize = 65536;
 
     // A frame contains a sample from each channel
     int frameCount = static_cast<int>(count / m_channelCount);
@@ -167,7 +167,7 @@ void SoundFileWriterOgg::flushBlocks()
     while (vorbis_analysis_blockout(&m_state, &block) == 1)
     {
         // Let the automatic bitrate management do its job
-        vorbis_analysis(&block, NULL);
+        vorbis_analysis(&block, nullptr);
         vorbis_bitrate_addblock(&block);
 
         // Get new packets from the bitrate management engine

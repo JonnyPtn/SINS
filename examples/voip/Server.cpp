@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <mutex>
 
 
 const sf::Uint8 audioData   = 1;
@@ -42,12 +43,12 @@ public:
         if (!m_hasFinished)
         {
             // Listen to the given port for incoming connections
-            if (m_listener.listen(port) != sf::Socket::Done)
+            if (m_listener.listen(port) != sf::Socket::Status::Done)
                 return;
             std::cout << "Server is listening to port " << port << ", waiting for connections... " << std::endl;
 
             // Wait for a connection
-            if (m_listener.accept(m_client) != sf::Socket::Done)
+            if (m_listener.accept(m_client) != sf::Socket::Status::Done)
                 return;
             std::cout << "Client connected: " << m_client.getRemoteAddress() << std::endl;
 
@@ -83,12 +84,12 @@ private:
         // Copy samples into a local buffer to avoid synchronization problems
         // (don't forget that we run in two separate threads)
         {
-            sf::Lock lock(m_mutex);
+            std::lock_guard<std::mutex> lock(m_mutex);
             m_tempBuffer.assign(m_samples.begin() + m_offset, m_samples.end());
         }
 
         // Fill audio data to pass to the stream
-        data.samples     = &m_tempBuffer[0];
+        data.samples     = m_tempBuffer.data();
         data.sampleCount = m_tempBuffer.size();
 
         // Update the playing offset
@@ -116,7 +117,7 @@ private:
         {
             // Get waiting audio data from the network
             sf::Packet packet;
-            if (m_client.receive(packet) != sf::Socket::Done)
+            if (m_client.receive(packet) != sf::Socket::Status::Done)
                 break;
 
             // Extract the message ID
@@ -132,7 +133,7 @@ private:
                 // Don't forget that the other thread can access the sample array at any time
                 // (so we protect any operation on it with the mutex)
                 {
-                    sf::Lock lock(m_mutex);
+                    std::lock_guard<std::mutex> lock(m_mutex);
                     std::copy(samples, samples + sampleCount, std::back_inserter(m_samples));
                 }
             }
@@ -156,7 +157,7 @@ private:
     ////////////////////////////////////////////////////////////
     sf::TcpListener        m_listener;
     sf::TcpSocket          m_client;
-    sf::Mutex              m_mutex;
+    std::mutex             m_mutex;
     std::vector<sf::Int16> m_samples;
     std::vector<sf::Int16> m_tempBuffer;
     std::size_t            m_offset;
@@ -176,7 +177,7 @@ void doServer(unsigned short port)
     audioStream.start(port);
 
     // Loop until the sound playback is finished
-    while (audioStream.getStatus() != sf::SoundStream::Stopped)
+    while (audioStream.getStatus() != sf::SoundStream::Status::Stopped)
     {
         // Leave some CPU time for other threads
         sf::sleep(sf::milliseconds(100));
@@ -192,7 +193,7 @@ void doServer(unsigned short port)
     audioStream.play();
 
     // Loop until the sound playback is finished
-    while (audioStream.getStatus() != sf::SoundStream::Stopped)
+    while (audioStream.getStatus() != sf::SoundStream::Status::Stopped)
     {
         // Leave some CPU time for other threads
         sf::sleep(sf::milliseconds(100));

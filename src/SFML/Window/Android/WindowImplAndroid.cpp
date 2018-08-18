@@ -29,9 +29,9 @@
 #include <SFML/Window/WindowStyle.hpp> // important to be included first (conflict with None)
 #include <SFML/Window/Android/WindowImplAndroid.hpp>
 #include <SFML/Window/Event.hpp>
-#include <SFML/System/Lock.hpp>
 #include <SFML/System/Err.hpp>
 #include <android/looper.h>
+#include <mutex>
 
 // Define missing constants for older API levels
 #if __ANDROID_API__ < 13
@@ -46,7 +46,7 @@ namespace sf
 {
 namespace priv
 {
-WindowImplAndroid* WindowImplAndroid::singleInstance = NULL;
+WindowImplAndroid* WindowImplAndroid::singleInstance = nullptr;
 
 ////////////////////////////////////////////////////////////
 WindowImplAndroid::WindowImplAndroid(WindowHandle handle)
@@ -65,8 +65,8 @@ WindowImplAndroid::WindowImplAndroid(VideoMode mode, const String& title, unsign
 , m_windowBeingDestroyed(false)
 , m_hasFocus(false)
 {
-    ActivityStates* states = getActivity(NULL);
-    Lock lock(states->mutex);
+    ActivityStates* states = getActivity(nullptr);
+    std::lock_guard<std::mutex> lock(states->mutex);
 
     if (style& Style::Fullscreen)
         states->fullscreen = true;
@@ -90,8 +90,8 @@ WindowImplAndroid::~WindowImplAndroid()
 ////////////////////////////////////////////////////////////
 WindowHandle WindowImplAndroid::getSystemHandle() const
 {
-    ActivityStates* states = getActivity(NULL);
-    Lock lock(states->mutex);
+    ActivityStates* states = getActivity(nullptr);
+    std::lock_guard<std::mutex> lock(states->mutex);
 
     return states->window;
 }
@@ -101,10 +101,10 @@ WindowHandle WindowImplAndroid::getSystemHandle() const
 void WindowImplAndroid::processEvents()
 {
     // Process incoming OS events
-    ALooper_pollAll(0, NULL, NULL, NULL);
+    ALooper_pollAll(0, nullptr, nullptr, nullptr);
 
-    ActivityStates* states = getActivity(NULL);
-    sf::Lock lock(states->mutex);
+    ActivityStates* states = getActivity(nullptr);
+    std::lock_guard<std::mutex> lock(states->mutex);
 
     if (m_windowBeingCreated)
     {
@@ -216,16 +216,16 @@ bool WindowImplAndroid::hasFocus() const
 ////////////////////////////////////////////////////////////
 void WindowImplAndroid::forwardEvent(const Event& event)
 {
-    ActivityStates* states = getActivity(NULL);
+    ActivityStates* states = getActivity(nullptr);
 
-    if (event.type == Event::GainedFocus)
+    if (event.type == Event::Type::GainedFocus)
     {
         WindowImplAndroid::singleInstance->m_size.x = ANativeWindow_getWidth(states->window);
         WindowImplAndroid::singleInstance->m_size.y = ANativeWindow_getHeight(states->window);
         WindowImplAndroid::singleInstance->m_windowBeingCreated = true;
         WindowImplAndroid::singleInstance->m_hasFocus = true;
     }
-    else if (event.type == Event::LostFocus)
+    else if (event.type == Event::Type::LostFocus)
     {
         WindowImplAndroid::singleInstance->m_windowBeingDestroyed = true;
         WindowImplAndroid::singleInstance->m_hasFocus = false;
@@ -238,10 +238,10 @@ void WindowImplAndroid::forwardEvent(const Event& event)
 ////////////////////////////////////////////////////////////
 int WindowImplAndroid::processEvent(int fd, int events, void* data)
 {
-    ActivityStates* states = getActivity(NULL);
-    Lock lock(states->mutex);
+    ActivityStates* states = getActivity(nullptr);
+    std::lock_guard<std::mutex> lock(states->mutex);
 
-    AInputEvent* _event = NULL;
+    AInputEvent* _event = nullptr;
 
     if (AInputQueue_getEvent(states->inputQueue, &_event) >= 0)
     {
@@ -322,7 +322,7 @@ int WindowImplAndroid::processScrollEvent(AInputEvent* _event, ActivityStates* s
     JavaVMAttachArgs lJavaVMAttachArgs;
     lJavaVMAttachArgs.version = JNI_VERSION_1_6;
     lJavaVMAttachArgs.name = "NativeThread";
-    lJavaVMAttachArgs.group = NULL;
+    lJavaVMAttachArgs.group = nullptr;
 
     lResult=lJavaVM->AttachCurrentThread(&lJNIEnv, &lJavaVMAttachArgs);
 
@@ -359,7 +359,7 @@ int WindowImplAndroid::processScrollEvent(AInputEvent* _event, ActivityStates* s
 
     // Create and send our mouse wheel event
     Event event;
-    event.type = Event::MouseWheelMoved;
+    event.type = Event::Type::MouseWheelMoved;
     event.mouseWheel.delta = static_cast<double>(delta);
     event.mouseWheel.x = AMotionEvent_getX(_event, 0);
     event.mouseWheel.y = AMotionEvent_getY(_event, 0);
@@ -391,16 +391,16 @@ int WindowImplAndroid::processKeyEvent(AInputEvent* _event, ActivityStates* stat
     switch (action)
     {
     case AKEY_EVENT_ACTION_DOWN:
-        event.type = Event::KeyPressed;
+        event.type = Event::Type::KeyPressed;
         forwardEvent(event);
         return 1;
     case AKEY_EVENT_ACTION_UP:
-        event.type = Event::KeyReleased;
+        event.type = Event::Type::KeyReleased;
         forwardEvent(event);
 
         if (int unicode = getUnicode(_event))
         {
-            event.type = Event::TextEntered;
+            event.type = Event::Type::TextEntered;
             event.text.unicode = unicode;
             forwardEvent(event);
         }
@@ -408,9 +408,9 @@ int WindowImplAndroid::processKeyEvent(AInputEvent* _event, ActivityStates* stat
     case AKEY_EVENT_ACTION_MULTIPLE:
         // Since complex inputs don't get separate key down/up events
         // both have to be faked at once
-        event.type = Event::KeyPressed;
+        event.type = Event::Type::KeyPressed;
         forwardEvent(event);
-        event.type = Event::KeyReleased;
+        event.type = Event::Type::KeyReleased;
         forwardEvent(event);
 
         // This requires some special treatment, since this might represent
@@ -423,7 +423,7 @@ int WindowImplAndroid::processKeyEvent(AInputEvent* _event, ActivityStates* stat
         }
         else if (int unicode = getUnicode(_event)) // This is a repeated sequence
         {
-            event.type = Event::TextEntered;
+            event.type = Event::Type::TextEntered;
             event.text.unicode = unicode;
 
             int32_t repeats = AKeyEvent_getRepeatCount(_event);
@@ -446,9 +446,9 @@ int WindowImplAndroid::processMotionEvent(AInputEvent* _event, ActivityStates* s
     Event event;
 
     if (device == AINPUT_SOURCE_MOUSE)
-        event.type = Event::MouseMoved;
+        event.type = Event::Type::MouseMoved;
     else if (device & AINPUT_SOURCE_TOUCHSCREEN)
-        event.type = Event::TouchMoved;
+        event.type = Event::Type::TouchMoved;
 
     int pointerCount = AMotionEvent_getPointerCount(_event);
 
@@ -502,17 +502,17 @@ int WindowImplAndroid::processPointerEvent(bool isDown, AInputEvent* _event, Act
     {
         if (device == AINPUT_SOURCE_MOUSE)
         {
-            event.type = Event::MouseButtonPressed;
+            event.type = Event::Type::MouseButtonPressed;
             event.mouseButton.button = static_cast<Mouse::Button>(id);
             event.mouseButton.x = x;
             event.mouseButton.y = y;
 
-            if (id >= 0 && id < Mouse::ButtonCount)
+            if (id >= 0 && id < Mouse::Button::Count)
                 states->isButtonPressed[id] = true;
         }
         else if (device & AINPUT_SOURCE_TOUCHSCREEN)
         {
-            event.type = Event::TouchBegan;
+            event.type = Event::Type::TouchBegan;
             event.touch.finger = id;
             event.touch.x = x;
             event.touch.y = y;
@@ -524,17 +524,17 @@ int WindowImplAndroid::processPointerEvent(bool isDown, AInputEvent* _event, Act
     {
         if (device == AINPUT_SOURCE_MOUSE)
         {
-            event.type = Event::MouseButtonReleased;
+            event.type = Event::Type::MouseButtonReleased;
             event.mouseButton.button = static_cast<Mouse::Button>(id);
             event.mouseButton.x = x;
             event.mouseButton.y = y;
 
-            if (id >= 0 && id < Mouse::ButtonCount)
+            if (id >= 0 && id < Mouse::Button::Count)
                 states->isButtonPressed[id] = false;
         }
         else if (device & AINPUT_SOURCE_TOUCHSCREEN)
         {
-            event.type = Event::TouchEnded;
+            event.type = Event::Type::TouchEnded;
             event.touch.finger = id;
             event.touch.x = x;
             event.touch.y = y;
@@ -556,20 +556,20 @@ Keyboard::Key WindowImplAndroid::androidKeyToSF(int32_t key)
         case AKEYCODE_UNKNOWN:
         case AKEYCODE_SOFT_LEFT:
         case AKEYCODE_SOFT_RIGHT:
-        case AKEYCODE_HOME:               return Keyboard::Unknown;
-        case AKEYCODE_BACK:               return Keyboard::Escape;
+        case AKEYCODE_HOME:               return Keyboard::Key::Unknown;
+        case AKEYCODE_BACK:               return Keyboard::Key::Escape;
         case AKEYCODE_CALL:
-        case AKEYCODE_ENDCALL:            return Keyboard::Unknown;
-        case AKEYCODE_0:                  return Keyboard::Num0;
-        case AKEYCODE_1:                  return Keyboard::Num1;
-        case AKEYCODE_2:                  return Keyboard::Num2;
-        case AKEYCODE_3:                  return Keyboard::Num3;
-        case AKEYCODE_4:                  return Keyboard::Num4;
-        case AKEYCODE_5:                  return Keyboard::Num5;
-        case AKEYCODE_6:                  return Keyboard::Num6;
-        case AKEYCODE_7:                  return Keyboard::Num7;
-        case AKEYCODE_8:                  return Keyboard::Num8;
-        case AKEYCODE_9:                  return Keyboard::Num9;
+        case AKEYCODE_ENDCALL:            return Keyboard::Key::Unknown;
+        case AKEYCODE_0:                  return Keyboard::Key::Num0;
+        case AKEYCODE_1:                  return Keyboard::Key::Num1;
+        case AKEYCODE_2:                  return Keyboard::Key::Num2;
+        case AKEYCODE_3:                  return Keyboard::Key::Num3;
+        case AKEYCODE_4:                  return Keyboard::Key::Num4;
+        case AKEYCODE_5:                  return Keyboard::Key::Num5;
+        case AKEYCODE_6:                  return Keyboard::Key::Num6;
+        case AKEYCODE_7:                  return Keyboard::Key::Num7;
+        case AKEYCODE_8:                  return Keyboard::Key::Num8;
+        case AKEYCODE_9:                  return Keyboard::Key::Num9;
         case AKEYCODE_STAR:
         case AKEYCODE_POUND:
         case AKEYCODE_DPAD_UP:
@@ -581,54 +581,54 @@ Keyboard::Key WindowImplAndroid::androidKeyToSF(int32_t key)
         case AKEYCODE_VOLUME_DOWN:
         case AKEYCODE_POWER:
         case AKEYCODE_CAMERA:
-        case AKEYCODE_CLEAR:              return Keyboard::Unknown;
-        case AKEYCODE_A:                  return Keyboard::A;
-        case AKEYCODE_B:                  return Keyboard::B;
-        case AKEYCODE_C:                  return Keyboard::C;
-        case AKEYCODE_D:                  return Keyboard::D;
-        case AKEYCODE_E:                  return Keyboard::E;
-        case AKEYCODE_F:                  return Keyboard::F;
-        case AKEYCODE_G:                  return Keyboard::G;
-        case AKEYCODE_H:                  return Keyboard::H;
-        case AKEYCODE_I:                  return Keyboard::I;
-        case AKEYCODE_J:                  return Keyboard::J;
-        case AKEYCODE_K:                  return Keyboard::K;
-        case AKEYCODE_L:                  return Keyboard::L;
-        case AKEYCODE_M:                  return Keyboard::M;
-        case AKEYCODE_N:                  return Keyboard::N;
-        case AKEYCODE_O:                  return Keyboard::O;
-        case AKEYCODE_P:                  return Keyboard::P;
-        case AKEYCODE_Q:                  return Keyboard::Q;
-        case AKEYCODE_R:                  return Keyboard::R;
-        case AKEYCODE_S:                  return Keyboard::S;
-        case AKEYCODE_T:                  return Keyboard::T;
-        case AKEYCODE_U:                  return Keyboard::U;
-        case AKEYCODE_V:                  return Keyboard::V;
-        case AKEYCODE_W:                  return Keyboard::W;
-        case AKEYCODE_X:                  return Keyboard::X;
-        case AKEYCODE_Y:                  return Keyboard::Y;
-        case AKEYCODE_Z:                  return Keyboard::Z;
-        case AKEYCODE_COMMA:              return Keyboard::Comma;
-        case AKEYCODE_PERIOD:             return Keyboard::Period;
-        case AKEYCODE_ALT_LEFT:           return Keyboard::LAlt;
-        case AKEYCODE_ALT_RIGHT:          return Keyboard::RAlt;
-        case AKEYCODE_SHIFT_LEFT:         return Keyboard::LShift;
-        case AKEYCODE_SHIFT_RIGHT:        return Keyboard::RShift;
-        case AKEYCODE_TAB:                return Keyboard::Tab;
-        case AKEYCODE_SPACE:              return Keyboard::Space;
+        case AKEYCODE_CLEAR:              return Keyboard::Key::Unknown;
+        case AKEYCODE_A:                  return Keyboard::Key::A;
+        case AKEYCODE_B:                  return Keyboard::Key::B;
+        case AKEYCODE_C:                  return Keyboard::Key::C;
+        case AKEYCODE_D:                  return Keyboard::Key::D;
+        case AKEYCODE_E:                  return Keyboard::Key::E;
+        case AKEYCODE_F:                  return Keyboard::Key::F;
+        case AKEYCODE_G:                  return Keyboard::Key::G;
+        case AKEYCODE_H:                  return Keyboard::Key::H;
+        case AKEYCODE_I:                  return Keyboard::Key::I;
+        case AKEYCODE_J:                  return Keyboard::Key::J;
+        case AKEYCODE_K:                  return Keyboard::Key::K;
+        case AKEYCODE_L:                  return Keyboard::Key::L;
+        case AKEYCODE_M:                  return Keyboard::Key::M;
+        case AKEYCODE_N:                  return Keyboard::Key::N;
+        case AKEYCODE_O:                  return Keyboard::Key::O;
+        case AKEYCODE_P:                  return Keyboard::Key::P;
+        case AKEYCODE_Q:                  return Keyboard::Key::Q;
+        case AKEYCODE_R:                  return Keyboard::Key::R;
+        case AKEYCODE_S:                  return Keyboard::Key::S;
+        case AKEYCODE_T:                  return Keyboard::Key::T;
+        case AKEYCODE_U:                  return Keyboard::Key::U;
+        case AKEYCODE_V:                  return Keyboard::Key::V;
+        case AKEYCODE_W:                  return Keyboard::Key::W;
+        case AKEYCODE_X:                  return Keyboard::Key::X;
+        case AKEYCODE_Y:                  return Keyboard::Key::Y;
+        case AKEYCODE_Z:                  return Keyboard::Key::Z;
+        case AKEYCODE_COMMA:              return Keyboard::Key::Comma;
+        case AKEYCODE_PERIOD:             return Keyboard::Key::Period;
+        case AKEYCODE_ALT_LEFT:           return Keyboard::Key::LAlt;
+        case AKEYCODE_ALT_RIGHT:          return Keyboard::Key::RAlt;
+        case AKEYCODE_SHIFT_LEFT:         return Keyboard::Key::LShift;
+        case AKEYCODE_SHIFT_RIGHT:        return Keyboard::Key::RShift;
+        case AKEYCODE_TAB:                return Keyboard::Key::Tab;
+        case AKEYCODE_SPACE:              return Keyboard::Key::Space;
         case AKEYCODE_SYM:
         case AKEYCODE_EXPLORER:
-        case AKEYCODE_ENVELOPE:           return Keyboard::Unknown;
-        case AKEYCODE_ENTER:              return Keyboard::Enter;
-        case AKEYCODE_DEL:                return Keyboard::Backspace;
-        case AKEYCODE_FORWARD_DEL:        return Keyboard::Delete;
-        case AKEYCODE_GRAVE:              return Keyboard::Tilde;
-        case AKEYCODE_MINUS:              return Keyboard::Subtract;
-        case AKEYCODE_EQUALS:             return Keyboard::Equal;
-        case AKEYCODE_LEFT_BRACKET:       return Keyboard::LBracket;
-        case AKEYCODE_RIGHT_BRACKET:      return Keyboard::RBracket;
-        case AKEYCODE_BACKSLASH:          return Keyboard::Backslash;
-        case AKEYCODE_SEMICOLON:          return Keyboard::Semicolon;
+        case AKEYCODE_ENVELOPE:           return Keyboard::Key::Unknown;
+        case AKEYCODE_ENTER:              return Keyboard::Key::Enter;
+        case AKEYCODE_DEL:                return Keyboard::Key::Backspace;
+        case AKEYCODE_FORWARD_DEL:        return Keyboard::Key::Delete;
+        case AKEYCODE_GRAVE:              return Keyboard::Key::Tilde;
+        case AKEYCODE_MINUS:              return Keyboard::Key::Subtract;
+        case AKEYCODE_EQUALS:             return Keyboard::Key::Equal;
+        case AKEYCODE_LEFT_BRACKET:       return Keyboard::Key::LBracket;
+        case AKEYCODE_RIGHT_BRACKET:      return Keyboard::Key::RBracket;
+        case AKEYCODE_BACKSLASH:          return Keyboard::Key::Backslash;
+        case AKEYCODE_SEMICOLON:          return Keyboard::Key::Semicolon;
         case AKEYCODE_APOSTROPHE:         return Keyboard::Quote;
         case AKEYCODE_SLASH:              return Keyboard::Slash;
         case AKEYCODE_AT:
@@ -645,9 +645,9 @@ Keyboard::Key WindowImplAndroid::androidKeyToSF(int32_t key)
         case AKEYCODE_MEDIA_PREVIOUS:
         case AKEYCODE_MEDIA_REWIND:
         case AKEYCODE_MEDIA_FAST_FORWARD:
-        case AKEYCODE_MUTE:               return Keyboard::Unknown;
-        case AKEYCODE_PAGE_UP:            return Keyboard::PageUp;
-        case AKEYCODE_PAGE_DOWN:          return Keyboard::PageDown;
+        case AKEYCODE_MUTE:               return Keyboard::Key::Unknown;
+        case AKEYCODE_PAGE_UP:            return Keyboard::Key::PageUp;
+        case AKEYCODE_PAGE_DOWN:          return Keyboard::Key::PageDown;
         case AKEYCODE_PICTSYMBOLS:
         case AKEYCODE_SWITCH_CHARSET:
         case AKEYCODE_BUTTON_A:
@@ -664,7 +664,7 @@ Keyboard::Key WindowImplAndroid::androidKeyToSF(int32_t key)
         case AKEYCODE_BUTTON_THUMBR:
         case AKEYCODE_BUTTON_START:
         case AKEYCODE_BUTTON_SELECT:
-        case AKEYCODE_BUTTON_MODE:        return Keyboard::Unknown;
+        case AKEYCODE_BUTTON_MODE:        return Keyboard::Key::Unknown;
     }
 }
 
@@ -673,8 +673,8 @@ Keyboard::Key WindowImplAndroid::androidKeyToSF(int32_t key)
 int WindowImplAndroid::getUnicode(AInputEvent* event)
 {
     // Retrieve activity states
-    ActivityStates* states = getActivity(NULL);
-    Lock lock(states->mutex);
+    ActivityStates* states = getActivity(nullptr);
+    std::lock_guard<std::mutex> lock(states->mutex);
 
     // Initializes JNI
     jint lResult;
@@ -686,7 +686,7 @@ int WindowImplAndroid::getUnicode(AInputEvent* event)
     JavaVMAttachArgs lJavaVMAttachArgs;
     lJavaVMAttachArgs.version = JNI_VERSION_1_6;
     lJavaVMAttachArgs.name = "NativeThread";
-    lJavaVMAttachArgs.group = NULL;
+    lJavaVMAttachArgs.group = nullptr;
 
     lResult=lJavaVM->AttachCurrentThread(&lJNIEnv, &lJavaVMAttachArgs);
 

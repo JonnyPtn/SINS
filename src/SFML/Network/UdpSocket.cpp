@@ -37,7 +37,7 @@ namespace sf
 {
 ////////////////////////////////////////////////////////////
 UdpSocket::UdpSocket() :
-Socket  (Udp),
+Socket  (Type::Udp),
 m_buffer(MaxDatagramSize)
 {
 
@@ -74,17 +74,17 @@ Socket::Status UdpSocket::bind(unsigned short port, const IpAddress& address)
 
     // Check if the address is valid
     if ((address == IpAddress::None) || (address == IpAddress::Broadcast))
-        return Error;
+        return Status::Error;
 
     // Bind the socket
     sockaddr_in addr = priv::SocketImpl::createAddress(address.toInteger(), port);
     if (::bind(getHandle(), reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) == -1)
     {
         err() << "Failed to bind socket to port " << port << std::endl;
-        return Error;
+        return Status::Error;
     }
 
-    return Done;
+    return Status::Done;
 }
 
 
@@ -107,7 +107,7 @@ Socket::Status UdpSocket::send(const void* data, std::size_t size, const IpAddre
     {
         err() << "Cannot send data over the network "
               << "(the number of bytes to send is greater than sf::UdpSocket::MaxDatagramSize)" << std::endl;
-        return Error;
+        return Status::Error;
     }
 
     // Build the target address
@@ -120,7 +120,7 @@ Socket::Status UdpSocket::send(const void* data, std::size_t size, const IpAddre
     if (sent < 0)
         return priv::SocketImpl::getErrorStatus();
 
-    return Done;
+    return Status::Done;
 }
 
 
@@ -136,7 +136,7 @@ Socket::Status UdpSocket::receive(void* data, std::size_t size, std::size_t& rec
     if (!data)
     {
         err() << "Cannot receive data from the network (the destination buffer is invalid)" << std::endl;
-        return Error;
+        return Status::Error;
     }
 
     // Data that will be filled with the other computer's address
@@ -155,7 +155,7 @@ Socket::Status UdpSocket::receive(void* data, std::size_t size, std::size_t& rec
     remoteAddress = IpAddress(ntohl(address.sin_addr.s_addr));
     remotePort    = ntohs(address.sin_port);
 
-    return Done;
+    return Status::Done;
 }
 
 
@@ -186,12 +186,12 @@ Socket::Status UdpSocket::receive(Packet& packet, IpAddress& remoteAddress, unsi
 
     // Receive the datagram
     std::size_t received = 0;
-    Status status = receive(&m_buffer[0], m_buffer.size(), received, remoteAddress, remotePort);
+    Status status = receive(m_buffer.data(), m_buffer.size(), received, remoteAddress, remotePort);
 
     // If we received valid data, we can copy it to the user packet
     packet.clear();
-    if ((status == Done) && (received > 0))
-        packet.onReceive(&m_buffer[0], received);
+    if ((status == Status::Done) && (received > 0))
+        packet.onReceive(m_buffer.data(), received);
 
     return status;
 }

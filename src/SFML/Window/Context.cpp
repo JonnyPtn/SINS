@@ -27,13 +27,12 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Window/Context.hpp>
 #include <SFML/Window/GlContext.hpp>
-#include <SFML/System/ThreadLocalPtr.hpp>
 
 
 namespace
 {
     // This per-thread variable holds the current context for each thread
-    sf::ThreadLocalPtr<sf::Context> currentContext(NULL);
+    thread_local sf::Context* currentContext = nullptr;
 }
 
 namespace sf
@@ -50,7 +49,6 @@ Context::Context()
 Context::~Context()
 {
     setActive(false);
-    delete m_context;
 }
 
 
@@ -60,7 +58,7 @@ bool Context::setActive(bool active)
     bool result = m_context->setActive(active);
 
     if (result)
-        currentContext = (active ? this : NULL);
+        currentContext = (active ? this : nullptr);
 
     return result;
 }

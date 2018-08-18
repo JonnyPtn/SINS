@@ -30,10 +30,10 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Audio/Export.hpp>
 #include <SFML/Audio/SoundSource.hpp>
-#include <SFML/System/Thread.hpp>
 #include <SFML/System/Time.hpp>
-#include <SFML/System/Mutex.hpp>
 #include <cstdlib>
+#include <mutex>
+#include <thread>
 
 
 namespace sf
@@ -60,7 +60,7 @@ public:
     /// \brief Destructor
     ///
     ////////////////////////////////////////////////////////////
-    virtual ~SoundStream();
+    ~SoundStream() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Start or resume playing the audio stream
@@ -74,7 +74,7 @@ public:
     /// \see pause, stop
     ///
     ////////////////////////////////////////////////////////////
-    void play();
+    void play() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Pause the audio stream
@@ -85,7 +85,7 @@ public:
     /// \see play, stop
     ///
     ////////////////////////////////////////////////////////////
-    void pause();
+    void pause() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Stop playing the audio stream
@@ -97,7 +97,7 @@ public:
     /// \see play, pause
     ///
     ////////////////////////////////////////////////////////////
-    void stop();
+    void stop() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the number of channels of the stream
@@ -126,7 +126,7 @@ public:
     /// \return Current status
     ///
     ////////////////////////////////////////////////////////////
-    Status getStatus() const;
+    Status getStatus() const override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Change the current playing position of the stream
@@ -306,16 +306,16 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    Thread        m_thread;                   ///< Thread running the background tasks
-    mutable Mutex m_threadMutex;              ///< Thread mutex
-    Status        m_threadStartState;         ///< State the thread starts in (Playing, Paused, Stopped)
-    bool          m_isStreaming;              ///< Streaming state (true = playing, false = stopped)
-    unsigned int  m_buffers[BufferCount];     ///< Sound buffers used to store temporary audio data
-    unsigned int  m_channelCount;             ///< Number of channels (1 = mono, 2 = stereo, ...)
-    unsigned int  m_sampleRate;               ///< Frequency (samples / second)
-    Uint32        m_format;                   ///< Format of the internal sound buffers
-    bool          m_loop;                     ///< Loop flag (true to loop, false to play once)
-    Uint64        m_samplesProcessed;         ///< Number of buffers processed since beginning of the stream
+    std::thread        m_thread;                  ///< Thread running the background tasks
+    mutable std::mutex m_threadMutex;             ///< Thread mutex
+    Status             m_threadStartState;        ///< State the thread starts in (Playing, Paused, Stopped)
+    bool               m_isStreaming;             ///< Streaming state (true = playing, false = stopped)
+    unsigned int       m_buffers[BufferCount];    ///< Sound buffers used to store temporary audio data
+    unsigned int       m_channelCount;            ///< Number of channels (1 = mono, 2 = stereo, ...)
+    unsigned int       m_sampleRate;              ///< Frequency (samples / second)
+    Uint32             m_format;                  ///< Format of the internal sound buffers
+    bool               m_loop;                    ///< Loop flag (true to loop, false to play once)
+    Uint64             m_samplesProcessed;        ///< Number of buffers processed since beginning of the stream
     Int64         m_bufferSeeks[BufferCount]; ///< If buffer is an "end buffer", holds next seek position, else NoLoop. For play offset calculation.
 };
 

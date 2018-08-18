@@ -75,7 +75,7 @@ void Packet::clear()
 ////////////////////////////////////////////////////////////
 const void* Packet::getData() const
 {
-    return !m_data.empty() ? &m_data[0] : NULL;
+    return !m_data.empty() ? m_data.data() : nullptr;
 }
 
 
@@ -96,7 +96,7 @@ bool Packet::endOfPacket() const
 ////////////////////////////////////////////////////////////
 Packet::operator BoolType() const
 {
-    return m_isValid ? &Packet::checkSize : NULL;
+    return m_isValid ? &Packet::checkSize : nullptr;
 }
 
 
@@ -544,8 +544,8 @@ Packet& Packet::operator <<(const std::wstring& data)
     // Then insert characters
     if (length > 0)
     {
-        for (std::wstring::const_iterator c = data.begin(); c != data.end(); ++c)
-            *this << static_cast<Uint32>(*c);
+        for (auto c : data)
+            *this << static_cast<Uint32>(c);
     }
 
     return *this;
@@ -562,8 +562,8 @@ Packet& Packet::operator <<(const String& data)
     // Then insert characters
     if (length > 0)
     {
-        for (String::ConstIterator c = data.begin(); c != data.end(); ++c)
-            *this << *c;
+        for (auto c : data)
+            *this << c;
     }
 
     return *this;

@@ -32,6 +32,7 @@
 #include <SFML/Window/GlResource.hpp>
 #include <SFML/Window/ContextSettings.hpp>
 #include <SFML/System/NonCopyable.hpp>
+#include <memory>
 
 
 namespace sf
@@ -116,7 +117,7 @@ public:
     /// Contexts created e.g. by RenderTargets or for internal
     /// use will not be returned by this function.
     ///
-    /// \return The currently active context or NULL if none is active
+    /// \return The currently active context or nullptr if none is active
     ///
     ////////////////////////////////////////////////////////////
     static const Context* getActiveContext();
@@ -150,7 +151,7 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    priv::GlContext* m_context; ///< Internal OpenGL context
+    std::unique_ptr<priv::GlContext> m_context; ///< Internal OpenGL context
 };
 
 } // namespace sf

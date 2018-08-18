@@ -140,7 +140,7 @@ void InputImpl::setVirtualKeyboardVisible(bool /*visible*/)
 bool InputImpl::isMouseButtonPressed(Mouse::Button button)
 {
     NSUInteger state = [NSEvent pressedMouseButtons];
-    NSUInteger flag = 1 << button;
+    NSUInteger flag = 1 << static_cast<size_t>(button);
     return (state & flag) != 0;
 }
 
@@ -182,7 +182,7 @@ void InputImpl::setMousePosition(const Vector2i& position)
     CGPoint pos = CGPointMake(position.x / scale, position.y / scale);
 
     // Place the cursor.
-    CGEventRef event = CGEventCreateMouseEvent(NULL,
+    CGEventRef event = CGEventCreateMouseEvent(nullptr,
                                                kCGEventMouseMoved,
                                                pos,
                                                /* we don't care about this: */ kCGMouseButtonLeft);
