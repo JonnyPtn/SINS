@@ -122,8 +122,8 @@ bool Image::loadFromFile(const std::string& filename)
 
     #else
 
-        m_stream = std::make_shared<priv::ResourceStream>(filename);
-        return loadFromStream(*std::static_pointer_cast<priv::ResourceStream*>(m_stream));
+        priv::ResourceStream stream(filename);
+        return loadFromStream(stream);
 
     #endif
 }
