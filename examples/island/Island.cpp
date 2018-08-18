@@ -144,7 +144,7 @@ int main()
         terrainStagingBuffer.resize(resolutionX * resolutionY * 6);
 
         // Generate the initial terrain
-        generateTerrain(&terrainStagingBuffer[0]);
+        generateTerrain(terrainStagingBuffer.data());
 
         statusText.setString("Generating Terrain...");
     }
@@ -497,7 +497,7 @@ void processWorkItem(std::vector<sf::Vertex>& vertices, const WorkItem& workItem
     }
 
     // Copy the resulting geometry from our thread-local buffer into the target buffer
-    std::memcpy(workItem.targetBuffer + (resolutionX * rowStart * 6), &vertices[0], sizeof(sf::Vertex) * resolutionX * rowCount * 6);
+    std::memcpy(workItem.targetBuffer + (resolutionX * rowStart * 6), vertices.data(), sizeof(sf::Vertex) * resolutionX * rowCount * 6);
 }
 
 

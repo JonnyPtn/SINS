@@ -262,7 +262,7 @@ bool ImageLoader::saveImageToFile(const std::string& filename, const std::vector
         else if (extension == "jpg" || extension == "jpeg")
         {
             // JPG format
-            if (stbi_write_jpg(filename.c_str(), size.x, size.y, 4, &pixels[0], 90))
+            if (stbi_write_jpg(filename.c_str(), size.x, size.y, 4, pixels.data(), 90))
                 return true;
         }
     }
