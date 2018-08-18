@@ -52,9 +52,6 @@ sfml_add_library(sfml-system
                  SOURCES ${SRC} ${PLATFORM_SRC})
 
 # setup dependencies
-if(SFML_OS_LINUX OR SFML_OS_FREEBSD OR SFML_OS_MACOSX)
-    target_link_libraries(sfml-system PRIVATE pthread)
-endif()
 if(SFML_OS_LINUX)
     target_link_libraries(sfml-system PRIVATE rt)
 elseif(SFML_OS_WINDOWS)

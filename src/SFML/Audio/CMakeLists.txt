@@ -88,3 +88,17 @@ endif()
 target_link_libraries(sfml-audio
                       PUBLIC sfml-system
                       PRIVATE Vorbis FLAC)
+
+if(SFML_OS_LINUX OR SFML_OS_FREEBSD)
+    # TODO: replace with Threads::Threads if CMake version >= 3.1
+    find_package(Threads REQUIRED)
+
+    if(THREADS_HAVE_PTHREAD_ARG)
+        target_compile_options(sfml-audio PRIVATE "-pthread")
+    endif()
+
+    if(CMAKE_THREAD_LIBS_INIT)
+        target_link_libraries(sfml-audio
+                              PRIVATE "${CMAKE_THREAD_LIBS_INIT}")
+    endif()
+endif()
