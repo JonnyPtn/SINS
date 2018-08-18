@@ -47,7 +47,7 @@ namespace
     // Update joystick axes
     void updateAxes(unsigned int index)
     {
-        for (unsigned int j = 0; j < sf::Joystick::AxisCount; ++j)
+        for (unsigned int j = 0; j < static_cast<unsigned int>(sf::Joystick::Axis::Count); ++j)
         {
             if (sf::Joystick::hasAxis(index, static_cast<sf::Joystick::Axis>(j)))
                 set(axislabels[j], sf::Joystick::getAxisPosition(index, static_cast<sf::Joystick::Axis>(j)));
@@ -118,7 +118,7 @@ int main()
     texts["Threshold"].value.setString(sstr.str());
 
     // Set up our label-value sf::Text objects
-    for (unsigned int i = 0; i < sf::Joystick::AxisCount; ++i)
+    for (unsigned int i = 0; i < static_cast<unsigned int>(sf::Joystick::Axis::Count); ++i)
     {
         JoystickObject& object = texts[axislabels[i]];
 
@@ -135,10 +135,10 @@ int main()
         sstr << "Button " << i;
         JoystickObject& object = texts[sstr.str()];
 
-        object.label.setPosition(5.f, 5.f + ((sf::Joystick::AxisCount + i + 4) * font.getLineSpacing(14)));
+        object.label.setPosition(5.f, 5.f + ((static_cast<int>(sf::Joystick::Axis::Count) + i + 4) * font.getLineSpacing(14)));
         object.label.setString(sstr.str() + ":");
 
-        object.value.setPosition(80.f, 5.f + ((sf::Joystick::AxisCount + i + 4) * font.getLineSpacing(14)));
+        object.value.setPosition(80.f, 5.f + ((static_cast<int>(sf::Joystick::Axis::Count) + i + 4) * font.getLineSpacing(14)));
         object.value.setString("N/A");
     }
 
@@ -170,21 +170,21 @@ int main()
         while (window.pollEvent(event))
         {
             // Window closed or escape key pressed: exit
-            if ((event.type == sf::Event::Closed) ||
-               ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)))
+            if ((event.type == sf::Event::Type::Closed) ||
+                ((event.type == sf::Event::Type::KeyPressed) && (event.key.code == sf::Keyboard::Key::Escape)))
             {
                 window.close();
                 break;
             }
-            else if ((event.type == sf::Event::JoystickButtonPressed) ||
-                     (event.type == sf::Event::JoystickButtonReleased) ||
-                     (event.type == sf::Event::JoystickMoved) ||
-                     (event.type == sf::Event::JoystickConnected))
+            else if ((event.type == sf::Event::Type::JoystickButtonPressed) ||
+                     (event.type == sf::Event::Type::JoystickButtonReleased) ||
+                     (event.type == sf::Event::Type::JoystickMoved) ||
+                     (event.type == sf::Event::Type::JoystickConnected))
             {
                 // Update displayed joystick values
                 updateValues(event.joystickConnect.joystickId);
             }
-            else if (event.type == sf::Event::JoystickDisconnected)
+            else if (event.type == sf::Event::Type::JoystickDisconnected)
             {
                 // Reset displayed joystick values to empty
                 for (Texts::iterator it = texts.begin(); it != texts.end(); ++it)
@@ -203,10 +203,10 @@ int main()
         // Update threshold if the user wants to change it
         float newThreshold = threshold;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
             newThreshold += 0.1f;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
             newThreshold -= 0.1f;
 
         newThreshold = std::min(std::max(newThreshold, 0.1f), 100.0f);

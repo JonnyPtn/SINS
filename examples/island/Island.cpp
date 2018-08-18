@@ -11,7 +11,8 @@
 #include <algorithm>
 #include <cstring>
 #include <cmath>
-
+#include <thread>
+#include <mutex>
 
 namespace
 {
@@ -34,11 +35,11 @@ namespace
     };
 
     std::deque<WorkItem> workQueue;
-    std::vector<sf::Thread*> threads;
+    std::vector<std::thread> threads;
     int pendingWorkCount = 0;
     bool workPending = true;
     bool bufferUploadPending = false;
-    sf::Mutex workQueueMutex;
+    std::mutex workQueueMutex;
 
     struct Setting
     {
@@ -93,7 +94,7 @@ int main()
     sf::Text statusText;
     sf::Shader terrainShader;
     sf::RenderStates terrainStates(&terrainShader);
-    sf::VertexBuffer terrain(sf::Triangles, sf::VertexBuffer::Static);
+    sf::VertexBuffer terrain(sf::PrimitiveType::Triangles, sf::VertexBuffer::Static);
 
     // Set up our text drawables
     statusText.setFont(font);
@@ -131,8 +132,9 @@ int main()
         // Start up our thread pool
         for (unsigned int i = 0; i < threadCount; i++)
         {
-            threads.push_back(new sf::Thread(threadFunction));
-            threads.back()->launch();
+            threads.emplace_back([]() {
+                threadFunction();
+            });
         }
 
         // Create our VertexBuffer with enough space to hold all the terrain geometry
@@ -177,23 +179,23 @@ int main()
         while (window.pollEvent(event))
         {
             // Window closed or escape key pressed: exit
-            if ((event.type == sf::Event::Closed) ||
-               ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)))
+            if ((event.type == sf::Event::Type::Closed) ||
+                ((event.type == sf::Event::Type::KeyPressed) && (event.key.code == sf::Keyboard::Key::Escape)))
             {
                 window.close();
                 break;
             }
 
             // Arrow key pressed:
-            if (prerequisitesSupported && (event.type == sf::Event::KeyPressed))
+            if (prerequisitesSupported && (event.type == sf::Event::Type::KeyPressed))
             {
                 switch (event.key.code)
                 {
-                    case sf::Keyboard::Return: generateTerrain(&terrainStagingBuffer[0]); break;
-                    case sf::Keyboard::Down:   currentSetting = (currentSetting + 1) % settingCount; break;
-                    case sf::Keyboard::Up:     currentSetting = (currentSetting + settingCount - 1) % settingCount; break;
-                    case sf::Keyboard::Left:   *(settings[currentSetting].value) -= 0.1f; break;
-                    case sf::Keyboard::Right:  *(settings[currentSetting].value) += 0.1f; break;
+                    case sf::Keyboard::Key::Return: generateTerrain(&terrainStagingBuffer[0]); break;
+                    case sf::Keyboard::Key::Down:   currentSetting = (currentSetting + 1) % settingCount; break;
+                    case sf::Keyboard::Key::Up:     currentSetting = (currentSetting + settingCount - 1) % settingCount; break;
+                    case sf::Keyboard::Key::Left:   *(settings[currentSetting].value) -= 0.1f; break;
+                    case sf::Keyboard::Key::Right:  *(settings[currentSetting].value) += 0.1f; break;
                     default: break;
                 }
             }
@@ -207,7 +209,7 @@ int main()
         if (prerequisitesSupported)
         {
             {
-                sf::Lock lock(workQueueMutex);
+                std::lock_guard<std::mutex> lock(workQueueMutex);
 
                 // Don't bother updating/drawing the VertexBuffer while terrain is being regenerated
                 if (!pendingWorkCount)
@@ -244,14 +246,13 @@ int main()
 
     // Shut down our thread pool
     {
-        sf::Lock lock(workQueueMutex);
+        std::lock_guard<std::mutex> lock(workQueueMutex);
         workPending = false;
     }
 
     while (!threads.empty())
     {
-        threads.back()->wait();
-        delete threads.back();
+        threads.back().join();
         threads.pop_back();
     }
 
@@ -521,7 +522,7 @@ void threadFunction()
 
         // Check if there are new work items in the queue
         {
-            sf::Lock lock(workQueueMutex);
+            std::lock_guard<std::mutex> lock(workQueueMutex);
 
             if (!workPending)
                 return;
@@ -544,7 +545,7 @@ void threadFunction()
         processWorkItem(vertices, workItem);
 
         {
-            sf::Lock lock(workQueueMutex);
+            std::lock_guard<std::mutex> lock(workQueueMutex);
 
             --pendingWorkCount;
         }
@@ -566,7 +567,7 @@ void generateTerrain(sf::Vertex* buffer)
     for (;;)
     {
         {
-            sf::Lock lock(workQueueMutex);
+            std::lock_guard<std::mutex> lock(workQueueMutex);
 
             if (workQueue.empty())
                 break;
@@ -577,7 +578,7 @@ void generateTerrain(sf::Vertex* buffer)
 
     // Queue all the new work items
     {
-        sf::Lock lock(workQueueMutex);
+        std::lock_guard<std::mutex> lock(workQueueMutex);
 
         for (unsigned int i = 0; i < blockCount; i++)
         {
