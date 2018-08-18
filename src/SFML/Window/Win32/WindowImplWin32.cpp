@@ -732,7 +732,7 @@ void WindowImplWin32::processEvent(UINT message, WPARAM wParam, LPARAM lParam)
             if (m_keyRepeatEnabled || ((HIWORD(lParam) & KF_REPEAT) == 0))
             {
                 Event event;
-                event.type        = Event::KeyPressed;
+                event.type        = Event::Type::KeyPressed;
                 event.key.alt     = HIWORD(GetKeyState(VK_MENU))    != 0;
                 event.key.control = HIWORD(GetKeyState(VK_CONTROL)) != 0;
                 event.key.shift   = HIWORD(GetKeyState(VK_SHIFT))   != 0;
@@ -748,7 +748,7 @@ void WindowImplWin32::processEvent(UINT message, WPARAM wParam, LPARAM lParam)
         case WM_SYSKEYUP:
         {
             Event event;
-            event.type        = Event::KeyReleased;
+            event.type        = Event::Type::KeyReleased;
             event.key.alt     = HIWORD(GetKeyState(VK_MENU))    != 0;
             event.key.control = HIWORD(GetKeyState(VK_CONTROL)) != 0;
             event.key.shift   = HIWORD(GetKeyState(VK_SHIFT))   != 0;

@@ -491,7 +491,7 @@ bool JoystickImpl::openDInput(unsigned int index)
     // Initialize DirectInput members
     m_device = NULL;
 
-    for (int i = 0; i < Joystick::AxisCount; ++i)
+    for (int i = 0; i < static_cast<int>(Joystick::Axis::Count); ++i)
         m_axes[i] = -1;
 
     for (int i = 0; i < Joystick::ButtonCount; ++i)
@@ -701,7 +701,7 @@ JoystickCaps JoystickImpl::getCapabilitiesDInput() const
     }
 
     // Check which axes have valid offsets
-    for (int i = 0; i < Joystick::AxisCount; ++i)
+    for (int i = 0; i < static_cast<int>(Joystick::Axis::Count); ++i)
         caps.axes[i] = (m_axes[i] != -1);
 
     return caps;
@@ -748,11 +748,11 @@ JoystickState JoystickImpl::updateDInput()
         }
 
         // Get the current state of each axis
-        for (int i = 0; i < Joystick::AxisCount; ++i)
+        for (int i = 0; i < static_cast<int>(Joystick::Axis::Count); ++i)
         {
             if (m_axes[i] != -1)
             {
-                if (i == Joystick::PovX)
+                if (i == static_cast<int>(Joystick::Axis::PovX))
                 {
                     unsigned short value = LOWORD(*reinterpret_cast<const DWORD*>(reinterpret_cast<const char*>(&joystate) + m_axes[i]));
 
@@ -767,7 +767,7 @@ JoystickState JoystickImpl::updateDInput()
                         state.axes[i] = 0;
                     }
                 }
-                else if (i == Joystick::PovY)
+                else if (i == static_cast<int>(Joystick::Axis::PovY))
                 {
                     unsigned short value = LOWORD(*reinterpret_cast<const DWORD*>(reinterpret_cast<const char*>(&joystate) + m_axes[i]));
 
@@ -844,23 +844,23 @@ BOOL CALLBACK JoystickImpl::deviceObjectEnumerationCallback(const DIDEVICEOBJECT
     {
         // Axes
         if (deviceObjectInstance->guidType == guids::GUID_XAxis)
-            joystick.m_axes[Joystick::X] = DIJOFS_X;
+            joystick.m_axes[static_cast<int>(Joystick::Axis::X)] = DIJOFS_X;
         else if (deviceObjectInstance->guidType == guids::GUID_YAxis)
-            joystick.m_axes[Joystick::Y] = DIJOFS_Y;
+            joystick.m_axes[static_cast<int>(Joystick::Axis::Y)] = DIJOFS_Y;
         else if (deviceObjectInstance->guidType == guids::GUID_ZAxis)
-            joystick.m_axes[Joystick::Z] = DIJOFS_Z;
+            joystick.m_axes[static_cast<int>(Joystick::Axis::Z)] = DIJOFS_Z;
         else if (deviceObjectInstance->guidType == guids::GUID_RzAxis)
-            joystick.m_axes[Joystick::R] = DIJOFS_RZ;
+            joystick.m_axes[static_cast<int>(Joystick::Axis::R)] = DIJOFS_RZ;
         else if (deviceObjectInstance->guidType == guids::GUID_RxAxis)
-            joystick.m_axes[Joystick::U] = DIJOFS_RX;
+            joystick.m_axes[static_cast<int>(Joystick::Axis::U)] = DIJOFS_RX;
         else if (deviceObjectInstance->guidType == guids::GUID_RyAxis)
-            joystick.m_axes[Joystick::V] = DIJOFS_RY;
+            joystick.m_axes[static_cast<int>(Joystick::Axis::V)] = DIJOFS_RY;
         else if (deviceObjectInstance->guidType == guids::GUID_Slider)
         {
-            if(joystick.m_axes[Joystick::U] == -1)
-                joystick.m_axes[Joystick::U] = DIJOFS_SLIDER(0);
+            if(joystick.m_axes[static_cast<int>(Joystick::Axis::U)] == -1)
+                joystick.m_axes[static_cast<int>(Joystick::Axis::U)] = DIJOFS_SLIDER(0);
             else
-                joystick.m_axes[Joystick::V] = DIJOFS_SLIDER(1);
+                joystick.m_axes[static_cast<int>(Joystick::Axis::V)] = DIJOFS_SLIDER(1);
         }
         else
             return DIENUM_CONTINUE;
@@ -888,10 +888,10 @@ BOOL CALLBACK JoystickImpl::deviceObjectEnumerationCallback(const DIDEVICEOBJECT
         // POVs
         if (deviceObjectInstance->guidType == guids::GUID_POV)
         {
-            if (joystick.m_axes[Joystick::PovX] == -1)
+            if (joystick.m_axes[static_cast<int>(Joystick::Axis::PovX)] == -1)
             {
-                joystick.m_axes[Joystick::PovX] = DIJOFS_POV(0);
-                joystick.m_axes[Joystick::PovY] = DIJOFS_POV(0);
+                joystick.m_axes[static_cast<int>(Joystick::Axis::PovX)] = DIJOFS_POV(0);
+                joystick.m_axes[static_cast<int>(Joystick::Axis::PovY)] = DIJOFS_POV(0);
             }
         }
 

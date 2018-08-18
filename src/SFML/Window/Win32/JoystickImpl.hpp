@@ -224,7 +224,7 @@ private:
     JOYCAPS                  m_caps;                           ///< Joystick capabilities
     IDirectInputDevice8W*    m_device;                         ///< DirectInput 8.x device
     DIDEVCAPS                m_deviceCaps;                     ///< DirectInput device capabilities
-    int                      m_axes[Joystick::AxisCount];      ///< Offsets to the bytes containing the axes states, -1 if not available
+    int                      m_axes[Joystick::Axis::Count];      ///< Offsets to the bytes containing the axes states, -1 if not available
     int                      m_buttons[Joystick::ButtonCount]; ///< Offsets to the bytes containing the button states, -1 if not available
     Joystick::Identification m_identification;                 ///< Joystick identification
 };
