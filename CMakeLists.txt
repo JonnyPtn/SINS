@@ -91,6 +91,9 @@ if(SFML_BUILD_WINDOW)
     sfml_set_option(SFML_OPENGL_ES ${OPENGL_ES} BOOL "TRUE to use an OpenGL ES implementation, FALSE to use a desktop OpenGL implementation")
 endif()
 
+# add an option for SFML compatibility, temporarily
+sfml_set_option(MML_SFML_COMPAT FALSE BOOL "TRUE to include API alterations allowing compatibility with SFML")
+
 # Mac OS X specific options
 if(SFML_OS_MACOSX)
     # add an option to build frameworks instead of dylibs (release only)

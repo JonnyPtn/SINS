@@ -212,6 +212,11 @@ public:
 
         Count                   ///< Keep last -- the total number of event types
     };
+    
+    // To allow sf::Event::EventType compatibility
+#ifdef MML_SFML_COMPAT
+    using EventType = Type;
+#endif
 
     ////////////////////////////////////////////////////////////
     // Member data

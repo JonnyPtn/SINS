@@ -247,6 +247,12 @@ if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
     set(OpenGL_GL_PREFERENCE "LEGACY")
 endif()
 
+# Compatibility for:
+# - sf::Event::EventType
+if(MML_SFML_COMPAT)
+    target_compile_definitions(sfml-window PUBLIC "-DMML_SFML_COMPAT")
+endif()
+
 if(SFML_OPENGL_ES)
     if(SFML_OS_IOS)
         target_link_libraries(sfml-window PRIVATE "-framework OpenGLES")
