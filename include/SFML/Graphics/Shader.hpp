@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Graphics/Export.hpp>
 #include <SFML/Graphics/Glsl.hpp>
 #include <SFML/Window/GlResource.hpp>
@@ -57,7 +58,7 @@ public:
     /// \brief Types of shaders
     ///
     ////////////////////////////////////////////////////////////
-    enum class Type : unsigned char
+    MML_COMPAT_ENUM Type
     {
         Vertex,   ///< %Vertex shader
         Geometry, ///< Geometry shader

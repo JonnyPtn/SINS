@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Audio/Export.hpp>
 #include <SFML/Audio/AlResource.hpp>
 #include <SFML/System/Vector3.hpp>
@@ -47,7 +48,7 @@ public:
     /// \brief Enumeration of the sound source states
     ///
     ////////////////////////////////////////////////////////////
-    enum class Status : unsigned char
+    MML_COMPAT_ENUM Status
     {
         Stopped, ///< Sound is not playing
         Paused,  ///< Sound is paused
