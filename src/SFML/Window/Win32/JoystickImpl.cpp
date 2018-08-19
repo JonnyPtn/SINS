@@ -96,7 +96,7 @@ namespace
     };
     const sf::Time connectionRefreshDelay = sf::milliseconds(500);
 
-    ConnectionCache connectionCache[sf::JoystickCount];
+    ConnectionCache connectionCache[sf::Joystick::Count];
 
     // If true, will only update when WM_DEVICECHANGE message is received
     bool lazyUpdates = false;
@@ -252,7 +252,7 @@ void JoystickImpl::updateConnections()
     if (directInput)
         return updateConnectionsDInput();
 
-    for (unsigned int i = 0; i < JoystickCount; ++i)
+    for (unsigned int i = 0; i < Joystick::Count; ++i)
     {
         JOYINFOEX joyInfo;
         joyInfo.dwSize = sizeof(joyInfo);
@@ -828,7 +828,7 @@ BOOL CALLBACK JoystickImpl::deviceEnumerationCallback(const DIDEVICEINSTANCE* de
         }
     }
 
-    JoystickRecord record = { deviceInstance->guidInstance, sf::JoystickCount, true };
+    JoystickRecord record = { deviceInstance->guidInstance, sf::Joystick::Count, true };
     joystickList.push_back(record);
 
     return DIENUM_CONTINUE;
