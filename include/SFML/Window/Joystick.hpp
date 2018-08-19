@@ -50,14 +50,15 @@ public:
     enum
     {
         Count       = 8,  ///< Maximum number of supported joysticks
-        ButtonCount = 32  ///< Maximum number of supported buttons
+        ButtonCount = 32, ///< Maximum number of supported buttons
+        AxisCount   = 8   ///< Maximum number of supported axes
     };
 
     ////////////////////////////////////////////////////////////
     /// \brief Axes supported by SFML joysticks
     ///
     ////////////////////////////////////////////////////////////
-    enum class Axis : unsigned char
+    MML_COMPAT_ENUM Axis
     {
         X,    ///< The X axis
         Y,    ///< The Y axis
@@ -67,19 +68,7 @@ public:
         V,    ///< The V axis
         PovX, ///< The X axis of the point-of-view hat
         PovY, ///< The Y axis of the point-of-view hat
-
-        Count ///< Maximum number of supported axes
     };
-    
-    MML_COMPAT_ALIAS(X, Axis::X)
-    MML_COMPAT_ALIAS(Y, Axis::Y)
-    MML_COMPAT_ALIAS(Z, Axis::Z)
-    MML_COMPAT_ALIAS(R, Axis::R)
-    MML_COMPAT_ALIAS(U, Axis::U)
-    MML_COMPAT_ALIAS(V, Axis::V)
-    MML_COMPAT_ALIAS(PovX, Axis::PovX)
-    MML_COMPAT_ALIAS(PovY, Axis::PovY)
-    MML_COMPAT_ALIAS(AxisCount, Axis::Count)
 
     ////////////////////////////////////////////////////////////
     /// \brief Structure holding a joystick's identification
