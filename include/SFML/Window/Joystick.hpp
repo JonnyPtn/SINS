@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Window/Export.hpp>
 #include <SFML/System/String.hpp>
 
@@ -69,6 +70,16 @@ public:
 
         Count ///< Maximum number of supported axes
     };
+    
+    MML_COMPAT_ALIAS(X, Axis::X)
+    MML_COMPAT_ALIAS(Y, Axis::Y)
+    MML_COMPAT_ALIAS(Z, Axis::Z)
+    MML_COMPAT_ALIAS(R, Axis::R)
+    MML_COMPAT_ALIAS(U, Axis::U)
+    MML_COMPAT_ALIAS(V, Axis::V)
+    MML_COMPAT_ALIAS(PovX, Axis::PovX)
+    MML_COMPAT_ALIAS(PovY, Axis::PovY)
+    MML_COMPAT_ALIAS(AxisCount, Axis::Count)
 
     ////////////////////////////////////////////////////////////
     /// \brief Structure holding a joystick's identification

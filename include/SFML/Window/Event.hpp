@@ -29,6 +29,7 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Config.hpp>
+#include <SFML/Compatibility.hpp>
 #include <SFML/Window/Joystick.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
@@ -184,7 +185,7 @@ public:
     /// \brief Enumeration of the different types of events
     ///
     ////////////////////////////////////////////////////////////
-    enum class Type : unsigned char
+    MML_COMPAT_ENUM Type
     {
         Closed,                 ///< The window requested to be closed (no data)
         Resized,                ///< The window was resized (data in event.size)

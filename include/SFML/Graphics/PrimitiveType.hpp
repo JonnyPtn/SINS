@@ -25,6 +25,8 @@
 #ifndef SFML_PRIMITIVETYPE_HPP
 #define SFML_PRIMITIVETYPE_HPP
 
+#include <SFML/Compatibility.hpp>
+
 namespace sf
 {
 ////////////////////////////////////////////////////////////
@@ -36,7 +38,7 @@ namespace sf
 /// and view.
 ///
 ////////////////////////////////////////////////////////////
-enum class PrimitiveType : unsigned char
+MML_COMPAT_ENUM PrimitiveType
 {
     Points,        ///< List of individual points
     Lines,         ///< List of individual lines
