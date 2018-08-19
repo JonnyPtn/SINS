@@ -96,7 +96,7 @@ namespace
     };
     const sf::Time connectionRefreshDelay = sf::milliseconds(500);
 
-    ConnectionCache connectionCache[sf::Joystick::Count];
+    ConnectionCache connectionCache[sf::JoystickCount];
 
     // If true, will only update when WM_DEVICECHANGE message is received
     bool lazyUpdates = false;
@@ -252,7 +252,7 @@ void JoystickImpl::updateConnections()
     if (directInput)
         return updateConnectionsDInput();
 
-    for (unsigned int i = 0; i < Joystick::Count; ++i)
+    for (unsigned int i = 0; i < JoystickCount; ++i)
     {
         JOYINFOEX joyInfo;
         joyInfo.dwSize = sizeof(joyInfo);
@@ -491,7 +491,7 @@ bool JoystickImpl::openDInput(unsigned int index)
     // Initialize DirectInput members
     m_device = NULL;
 
-    for (int i = 0; i < static_cast<int>(Joystick::Axis::Count); ++i)
+    for (int i = 0; i < static_cast<int>(Joystick::AxisCount); ++i)
         m_axes[i] = -1;
 
     for (int i = 0; i < Joystick::ButtonCount; ++i)
@@ -701,7 +701,7 @@ JoystickCaps JoystickImpl::getCapabilitiesDInput() const
     }
 
     // Check which axes have valid offsets
-    for (int i = 0; i < static_cast<int>(Joystick::Axis::Count); ++i)
+    for (int i = 0; i < static_cast<int>(Joystick::AxisCount); ++i)
         caps.axes[i] = (m_axes[i] != -1);
 
     return caps;
@@ -748,7 +748,7 @@ JoystickState JoystickImpl::updateDInput()
         }
 
         // Get the current state of each axis
-        for (int i = 0; i < static_cast<int>(Joystick::Axis::Count); ++i)
+        for (int i = 0; i < static_cast<int>(Joystick::AxisCount); ++i)
         {
             if (m_axes[i] != -1)
             {
@@ -828,7 +828,7 @@ BOOL CALLBACK JoystickImpl::deviceEnumerationCallback(const DIDEVICEINSTANCE* de
         }
     }
 
-    JoystickRecord record = { deviceInstance->guidInstance, sf::Joystick::Count, true };
+    JoystickRecord record = { deviceInstance->guidInstance, sf::JoystickCount, true };
     joystickList.push_back(record);
 
     return DIENUM_CONTINUE;
