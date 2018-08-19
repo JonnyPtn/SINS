@@ -47,7 +47,7 @@ namespace
     // Update joystick axes
     void updateAxes(unsigned int index)
     {
-        for (unsigned int j = 0; j < static_cast<unsigned int>(sf::Joystick::Axis::Count); ++j)
+        for (unsigned int j = 0; j < static_cast<unsigned int>(sf::Joystick::AxisCount); ++j)
         {
             if (sf::Joystick::hasAxis(index, static_cast<sf::Joystick::Axis>(j)))
                 set(axislabels[j], sf::Joystick::getAxisPosition(index, static_cast<sf::Joystick::Axis>(j)));
@@ -118,7 +118,7 @@ int main()
     texts["Threshold"].value.setString(sstr.str());
 
     // Set up our label-value sf::Text objects
-    for (unsigned int i = 0; i < static_cast<unsigned int>(sf::Joystick::Axis::Count); ++i)
+    for (unsigned int i = 0; i < static_cast<unsigned int>(sf::Joystick::AxisCount); ++i)
     {
         JoystickObject& object = texts[axislabels[i]];
 
@@ -135,10 +135,10 @@ int main()
         sstr << "Button " << i;
         JoystickObject& object = texts[sstr.str()];
 
-        object.label.setPosition(5.f, 5.f + ((static_cast<int>(sf::Joystick::Axis::Count) + i + 4) * font.getLineSpacing(14)));
+        object.label.setPosition(5.f, 5.f + ((static_cast<int>(sf::Joystick::AxisCount) + i + 4) * font.getLineSpacing(14)));
         object.label.setString(sstr.str() + ":");
 
-        object.value.setPosition(80.f, 5.f + ((static_cast<int>(sf::Joystick::Axis::Count) + i + 4) * font.getLineSpacing(14)));
+        object.value.setPosition(80.f, 5.f + ((static_cast<int>(sf::Joystick::AxisCount) + i + 4) * font.getLineSpacing(14)));
         object.value.setString("N/A");
     }
 
