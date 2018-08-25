@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Network/Export.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/System/NonCopyable.hpp>
@@ -52,7 +53,7 @@ public:
     /// \brief Enumeration of transfer modes
     ///
     ////////////////////////////////////////////////////////////
-    enum class TransferMode : unsigned char
+    MML_COMPAT_ENUM TransferMode
     {
         Binary, ///< Binary mode (file is transfered as a sequence of bytes)
         Ascii,  ///< Text mode using ASCII encoding
@@ -71,7 +72,7 @@ public:
         /// \brief Status codes possibly returned by a FTP response
         ///
         ////////////////////////////////////////////////////////////
-        enum class Status : unsigned short
+        MML_COMPAT_ENUM Status
         {
             // 1xx: the requested action is being initiated,
             // expect another reply before proceeding with a new command
