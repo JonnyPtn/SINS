@@ -59,14 +59,14 @@ public:
 
         Count       ///< Keep last -- the total number of mouse buttons
     };
-    
+
     MML_COMPAT_ALIAS(ButtonCount, Button::Count)
 
     ////////////////////////////////////////////////////////////
     /// \brief Mouse wheels
     ///
     ////////////////////////////////////////////////////////////
-    enum class Wheel : unsigned char
+    MML_COMPAT_ENUM Wheel
     {
         VerticalWheel,  ///< The vertical mouse wheel
         HorizontalWheel ///< The horizontal mouse wheel
