@@ -418,7 +418,11 @@ static void onInputQueueDestroyed(ANativeActivity* activity, AInputQueue* queue)
         std::lock_guard<std::mutex> lock(states->mutex);
 
         AInputQueue_detachLooper(queue);
+<<<<<<< HEAD
         states->inputQueue = nullptr;
+=======
+        states->inputQueue = NULL;
+>>>>>>> sfml/master
 
         ALooper_release(states->looper);
     }

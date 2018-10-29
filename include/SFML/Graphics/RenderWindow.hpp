@@ -176,7 +176,14 @@ protected:
     /// perform custom actions when the size of the window changes.
     ///
     ////////////////////////////////////////////////////////////
-    void onResize() override;
+    virtual void onResize() override;
+
+private:
+
+    ////////////////////////////////////////////////////////////
+    // Member data
+    ////////////////////////////////////////////////////////////
+    unsigned int m_defaultFrameBuffer; ///< Framebuffer to bind when targeting this window
 };
 
 } // namespace sf
