@@ -26,9 +26,6 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/RenderTextureImplDefault.hpp>
-#include <SFML/Graphics/GLCheck.hpp>
-#include <SFML/Graphics/TextureSaver.hpp>
-#include <SFML/Window/Context.hpp>
 #include <SFML/System/Err.hpp>
 
 
@@ -61,9 +58,6 @@ bool RenderTextureImplDefault::create(unsigned int width, unsigned int height, u
     m_width = width;
     m_height = height;
 
-    // Create the in-memory OpenGL context
-    m_context = std::make_unique<Context>(settings, width, height);
-
     return true;
 }
 
@@ -71,19 +65,15 @@ bool RenderTextureImplDefault::create(unsigned int width, unsigned int height, u
 ////////////////////////////////////////////////////////////
 bool RenderTextureImplDefault::activate(bool active)
 {
-    return m_context->setActive(active);
+    //TODO: Needed?
+    return true;
 }
 
 
 ////////////////////////////////////////////////////////////
 void RenderTextureImplDefault::updateTexture(unsigned int textureId)
 {
-    // Make sure that the current texture binding will be preserved
-    priv::TextureSaver save;
-
-    // Copy the rendered pixels to the texture
-    glCheck(glBindTexture(GL_TEXTURE_2D, textureId));
-    glCheck(glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_width, m_height));
+    //TODO
 }
 
 } // namespace priv

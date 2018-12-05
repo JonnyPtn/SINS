@@ -26,7 +26,6 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Window/Window.hpp>
-#include <SFML/Window/GlContext.hpp>
 #include <SFML/Window/WindowImpl.hpp>
 #include <SFML/System/Sleep.hpp>
 #include <SFML/System/Err.hpp>
@@ -42,7 +41,6 @@ namespace sf
 {
 ////////////////////////////////////////////////////////////
 Window::Window() :
-m_frameTimeLimit(Time::Zero),
 m_size          (0, 0)
 {
 
@@ -51,7 +49,6 @@ m_size          (0, 0)
 
 ////////////////////////////////////////////////////////////
 Window::Window(VideoMode mode, const String& title, Uint32 style, const ContextSettings& settings) :
-m_frameTimeLimit(Time::Zero),
 m_size          (0, 0)
 {
     create(mode, title, style, settings);
@@ -60,7 +57,6 @@ m_size          (0, 0)
 
 ////////////////////////////////////////////////////////////
 Window::Window(WindowHandle handle, const ContextSettings& settings) :
-m_frameTimeLimit(Time::Zero),
 m_size          (0, 0)
 {
     create(handle, settings);
@@ -117,9 +113,6 @@ void Window::create(VideoMode mode, const String& title, Uint32 style, const Con
     // Recreate the window implementation
     m_impl = priv::WindowImpl::create(mode, title, style, settings);
 
-    // Recreate the context
-    m_context = priv::GlContext::create(settings, m_impl.get(), mode.bitsPerPixel);
-
     // Perform common initializations
     initialize();
 }
@@ -134,9 +127,6 @@ void Window::create(WindowHandle handle, const ContextSettings& settings)
     // Recreate the window implementation
     m_impl = priv::WindowImpl::create(handle);
 
-    // Recreate the context
-    m_context = priv::GlContext::create(settings, m_impl.get(), VideoMode::getDesktopMode().bitsPerPixel);
-
     // Perform common initializations
     initialize();
 }
@@ -145,9 +135,6 @@ void Window::create(WindowHandle handle, const ContextSettings& settings)
 ////////////////////////////////////////////////////////////
 void Window::close()
 {
-    // Reset the context
-    m_context.reset();
-
     // Reset the window implementation
     m_impl.reset();
 
@@ -161,15 +148,6 @@ void Window::close()
 bool Window::isOpen() const
 {
     return m_impl != nullptr;
-}
-
-
-////////////////////////////////////////////////////////////
-const ContextSettings& Window::getSettings() const
-{
-    static const ContextSettings empty(0, 0, 0);
-
-    return m_context ? m_context->getSettings() : empty;
 }
 
 
@@ -265,14 +243,6 @@ void Window::setVisible(bool visible)
 
 
 ////////////////////////////////////////////////////////////
-void Window::setVerticalSyncEnabled(bool enabled)
-{
-    if (setActive())
-        m_context->setVerticalSyncEnabled(enabled);
-}
-
-
-////////////////////////////////////////////////////////////
 void Window::setMouseCursorVisible(bool visible)
 {
     if (m_impl)
@@ -305,42 +275,10 @@ void Window::setKeyRepeatEnabled(bool enabled)
 
 
 ////////////////////////////////////////////////////////////
-void Window::setFramerateLimit(unsigned int limit)
-{
-    if (limit > 0)
-        m_frameTimeLimit = seconds(1.f / limit);
-    else
-        m_frameTimeLimit = Time::Zero;
-}
-
-
-////////////////////////////////////////////////////////////
 void Window::setJoystickThreshold(float threshold)
 {
     if (m_impl)
         m_impl->setJoystickThreshold(threshold);
-}
-
-
-////////////////////////////////////////////////////////////
-bool Window::setActive(bool active) const
-{
-    if (m_context)
-    {
-        if (m_context->setActive(active))
-        {
-            return true;
-        }
-        else
-        {
-            err() << "Failed to activate the window's context" << std::endl;
-            return false;
-        }
-    }
-    else
-    {
-        return false;
-    }
 }
 
 
@@ -356,23 +294,6 @@ void Window::requestFocus()
 bool Window::hasFocus() const
 {
     return m_impl && m_impl->hasFocus();
-}
-
-
-////////////////////////////////////////////////////////////
-
-void Window::display()
-{
-    // Display the backbuffer on screen
-    if (setActive())
-        m_context->display();
-
-    // Limit the framerate if needed
-    if (m_frameTimeLimit != Time::Zero)
-    {
-        sleep(m_frameTimeLimit - m_clock.getElapsedTime());
-        m_clock.restart();
-    }
 }
 
 
@@ -421,18 +342,10 @@ void Window::initialize()
     // Setup default behaviors (to get a consistent behavior across different implementations)
     setVisible(true);
     setMouseCursorVisible(true);
-    setVerticalSyncEnabled(false);
     setKeyRepeatEnabled(true);
-    setFramerateLimit(0);
 
     // Get and cache the initial size of the window
     m_size = m_impl->getSize();
-
-    // Reset frame time
-    m_clock.restart();
-
-    // Activate the window
-    setActive();
 
     // Notify the derived class
     onCreate();

@@ -27,9 +27,9 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/GLCheck.hpp>
 #include <SFML/Graphics/RenderTextureImplFBO.hpp>
 
+#include <bgfx/bgfx.h>
 
 namespace sf
 {
@@ -72,52 +72,21 @@ Vector2u RenderWindow::getSize() const
     return Window::getSize();
 }
 
-
 ////////////////////////////////////////////////////////////
-bool RenderWindow::setActive(bool active)
+void RenderWindow::setVerticalSyncEnabled(bool enabled)
 {
-    bool result = Window::setActive(active);
-
-    // Update RenderTarget tracking
-    if (result)
-        RenderTarget::setActive(active);
-
-    // If FBOs are available, make sure none are bound when we
-    // try to draw to the default framebuffer of the RenderWindow
-    if (active && result && priv::RenderTextureImplFBO::isAvailable())
-    {
-        glCheck(GLEXT_glBindFramebuffer(GLEXT_GL_FRAMEBUFFER, m_defaultFrameBuffer));
-
-        return true;
-    }
-
-    return result;
+    bgfx::reset(getSize().x, getSize().y, BGFX_RESET_VSYNC);
 }
 
-
 ////////////////////////////////////////////////////////////
-Image RenderWindow::capture() const
+void RenderWindow::display()
 {
-    Vector2u windowSize = getSize();
-
-    Texture texture;
-    texture.create(windowSize.x, windowSize.y);
-    texture.update(*this);
-
-    return texture.copyToImage();
+    bgfx::frame();
 }
-
 
 ////////////////////////////////////////////////////////////
 void RenderWindow::onCreate()
 {
-    if (priv::RenderTextureImplFBO::isAvailable())
-    {
-        // Retrieve the framebuffer ID we have to bind when targeting the window for rendering
-        // We assume that this window's context is still active at this point
-        glCheck(glGetIntegerv(GLEXT_GL_FRAMEBUFFER_BINDING, reinterpret_cast<GLint*>(&m_defaultFrameBuffer)));
-    }
-
     // Just initialize the render target part
     RenderTarget::initialize();
 }

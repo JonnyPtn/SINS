@@ -2,7 +2,11 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
+
+#ifdef SFML_SYSTEM_WINDOWS
+#include <windows.h>
+#endif
+#include <gl/GL.h>
 
 
 ////////////////////////////////////////////////////////////
@@ -20,8 +24,32 @@ int main()
     // Create the main window
     sf::Window window(sf::VideoMode(640, 480), "SFML window with OpenGL", sf::Style::Default, contextSettings);
 
-    // Make it the active window for OpenGL calls
-    window.setActive();
+    // Create the openGL context
+    // TODO other platforms
+    auto dc = GetDC(window.getSystemHandle());
+    PIXELFORMATDESCRIPTOR pfd =
+    {
+        sizeof(PIXELFORMATDESCRIPTOR),
+        1,
+        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    // Flags
+        PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
+        32,                   // Colordepth of the framebuffer.
+        0, 0, 0, 0, 0, 0,
+        0,
+        0,
+        0,
+        0, 0, 0, 0,
+        24,                   // Number of bits for the depthbuffer
+        8,                    // Number of bits for the stencilbuffer
+        0,                    // Number of Aux buffers in the framebuffer.
+        PFD_MAIN_PLANE,
+        0,
+        0, 0, 0
+    };
+    auto pf = ChoosePixelFormat(dc, &pfd);
+    SetPixelFormat(dc, pf, &pfd);
+    auto context = wglCreateContext(dc);
+    wglMakeCurrent(dc, context);
 
     // Set the color and depth clear values
     glClearDepth(1.f);
@@ -138,8 +166,9 @@ int main()
         // Draw the cube
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        // Finally, display the rendered frame on screen
-        window.display();
+        // TODO: other platforms and better framerate control
+        SwapBuffers(GetDC(window.getSystemHandle()));
+        sf::sleep(sf::milliseconds(16));
     }
 
     return EXIT_SUCCESS;

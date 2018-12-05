@@ -7,16 +7,10 @@ set(SRC
     ${INCROOT}/Clipboard.hpp
     ${SRCROOT}/Clipboard.cpp
     ${SRCROOT}/ClipboardImpl.hpp
-    ${SRCROOT}/Context.cpp
-    ${INCROOT}/Context.hpp
     ${SRCROOT}/Cursor.cpp
     ${INCROOT}/Cursor.hpp
     ${SRCROOT}/CursorImpl.hpp
     ${INCROOT}/Export.hpp
-    ${SRCROOT}/GlContext.cpp
-    ${SRCROOT}/GlContext.hpp
-    ${SRCROOT}/GlResource.cpp
-    ${INCROOT}/GlResource.hpp
     ${INCROOT}/ContextSettings.hpp
     ${INCROOT}/Event.hpp
     ${SRCROOT}/InputImpl.hpp
@@ -46,12 +40,6 @@ set(SRC
     ${SRCROOT}/WindowImpl.hpp
     ${INCROOT}/WindowStyle.hpp
 )
-if(SFML_OPENGL_ES AND NOT SFML_OS_IOS)
-    list(APPEND SRC ${SRCROOT}/EGLCheck.cpp)
-    list(APPEND SRC ${SRCROOT}/EGLCheck.hpp)
-    list(APPEND SRC ${SRCROOT}/EglContext.cpp)
-    list(APPEND SRC ${SRCROOT}/EglContext.hpp)
-endif()
 source_group("" FILES ${SRC})
 
 # add platform specific sources
@@ -61,10 +49,6 @@ if(SFML_OS_WINDOWS)
         ${SRCROOT}/Win32/CursorImpl.cpp
         ${SRCROOT}/Win32/ClipboardImpl.hpp
         ${SRCROOT}/Win32/ClipboardImpl.cpp
-        ${SRCROOT}/Win32/WglContext.cpp
-        ${SRCROOT}/Win32/WglContext.hpp
-        ${SRCROOT}/Win32/WglExtensions.cpp
-        ${SRCROOT}/Win32/WglExtensions.hpp
         ${SRCROOT}/Win32/InputImpl.cpp
         ${SRCROOT}/Win32/InputImpl.hpp
         ${SRCROOT}/Win32/JoystickImpl.cpp
@@ -95,15 +79,6 @@ elseif(SFML_OS_LINUX OR SFML_OS_FREEBSD OR SFML_OS_OPENBSD)
         ${SRCROOT}/Unix/WindowImplX11.cpp
         ${SRCROOT}/Unix/WindowImplX11.hpp
     )
-    if(NOT SFML_OPENGL_ES)
-        set(PLATFORM_SRC
-            ${PLATFORM_SRC}
-            ${SRCROOT}/Unix/GlxContext.cpp
-            ${SRCROOT}/Unix/GlxContext.hpp
-            ${SRCROOT}/Unix/GlxExtensions.cpp
-            ${SRCROOT}/Unix/GlxExtensions.hpp
-        )
-    endif()
     if(SFML_OS_LINUX)
         set(PLATFORM_SRC
             ${PLATFORM_SRC}
@@ -155,12 +130,6 @@ elseif(SFML_OS_MACOSX)
         ${SRCROOT}/OSX/SFContext.mm
         ${SRCROOT}/OSX/SFKeyboardModifiersHelper.h
         ${SRCROOT}/OSX/SFKeyboardModifiersHelper.mm
-        ${SRCROOT}/OSX/SFOpenGLView.h
-        ${SRCROOT}/OSX/SFOpenGLView.mm
-        ${SRCROOT}/OSX/SFOpenGLView+keyboard.mm
-        ${SRCROOT}/OSX/SFOpenGLView+keyboard_priv.h
-        ${SRCROOT}/OSX/SFOpenGLView+mouse.mm
-        ${SRCROOT}/OSX/SFOpenGLView+mouse_priv.h
         ${SRCROOT}/OSX/SFSilentResponder.h
         ${SRCROOT}/OSX/SFSilentResponder.m
         ${SRCROOT}/OSX/SFWindow.h
@@ -183,8 +152,7 @@ elseif(SFML_OS_IOS)
         ${SRCROOT}/iOS/CursorImpl.cpp
         ${SRCROOT}/iOS/ClipboardImpl.mm
         ${SRCROOT}/iOS/ClipboardImpl.hpp
-        ${SRCROOT}/iOS/EaglContext.mm
-        ${SRCROOT}/iOS/EaglContext.hpp
+
         ${SRCROOT}/iOS/InputImpl.mm
         ${SRCROOT}/iOS/InputImpl.hpp
         ${SRCROOT}/iOS/JoystickImpl.mm
@@ -240,36 +208,12 @@ if(SFML_OS_LINUX OR SFML_OS_FREEBSD OR SFML_OPENBSD)
     target_link_libraries(sfml-window PRIVATE X11)
 endif()
 
-# CMake 3.11 and later prefer to choose GLVND, but we choose legacy OpenGL for backward compability
-# (unless the OpenGL_GL_PREFERENCE was explicitly set)
-# See CMP0072 for more details (cmake --help-policy CMP0072)
-if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
-    set(OpenGL_GL_PREFERENCE "LEGACY")
-endif()
-
-if(SFML_OPENGL_ES)
-    if(SFML_OS_IOS)
-        target_link_libraries(sfml-window PRIVATE "-framework OpenGLES")
-    elseif(SFML_OS_ANDROID)
-        target_link_libraries(sfml-window PRIVATE EGL GLESv1_CM)
-    endif()
-else()
-    sfml_find_package(OpenGL INCLUDE "OPENGL_INCLUDE_DIR" LINK "OPENGL_LIBRARIES")
-    target_link_libraries(sfml-window PRIVATE OpenGL)
-endif()
-
 if(SFML_OS_WINDOWS AND NOT SFML_COMPILER_MSVC)
     include(CheckIncludeFile)
     check_include_file(dinput.h DINPUT_H_FOUND)
     if(NOT DINPUT_H_FOUND)
         target_include_directories(sfml-window PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/mingw")
     endif()
-endif()
-
-if(SFML_OPENGL_ES AND SFML_OS_LINUX)
-    sfml_find_package(EGL INCLUDE "EGL_INCLUDE_DIR" LINK "EGL_LIBRARY")
-    sfml_find_package(GLES INCLUDE "GLES_INCLUDE_DIR" LINK "GLES_LIBRARY")
-    target_link_libraries(sfml-window PRIVATE EGL GLES)
 endif()
 
 if(SFML_OS_LINUX)

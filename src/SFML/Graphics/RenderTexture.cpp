@@ -77,7 +77,7 @@ bool RenderTexture::create(unsigned int width, unsigned int height, const Contex
     }
 
     // Initialize the render texture
-    if (!m_impl->create(width, height, m_texture.m_texture, settings))
+    if (!m_impl->create(width, height, m_texture.getNativeHandle(), settings))
         return false;
 
     // We can now initialize the render target part
@@ -137,25 +137,12 @@ bool RenderTexture::generateMipmap()
 
 
 ////////////////////////////////////////////////////////////
-bool RenderTexture::setActive(bool active)
-{
-    bool result = m_impl && m_impl->activate(active);
-
-    // Update RenderTarget tracking
-    if (result)
-        RenderTarget::setActive(active);
-
-    return result;
-}
-
-
-////////////////////////////////////////////////////////////
 void RenderTexture::display()
 {
     // Update the target texture
-    if (m_impl && (priv::RenderTextureImplFBO::isAvailable() || setActive(true)))
+    if (m_impl && (priv::RenderTextureImplFBO::isAvailable()))
     {
-        m_impl->updateTexture(m_texture.m_texture);
+        m_impl->updateTexture(m_texture.getNativeHandle());
         m_texture.m_pixelsFlipped = true;
         m_texture.invalidateMipmap();
     }

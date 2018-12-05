@@ -31,7 +31,6 @@
 #include <SFML/Window/ContextSettings.hpp>
 #include <SFML/Window/Cursor.hpp>
 #include <SFML/Window/Export.hpp>
-#include <SFML/Window/GlResource.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowHandle.hpp>
 #include <SFML/Window/WindowStyle.hpp>
@@ -45,17 +44,16 @@ namespace sf
 {
 namespace priv
 {
-    class GlContext;
     class WindowImpl;
 }
 
 class Event;
 
 ////////////////////////////////////////////////////////////
-/// \brief Window that serves as a target for OpenGL rendering
+/// \brief Window that serves as a target for rendering
 ///
 ////////////////////////////////////////////////////////////
-class SFML_WINDOW_API Window : GlResource, NonCopyable
+class SFML_WINDOW_API Window : NonCopyable
 {
 public:
 
@@ -172,19 +170,6 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     bool isOpen() const;
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Get the settings of the OpenGL context of the window
-    ///
-    /// Note that these settings may be different from what was
-    /// passed to the constructor or the create() function,
-    /// if one or more settings were not supported. In this case,
-    /// SFML chose the closest match.
-    ///
-    /// \return Structure containing the OpenGL context settings
-    ///
-    ////////////////////////////////////////////////////////////
-    const ContextSettings& getSettings() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Pop the event on top of the event queue, if any, and return it
@@ -325,21 +310,6 @@ public:
     void setVisible(bool visible);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Enable or disable vertical synchronization
-    ///
-    /// Activating vertical synchronization will limit the number
-    /// of frames displayed to the refresh rate of the monitor.
-    /// This can avoid some visual artifacts, and limit the framerate
-    /// to a good value (but not constant across different computers).
-    ///
-    /// Vertical synchronization is disabled by default.
-    ///
-    /// \param enabled True to enable v-sync, false to deactivate it
-    ///
-    ////////////////////////////////////////////////////////////
-    void setVerticalSyncEnabled(bool enabled);
-
-    ////////////////////////////////////////////////////////////
     /// \brief Show or hide the mouse cursor
     ///
     /// The mouse cursor is visible by default.
@@ -396,23 +366,6 @@ public:
     void setKeyRepeatEnabled(bool enabled);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Limit the framerate to a maximum fixed frequency
-    ///
-    /// If a limit is set, the window will use a small delay after
-    /// each call to display() to ensure that the current frame
-    /// lasted long enough to match the framerate limit.
-    /// SFML will try to match the given limit as much as it can,
-    /// but since it internally uses sf::sleep, whose precision
-    /// depends on the underlying OS, the results may be a little
-    /// unprecise as well (for example, you can get 65 FPS when
-    /// requesting 60).
-    ///
-    /// \param limit Framerate limit, in frames per seconds (use 0 to disable limit)
-    ///
-    ////////////////////////////////////////////////////////////
-    void setFramerateLimit(unsigned int limit);
-
-    ////////////////////////////////////////////////////////////
     /// \brief Change the joystick threshold
     ///
     /// The joystick threshold is the value below which
@@ -424,24 +377,6 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     void setJoystickThreshold(float threshold);
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Activate or deactivate the window as the current target
-    ///        for OpenGL rendering
-    ///
-    /// A window is active only on the current thread, if you want to
-    /// make it active on another thread you have to deactivate it
-    /// on the previous thread first if it was active.
-    /// Only one window can be active on a thread at a time, thus
-    /// the window previously active (if any) automatically gets deactivated.
-    /// This is not to be confused with requestFocus().
-    ///
-    /// \param active True to activate, false to deactivate
-    ///
-    /// \return True if operation was successful, false otherwise
-    ///
-    ////////////////////////////////////////////////////////////
-    bool setActive(bool active = true) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Request the current window to be made the active
@@ -471,16 +406,6 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     bool hasFocus() const;
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Display on screen what has been rendered to the window so far
-    ///
-    /// This function is typically called after all OpenGL rendering
-    /// has been done for the current frame, in order to show
-    /// it on screen.
-    ///
-    ////////////////////////////////////////////////////////////
-    void display();
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the OS-specific handle of the window
@@ -543,9 +468,6 @@ private:
     // Member data
     ////////////////////////////////////////////////////////////
     std::unique_ptr<priv::WindowImpl> m_impl;   ///< Platform-specific implementation of the window
-    std::unique_ptr<priv::GlContext> m_context; ///< Platform-specific implementation of the OpenGL context
-    Clock             m_clock;                  ///< Clock for measuring the elapsed time between frames
-    Time              m_frameTimeLimit;         ///< Current framerate limit
     Vector2u          m_size;                   ///< Current size of the window
 };
 

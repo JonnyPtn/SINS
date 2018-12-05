@@ -275,8 +275,8 @@ public:
     bool onLoad()
     {
         // Check if geometry shaders are supported
-        if (!sf::Shader::isGeometryAvailable())
-            return false;
+        //if (!sf::Shader::isGeometryAvailable())
+        //    return false;
 
         // Move the points in the point cloud to random positions
         for (std::size_t i = 0; i < 10000; i++)

@@ -11,14 +11,7 @@ set(SRC
     ${INCROOT}/Export.hpp
     ${SRCROOT}/Font.cpp
     ${INCROOT}/Font.hpp
-    ${SRCROOT}/Glsl.cpp
-    ${INCROOT}/Glsl.hpp
-    ${INCROOT}/Glsl.inl
     ${INCROOT}/Glyph.hpp
-    ${SRCROOT}/GLCheck.cpp
-    ${SRCROOT}/GLCheck.hpp
-    ${SRCROOT}/GLExtensions.hpp
-    ${SRCROOT}/GLExtensions.cpp
     ${SRCROOT}/Image.cpp
     ${INCROOT}/Image.hpp
     ${SRCROOT}/ImageLoader.cpp
@@ -38,8 +31,6 @@ set(SRC
     ${INCROOT}/Shader.hpp
     ${SRCROOT}/Texture.cpp
     ${INCROOT}/Texture.hpp
-    ${SRCROOT}/TextureSaver.cpp
-    ${SRCROOT}/TextureSaver.hpp
     ${SRCROOT}/Transform.cpp
     ${INCROOT}/Transform.hpp
     ${SRCROOT}/Transformable.cpp
@@ -49,10 +40,6 @@ set(SRC
     ${SRCROOT}/Vertex.cpp
     ${INCROOT}/Vertex.hpp
 )
-if(NOT SFML_OPENGL_ES)
-    list(APPEND SRC ${SRCROOT}/GLLoader.cpp)
-    list(APPEND SRC ${SRCROOT}/GLLoader.hpp)
-endif()
 source_group("" FILES ${SRC})
 
 # drawables sources
@@ -95,6 +82,7 @@ sfml_add_library(sfml-graphics
 
 # setup dependencies
 target_link_libraries(sfml-graphics PUBLIC sfml-window)
+target_link_libraries(sfml-graphics PRIVATE bgfx)
 
 # stb_image sources
 target_include_directories(sfml-graphics PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image")
@@ -111,27 +99,14 @@ elseif(SFML_OS_ANDROID)
     set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/freetype2")
 endif()
 
-# find external libraries
-if(SFML_OPENGL_ES)
-    if(SFML_OS_LINUX)
-        sfml_find_package(EGL INCLUDE "EGL_INCLUDE_DIR" LINK "EGL_LIBRARY")
-        sfml_find_package(GLES INCLUDE "GLES_INCLUDE_DIR" LINK "GLES_LIBRARY")
-        target_link_libraries(sfml-graphics PRIVATE EGL GLES)
-    elseif(SFML_OS_IOS)
-        target_link_libraries(sfml-graphics PRIVATE "-framework OpenGLES")
-    endif()
-else()
-    # Target OpenGL already defined for Window component so no sfml_find_package() here
-    target_link_libraries(sfml-graphics PRIVATE OpenGL)
 
-    if(SFML_OS_LINUX)
-        # Target X11 already defined for Window component so no sfml_find_package() here
-        target_link_libraries(sfml-graphics PRIVATE X11)
-    endif()
+if(SFML_OS_LINUX)
+    # Target X11 already defined for Window component so no sfml_find_package() here
+    target_link_libraries(sfml-graphics PRIVATE X11)
 endif()
 
 if(SFML_OS_ANDROID)
-    target_link_libraries(sfml-graphics PRIVATE z EGL GLESv1_CM)
+    target_link_libraries(sfml-graphics PRIVATE z)
 endif()
 
 sfml_find_package(Freetype INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")

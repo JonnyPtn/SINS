@@ -180,23 +180,6 @@ public:
     bool generateMipmap();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Activate or deactivate the render-texture for rendering
-    ///
-    /// This function makes the render-texture's context current for
-    /// future OpenGL rendering operations (so you shouldn't care
-    /// about it if you're not doing direct OpenGL stuff).
-    /// Only one context can be current in a thread, so if you
-    /// want to draw OpenGL geometry to another render target
-    /// (like a RenderWindow) don't forget to activate it again.
-    ///
-    /// \param active True to activate, false to deactivate
-    ///
-    /// \return True if operation was successful, false otherwise
-    ///
-    ////////////////////////////////////////////////////////////
-    bool setActive(bool active = true) override;
-
-    ////////////////////////////////////////////////////////////
     /// \brief Update the contents of the target texture
     ///
     /// This function updates the target texture with what

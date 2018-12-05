@@ -29,8 +29,6 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/RenderTextureImpl.hpp>
-#include <SFML/Window/GlResource.hpp>
-#include <SFML/Window/Context.hpp>
 #include <memory>
 
 
@@ -43,7 +41,7 @@ namespace priv
 ///        using an in-memory context
 ///
 ////////////////////////////////////////////////////////////
-class RenderTextureImplDefault : public RenderTextureImpl, GlResource
+class RenderTextureImplDefault : public RenderTextureImpl
 {
 public:
 
@@ -103,7 +101,6 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    std::unique_ptr<Context> m_context; ///< P-Buffer based context
     unsigned int             m_width;   ///< Width of the P-Buffer
     unsigned int             m_height;  ///< Height of the P-Buffer
 };

@@ -26,7 +26,6 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/Font.hpp>
-#include <SFML/Graphics/GLCheck.hpp>
 #ifdef SFML_SYSTEM_ANDROID
     #include <SFML/System/Android/ResourceStream.hpp>
 #endif

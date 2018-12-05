@@ -30,7 +30,6 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/Export.hpp>
 #include <SFML/Graphics/Image.hpp>
-#include <SFML/Window/GlResource.hpp>
 
 
 namespace sf
@@ -45,7 +44,7 @@ class Window;
 /// \brief Image living on the graphics card that can be used for drawing
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Texture : GlResource
+class SFML_GRAPHICS_API Texture
 {
 public:
 
@@ -616,9 +615,10 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
+    struct impl;
+    std::unique_ptr<impl> m_impl;
     Vector2u     m_size;          ///< Public texture size
     Vector2u     m_actualSize;    ///< Actual texture size (can be greater than public size because of padding)
-    unsigned int m_texture;       ///< Internal texture identifier
     bool         m_isSmooth;      ///< Status of the smooth filter
     bool         m_sRgb;          ///< Should the texture source be converted from sRGB?
     bool         m_isRepeated;    ///< Is the texture in repeat mode?

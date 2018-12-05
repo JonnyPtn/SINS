@@ -51,6 +51,9 @@ endif()
 # project name
 project(SFML)
 
+# add bgfx
+add_subdirectory(bgfx.cmake)
+
 # include the configuration file
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)
 
@@ -85,11 +88,6 @@ sfml_set_option(SFML_BUILD_NETWORK TRUE BOOL "TRUE to build SFML's Network modul
 
 # add an option for building the API documentation
 sfml_set_option(SFML_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
-
-# add an option for choosing the OpenGL implementation
-if(SFML_BUILD_WINDOW)
-    sfml_set_option(SFML_OPENGL_ES ${OPENGL_ES} BOOL "TRUE to use an OpenGL ES implementation, FALSE to use a desktop OpenGL implementation")
-endif()
 
 # Mac OS X specific options
 if(SFML_OS_MACOSX)
@@ -210,12 +208,6 @@ if(SFML_COMPILER_MSVC)
     endif()
 
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS)
-endif()
-
-# define SFML_OPENGL_ES if needed
-if(SFML_OPENGL_ES)
-    add_definitions(-DSFML_OPENGL_ES)
-    add_definitions(-DGL_GLEXT_PROTOTYPES)
 endif()
 
 # define an option for choosing between static and dynamic C runtime (Windows only)
@@ -354,7 +346,6 @@ else()
     # add the non-optional SFML headers
     add_custom_command(TARGET SFML POST_BUILD COMMAND cp -r
                        ${PROJECT_SOURCE_DIR}/include/SFML/Config.hpp
-                       ${PROJECT_SOURCE_DIR}/include/SFML/OpenGL.hpp
                        ${PROJECT_SOURCE_DIR}/include/SFML/GpuPreference.hpp
                        ${PROJECT_SOURCE_DIR}/include/SFML/System.hpp
                        ${PROJECT_SOURCE_DIR}/include/SFML/Main.hpp

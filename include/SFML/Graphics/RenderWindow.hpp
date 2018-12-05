@@ -113,49 +113,29 @@ public:
     Vector2u getSize() const override;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Activate or deactivate the window as the current target
-    ///        for OpenGL rendering
+    /// \brief Enable or disable vertical synchronization
     ///
-    /// A window is active only on the current thread, if you want to
-    /// make it active on another thread you have to deactivate it
-    /// on the previous thread first if it was active.
-    /// Only one window can be active on a thread at a time, thus
-    /// the window previously active (if any) automatically gets deactivated.
-    /// This is not to be confused with requestFocus().
+    /// Activating vertical synchronization will limit the number
+    /// of frames displayed to the refresh rate of the monitor.
+    /// This can avoid some visual artifacts, and limit the framerate
+    /// to a good value (but not constant across different computers).
     ///
-    /// \param active True to activate, false to deactivate
+    /// Vertical synchronization is disabled by default.
     ///
-    /// \return True if operation was successful, false otherwise
+    /// \param enabled True to enable v-sync, false to deactivate it
     ///
     ////////////////////////////////////////////////////////////
-    bool setActive(bool active = true) override;
+    void setVerticalSyncEnabled(bool enabled);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Copy the current contents of the window to an image
+    /// \brief Display on screen what has been rendered to the window so far
     ///
-    /// \deprecated
-    /// Use a sf::Texture and its sf::Texture::update(const Window&)
-    /// function and copy its contents into an sf::Image instead.
-    /// \code
-    /// sf::Vector2u windowSize = window.getSize();
-    /// sf::Texture texture;
-    /// texture.create(windowSize.x, windowSize.y);
-    /// texture.update(window);
-    /// sf::Image screenshot = texture.copyToImage();
-    /// \endcode
-    ///
-    /// This is a slow operation, whose main purpose is to make
-    /// screenshots of the application. If you want to update an
-    /// image with the contents of the window and then use it for
-    /// drawing, you should rather use a sf::Texture and its
-    /// update(Window&) function.
-    /// You can also draw things directly to a texture with the
-    /// sf::RenderTexture class.
-    ///
-    /// \return Image containing the captured contents
+    /// This function is typically called after all OpenGL rendering
+    /// has been done for the current frame, in order to show
+    /// it on screen.
     ///
     ////////////////////////////////////////////////////////////
-    SFML_DEPRECATED Image capture() const;
+    void display();
 
 protected:
 
