@@ -40,6 +40,8 @@
 
 #include <bgfx/bgfx.h>
 
+#include "fs_imgui_texture.bin.h"
+
 
 namespace
 {
@@ -61,6 +63,15 @@ namespace
     // has been activated within a single context
     typedef std::map<sf::Uint64, sf::Uint64> ContextRenderTargetMap;
     ContextRenderTargetMap contextRenderTargetMap;
+
+    // A bgfx vertexdecl to match our vertex types
+    bgfx::VertexDecl defaultVertexDecl;
+
+    // The handle to the texture uniform
+    bgfx::UniformHandle defaultTextureUniform;
+
+    // The default program/shader to use
+    bgfx::ProgramHandle defaultProgram;
 
 }
 
@@ -87,7 +98,6 @@ RenderTarget::~RenderTarget()
 ////////////////////////////////////////////////////////////
 void RenderTarget::clear(const Color& color)
 {
-
 }
 
 
@@ -182,8 +192,11 @@ void RenderTarget::draw(const Drawable& drawable, const RenderStates& states)
 void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
                         PrimitiveType type, const RenderStates& states)
 {
-    //TODO
-    assert(false);
+    bgfx::TransientVertexBuffer* tvb;
+    bgfx::allocTransientVertexBuffer(tvb, vertexCount, defaultVertexDecl);
+    bgfx::setVertexBuffer(0, tvb);
+    bgfx::setTexture(0, defaultTextureUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
+    bgfx::submit(0, { 0 });
 }
 
 
@@ -215,6 +228,21 @@ void RenderTarget::initialize()
     // Generate a unique ID for this RenderTarget to track
     // whether it is active within a specific context
     m_id = getUniqueId();
+
+    // Initialise bgfx
+    bgfx::init();
+
+    defaultVertexDecl
+        .begin()
+        .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8)
+        .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
+        .end();
+
+    defaultTextureUniform = bgfx::createUniform("s_tex", bgfx::UniformType::Int1);
+
+    //TODO embed this program in the binary
+    //defaultProgram = bgfx::createProgram()
 }
 
 

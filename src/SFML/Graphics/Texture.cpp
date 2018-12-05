@@ -145,10 +145,11 @@ bool Texture::create(unsigned int width, unsigned int height)
     m_hasMipmap = false;
 
     // Create the texture if it doesn't exist yet
-    if (!bgfx::isValid(m_impl->texture))
+    if (bgfx::isValid(m_impl->texture))
     {
-        m_impl->texture = bgfx::createTexture2D(width, height, m_hasMipmap, 1, bgfx::TextureFormat::RGBA8);
+        bgfx::destroy(m_impl->texture);
     }
+    m_impl->texture = bgfx::createTexture2D(width, height, m_hasMipmap, 1, bgfx::TextureFormat::RGBA8);
 
     m_cacheId = getUniqueId();
 

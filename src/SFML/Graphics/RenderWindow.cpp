@@ -30,6 +30,7 @@
 #include <SFML/Graphics/RenderTextureImplFBO.hpp>
 
 #include <bgfx/bgfx.h>
+#include <bgfx/platform.h>
 
 namespace sf
 {
@@ -87,7 +88,10 @@ void RenderWindow::display()
 ////////////////////////////////////////////////////////////
 void RenderWindow::onCreate()
 {
-    // Just initialize the render target part
+    // Set the window handle for bgfx then initialise the rendertarget
+    bgfx::PlatformData pd;
+    pd.nwh = getSystemHandle();
+    bgfx::setPlatformData(pd);
     RenderTarget::initialize();
 }
 
