@@ -44,19 +44,21 @@ m_defaultFrameBuffer(0)
 
 ////////////////////////////////////////////////////////////
 RenderWindow::RenderWindow(VideoMode mode, const String& title, Uint32 style, const ContextSettings& settings) :
+RenderTarget(settings),
 m_defaultFrameBuffer(0)
 {
     // Don't call the base class constructor because it contains virtual function calls
-    create(mode, title, style, settings);
+    create(mode, title, style);
 }
 
 
 ////////////////////////////////////////////////////////////
 RenderWindow::RenderWindow(WindowHandle handle, const ContextSettings& settings) :
+RenderTarget(settings),
 m_defaultFrameBuffer(0)
 {
     // Don't call the base class constructor because it contains virtual function calls
-    create(handle, settings);
+    create(handle);
 }
 
 
@@ -76,7 +78,7 @@ Vector2u RenderWindow::getSize() const
 ////////////////////////////////////////////////////////////
 void RenderWindow::setVerticalSyncEnabled(bool enabled)
 {
-    bgfx::reset(getSize().x, getSize().y, BGFX_RESET_VSYNC);
+    //bgfx::reset(getSize().x, getSize().y, enabled ? BGFX_RESET_VSYNC : BGFX_RESET_NONE);
 }
 
 ////////////////////////////////////////////////////////////
@@ -91,7 +93,9 @@ void RenderWindow::onCreate()
     // Set the window handle for bgfx then initialise the rendertarget
     bgfx::PlatformData pd;
     pd.nwh = getSystemHandle();
+    pd.ndt = NULL;
     bgfx::setPlatformData(pd);
+    //bgfx::renderFrame();
     RenderTarget::initialize();
 }
 

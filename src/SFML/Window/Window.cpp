@@ -48,18 +48,18 @@ m_size          (0, 0)
 
 
 ////////////////////////////////////////////////////////////
-Window::Window(VideoMode mode, const String& title, Uint32 style, const ContextSettings& settings) :
+Window::Window(VideoMode mode, const String& title, Uint32 style) :
 m_size          (0, 0)
 {
-    create(mode, title, style, settings);
+    create(mode, title, style);
 }
 
 
 ////////////////////////////////////////////////////////////
-Window::Window(WindowHandle handle, const ContextSettings& settings) :
+Window::Window(WindowHandle handle) :
 m_size          (0, 0)
 {
-    create(handle, settings);
+    create(handle);
 }
 
 
@@ -71,7 +71,7 @@ Window::~Window()
 
 
 ////////////////////////////////////////////////////////////
-void Window::create(VideoMode mode, const String& title, Uint32 style, const ContextSettings& settings)
+void Window::create(VideoMode mode, const String& title, Uint32 style)
 {
     // Destroy the previous window implementation
     close();
@@ -111,7 +111,7 @@ void Window::create(VideoMode mode, const String& title, Uint32 style, const Con
     #endif
 
     // Recreate the window implementation
-    m_impl = priv::WindowImpl::create(mode, title, style, settings);
+    m_impl = priv::WindowImpl::create(mode, title, style);
 
     // Perform common initializations
     initialize();
@@ -119,7 +119,7 @@ void Window::create(VideoMode mode, const String& title, Uint32 style, const Con
 
 
 ////////////////////////////////////////////////////////////
-void Window::create(WindowHandle handle, const ContextSettings& settings)
+void Window::create(WindowHandle handle)
 {
     // Destroy the previous window implementation
     close();

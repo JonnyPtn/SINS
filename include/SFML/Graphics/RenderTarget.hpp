@@ -38,6 +38,7 @@
 #include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/System/NonCopyable.hpp>
+#include <SFML/Window/ContextSettings.hpp>
 
 
 namespace sf
@@ -52,6 +53,12 @@ class VertexBuffer;
 class SFML_GRAPHICS_API RenderTarget : NonCopyable
 {
 public:
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Constructor
+    ///
+    ////////////////////////////////////////////////////////////
+    explicit RenderTarget(const sf::ContextSettings& settings);
 
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
@@ -293,6 +300,8 @@ protected:
     ////////////////////////////////////////////////////////////
     void initialize();
 
+    sf::ContextSettings m_contextSettings;
+
 private:
 
     ////////////////////////////////////////////////////////////
@@ -385,6 +394,7 @@ private:
     View        m_view;        ///< Current view
     StatesCache m_cache;       ///< Render states cache
     Uint64      m_id;          ///< Unique number that identifies the RenderTarget
+
 };
 
 } // namespace sf

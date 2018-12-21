@@ -58,7 +58,7 @@ namespace sf
 ////////////////////////////////////////////////////////////
 struct  Texture::impl
 {
-    bgfx::TextureHandle texture;
+    bgfx::TextureHandle texture = { bgfx::kInvalidHandle };
 };
 
 
@@ -108,7 +108,8 @@ m_impl(std::make_unique<impl>())
 ////////////////////////////////////////////////////////////
 Texture::~Texture()
 {
-    bgfx::destroy(m_impl->texture);
+    if (bgfx::isValid(m_impl->texture))
+        bgfx::destroy(m_impl->texture);
 }
 
 
@@ -252,7 +253,7 @@ Image Texture::copyToImage() const
     std::vector<Uint8> pixels(m_size.x * m_size.y * 4);
 
     // Danger?
-    std::memcpy(pixels.data(), bgfx::getDirectAccessPtr(m_impl->texture), pixels.size());
+    //std::memcpy(pixels.data(), bgfx::getDirectAccessPtr(m_impl->texture), pixels.size());
 
     // Create the image
     Image image;
@@ -279,7 +280,7 @@ void Texture::update(const Uint8* pixels, unsigned int width, unsigned int heigh
     if (pixels && bgfx::isValid(m_impl->texture))
     {
         const auto size = width * height * 4;
-        bgfx::updateTexture2D(m_impl->texture, 0, 0, x, y, width, height, bgfx::makeRef(pixels, size));
+        bgfx::updateTexture2D(m_impl->texture, 0, 0, x, y, width, height, bgfx::copy(pixels, size));
         m_hasMipmap = false;
         m_pixelsFlipped = false;
         m_cacheId = getUniqueId();
@@ -301,7 +302,7 @@ void Texture::update(const Texture& texture, unsigned int x, unsigned int y)
     assert(x + texture.m_size.x <= m_size.x);
     assert(y + texture.m_size.y <= m_size.y);
 
-    if (!bgfx::isValid(m_impl->texture) || !bgfx::isValid(m_impl->texture))
+    if (!bgfx::isValid(m_impl->texture))
         return;
 
     update(texture.copyToImage(), x, y);

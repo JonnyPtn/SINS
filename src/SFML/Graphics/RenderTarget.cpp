@@ -39,9 +39,22 @@
 #include <mutex>
 
 #include <bgfx/bgfx.h>
+#include <bgfx/embedded_shader.h>
 
-#include "fs_imgui_texture.bin.h"
+#include "../bgfx.cmake/bgfx/examples/common/debugdraw/fs_debugdraw_lines.bin.h"
+#include "../bgfx.cmake/bgfx/examples/common/debugdraw/vs_debugdraw_lines.bin.h"
+#include "../bgfx.cmake/bgfx/examples/common/debugdraw/fs_debugdraw_fill_texture.bin.h"
+#include "../bgfx.cmake/bgfx/examples/common/debugdraw/vs_debugdraw_fill_texture.bin.h"
 
+static const bgfx::EmbeddedShader s_embeddedShaders[] =
+{
+    BGFX_EMBEDDED_SHADER(vs_debugdraw_lines),
+    BGFX_EMBEDDED_SHADER(fs_debugdraw_lines),
+    BGFX_EMBEDDED_SHADER(vs_debugdraw_fill_texture),
+    BGFX_EMBEDDED_SHADER(fs_debugdraw_fill_texture),
+
+    BGFX_EMBEDDED_SHADER_END()
+};
 
 namespace
 {
@@ -68,10 +81,11 @@ namespace
     bgfx::VertexDecl defaultVertexDecl;
 
     // The handle to the texture uniform
-    bgfx::UniformHandle defaultTextureUniform;
+    bgfx::UniformHandle defaultTextureUniform = { bgfx::kInvalidHandle };
 
     // The default program/shader to use
-    bgfx::ProgramHandle defaultProgram;
+    bgfx::ProgramHandle fillProgram = { bgfx::kInvalidHandle };
+    bgfx::ProgramHandle fillTextureProgram = { bgfx::kInvalidHandle };
 
 }
 
@@ -88,6 +102,11 @@ m_id         (0)
     m_cache.glStatesSet = false;
 }
 
+////////////////////////////////////////////////////////////
+RenderTarget::RenderTarget(const sf::ContextSettings & settings) :
+m_contextSettings(settings)
+{
+}
 
 ////////////////////////////////////////////////////////////
 RenderTarget::~RenderTarget()
@@ -98,6 +117,9 @@ RenderTarget::~RenderTarget()
 ////////////////////////////////////////////////////////////
 void RenderTarget::clear(const Color& color)
 {
+    const auto rect = getViewport(getView());
+    bgfx::setViewRect(0, rect.left, rect.top, rect.width, rect.height);
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, color.toInteger());
 }
 
 
@@ -190,13 +212,59 @@ void RenderTarget::draw(const Drawable& drawable, const RenderStates& states)
 
 ////////////////////////////////////////////////////////////
 void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
-                        PrimitiveType type, const RenderStates& states)
+    PrimitiveType type, const RenderStates& states)
 {
-    bgfx::TransientVertexBuffer* tvb;
-    bgfx::allocTransientVertexBuffer(tvb, vertexCount, defaultVertexDecl);
-    bgfx::setVertexBuffer(0, tvb);
-    bgfx::setTexture(0, defaultTextureUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
-    bgfx::submit(0, { 0 });
+    bgfx::TransientVertexBuffer tvb;
+    bgfx::allocTransientVertexBuffer(&tvb, vertexCount, defaultVertexDecl);
+    sf::Vector2u textureSize = { 1,1 };
+    if (states.texture)
+    {
+        textureSize = states.texture->getSize();
+    }
+       
+    for (int i = 0; i < vertexCount; ++i)
+    {
+        Vertex* data = reinterpret_cast<Vertex*>(tvb.data);
+        data[i] = vertices[i];
+        data[i].texCoords.x /= textureSize.x;
+        data[i].texCoords.y /= textureSize.y;
+    }
+    bgfx::setVertexBuffer(0, &tvb);
+
+    auto state = BGFX_STATE_WRITE_RGB | BGFX_STATE_BLEND_ALPHA;
+    switch (type)
+    {
+    case PrimitiveType::Triangles:
+        state |= BGFX_STATE_DEFAULT;
+        break;
+    case PrimitiveType::TriangleStrip:
+        state |= BGFX_STATE_PT_TRISTRIP;
+        break;
+    case PrimitiveType::Points:
+        state |= BGFX_STATE_PT_POINTS;
+        break;
+    case PrimitiveType::Lines:
+        state |= BGFX_STATE_PT_LINES;
+        break;
+    case PrimitiveType::LineStrip:
+        state |= BGFX_STATE_PT_LINESTRIP;
+        break;
+    case PrimitiveType::TriangleFan:
+        //eek
+        break;
+    }
+    bgfx::setState(state);
+    bgfx::setTransform(states.transform.getMatrix());
+    if (states.texture)
+    {
+        bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
+        bgfx::setTexture(0, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
+        bgfx::submit(0, fillTextureProgram);
+    }
+    else
+    {
+        bgfx::submit(0, fillProgram);
+    }
 }
 
 
@@ -218,31 +286,53 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
 ////////////////////////////////////////////////////////////
 void RenderTarget::initialize()
 {
-    // Setup the default and current views
-    m_defaultView.reset(FloatRect(0, 0, static_cast<float>(getSize().x), static_cast<float>(getSize().y)));
-    m_view = m_defaultView;
-
-    // Set GL states only on first draw, so that we don't pollute user's states
-    m_cache.glStatesSet = false;
-
     // Generate a unique ID for this RenderTarget to track
     // whether it is active within a specific context
     m_id = getUniqueId();
 
     // Initialise bgfx
-    bgfx::init();
+    bgfx::Init init;
+    init.resolution.width = getSize().x;
+    init.resolution.height = getSize().y;
+    init.resolution.reset = BGFX_RESET_VSYNC | BGFX_RESET_HIDPI;
 
+    switch (m_contextSettings.backend)
+    {
+    case ContextSettings::Backend::OpenGL:
+        //init.type = bgfx::RendererType::OpenGL;
+        break;
+
+    default:
+        break;
+    }
+
+    bgfx::init(init);
+
+    //bgfx::setDebug(BGFX_DEBUG_STATS);
+
+    // Setup the default and current views
+    m_defaultView.reset(FloatRect(0, 0, static_cast<float>(getSize().x), static_cast<float>(getSize().y)));
+    m_view = m_defaultView;
+    applyCurrentView();
+    bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
+
+    // As I'm using the bgfx debug shaders for now, the colour it expects is 4 floats
     defaultVertexDecl
         .begin()
         .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
-        .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8)
+        .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
         .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
         .end();
 
-    defaultTextureUniform = bgfx::createUniform("s_tex", bgfx::UniformType::Int1);
+    fillProgram = bgfx::createProgram(
+        bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "vs_debugdraw_lines"),
+        bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "fs_debugdraw_lines"),
+        true);
 
-    //TODO embed this program in the binary
-    //defaultProgram = bgfx::createProgram()
+    fillTextureProgram = bgfx::createProgram(
+        bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "vs_debugdraw_fill_texture"),
+        bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "fs_debugdraw_fill_texture"),
+        true);
 }
 
 
@@ -251,7 +341,7 @@ void RenderTarget::applyCurrentView()
 {
     // Set the viewport
     const auto viewport = m_view.getViewport();
-    bgfx::setViewRect(0, viewport.left, viewport.top, viewport.width, viewport.height);
+    //bgfx::setViewRect(0, viewport.left, viewport.top, viewport.width, viewport.height);
 
     // And the view transform
     const auto transform = m_view.getTransform();
@@ -273,7 +363,7 @@ void RenderTarget::applyBlendMode(const BlendMode& mode)
 ////////////////////////////////////////////////////////////
 void RenderTarget::applyTransform(const Transform& transform)
 {
-    bgfx::setTransform(transform.getMatrix());
+   //bgfx::setTransform(transform.getMatrix());
 }
 
 

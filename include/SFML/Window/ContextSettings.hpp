@@ -34,8 +34,8 @@ namespace sf
 ///        context attached to a window
 ///
 ////////////////////////////////////////////////////////////
-struct ContextSettings
-{
+    struct ContextSettings
+    {
     ////////////////////////////////////////////////////////////
     /// \brief Enumeration of the context attribute flags
     ///
@@ -43,8 +43,14 @@ struct ContextSettings
     enum Attribute
     {
         Default = 0,      ///< Non-debug, compatibility context (this and the core attribute are mutually exclusive)
-        Core    = 1 << 0, ///< Core attribute
-        Debug   = 1 << 2  ///< Debug attribute
+        Core = 1 << 0, ///< Core attribute
+        Debug = 1 << 2  ///< Debug attribute
+    };
+
+    enum class Backend
+    {
+        OpenGL,
+        Default
     };
 
     ////////////////////////////////////////////////////////////
@@ -59,14 +65,15 @@ struct ContextSettings
     /// \param sRgb         sRGB capable framebuffer
     ///
     ////////////////////////////////////////////////////////////
-    explicit ContextSettings(unsigned int depth = 0, unsigned int stencil = 0, unsigned int antialiasing = 0, unsigned int major = 1, unsigned int minor = 1, unsigned int attributes = Default, bool sRgb = false) :
+    explicit ContextSettings(unsigned int depth = 0, unsigned int stencil = 0, unsigned int antialiasing = 0, unsigned int major = 1, unsigned int minor = 1, unsigned int attributes = Default, bool sRgb = false, Backend backendAPI = Backend::Default) :
     depthBits        (depth),
     stencilBits      (stencil),
     antialiasingLevel(antialiasing),
     majorVersion     (major),
     minorVersion     (minor),
     attributeFlags   (attributes),
-    sRgbCapable      (sRgb)
+    sRgbCapable      (sRgb),
+    backend          (backendAPI)
     {
     }
 
@@ -80,6 +87,7 @@ struct ContextSettings
     unsigned int minorVersion;      ///< Minor number of the context version to create
     Uint32       attributeFlags;    ///< The attribute flags to create the context with
     bool         sRgbCapable;       ///< Whether the context framebuffer is sRGB capable
+    Backend      backend;
 };
 
 } // namespace sf

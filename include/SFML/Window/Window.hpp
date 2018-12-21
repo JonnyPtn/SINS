@@ -85,7 +85,7 @@ public:
     /// \param settings Additional settings for the underlying OpenGL context
     ///
     ////////////////////////////////////////////////////////////
-    Window(VideoMode mode, const String& title, Uint32 style = Style::Default, const ContextSettings& settings = ContextSettings());
+    Window(VideoMode mode, const String& title, Uint32 style = Style::Default);
 
     ////////////////////////////////////////////////////////////
     /// \brief Construct the window from an existing control
@@ -101,7 +101,7 @@ public:
     /// \param settings Additional settings for the underlying OpenGL context
     ///
     ////////////////////////////////////////////////////////////
-    explicit Window(WindowHandle handle, const ContextSettings& settings = ContextSettings());
+    explicit Window(WindowHandle handle);
 
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
@@ -128,7 +128,7 @@ public:
     /// \param settings Additional settings for the underlying OpenGL context
     ///
     ////////////////////////////////////////////////////////////
-    void create(VideoMode mode, const String& title, Uint32 style = Style::Default, const ContextSettings& settings = ContextSettings());
+    void create(VideoMode mode, const String& title, Uint32 style = Style::Default);
 
     ////////////////////////////////////////////////////////////
     /// \brief Create (or recreate) the window from an existing control
@@ -145,7 +145,7 @@ public:
     /// \param settings Additional settings for the underlying OpenGL context
     ///
     ////////////////////////////////////////////////////////////
-    void create(WindowHandle handle, const ContextSettings& settings = ContextSettings());
+    void create(WindowHandle handle);
 
     ////////////////////////////////////////////////////////////
     /// \brief Close the window and destroy all the attached resources
