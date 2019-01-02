@@ -82,7 +82,6 @@ sfml_add_library(sfml-graphics
 
 # setup dependencies
 target_link_libraries(sfml-graphics PUBLIC sfml-window)
-target_link_libraries(sfml-graphics PRIVATE bgfx)
 
 # stb_image sources
 target_include_directories(sfml-graphics PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image")
@@ -107,6 +106,14 @@ endif()
 
 if(SFML_OS_ANDROID)
     target_link_libraries(sfml-graphics PRIVATE z)
+endif()
+
+sfml_find_package(BGFX INCLUDE "BGFX_INCLUDE_DIRS" LINK "BGFX_LIBRARIES")
+target_link_libraries(sfml-graphics PRIVATE BGFX)
+
+# We use Metal on apple
+if(APPLE)
+    target_link_libraries(sfml-graphics PUBLIC "-framework Metal -framework Quartzcore")
 endif()
 
 sfml_find_package(Freetype INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")

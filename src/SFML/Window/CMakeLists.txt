@@ -126,8 +126,6 @@ elseif(SFML_OS_MACOSX)
         ${SRCROOT}/OSX/SFApplication.m
         ${SRCROOT}/OSX/SFApplicationDelegate.h
         ${SRCROOT}/OSX/SFApplicationDelegate.m
-        ${SRCROOT}/OSX/SFContext.hpp
-        ${SRCROOT}/OSX/SFContext.mm
         ${SRCROOT}/OSX/SFKeyboardModifiersHelper.h
         ${SRCROOT}/OSX/SFKeyboardModifiersHelper.mm
         ${SRCROOT}/OSX/SFSilentResponder.h

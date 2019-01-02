@@ -10,3 +10,7 @@ find_package(OpenGL REQUIRED)
 sfml_add_example(window GUI_APP
                  SOURCES ${SRC}
                  DEPENDS sfml-window ${OPENGL_gl_LIBRARY})
+
+if (APPLE)
+    target_link_libraries(window PRIVATE "-framework OpenGL -Objc")
+endif()
