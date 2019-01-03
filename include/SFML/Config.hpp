@@ -178,24 +178,9 @@
     // User explicitly requests to disable deprecation warnings
     #define SFML_DEPRECATED
 
-#elif defined(_MSC_VER)
-
-    // Microsoft C++ compiler
-    // Note: On newer MSVC versions, using deprecated functions causes a compiler error. In order to
-    // trigger a warning instead of an error, the compiler flag /sdl- (instead of /sdl) must be specified.
-    #define SFML_DEPRECATED __declspec(deprecated)
-
-#elif defined(__GNUC__)
-
-    // g++ and Clang
-    #define SFML_DEPRECATED __attribute__ ((deprecated))
-
 #else
 
-    // Other compilers are not supported, leave class or function as-is.
-    // With a bit of luck, the #pragma directive works, otherwise users get a warning (no error!) for unrecognized #pragma.
-    #pragma message("SFML_DEPRECATED is not supported for your compiler, please contact the SFML team")
-    #define SFML_DEPRECATED
+    #define SFML_DEPRECATED [[deprecated]]
 
 #endif
 
