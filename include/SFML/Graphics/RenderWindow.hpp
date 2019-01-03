@@ -128,6 +128,23 @@ public:
     void setVerticalSyncEnabled(bool enabled);
 
     ////////////////////////////////////////////////////////////
+    /// \brief Limit the framerate to a maximum fixed frequency
+    ///
+    /// If a limit is set, the window will use a small delay after
+    /// each call to display() to ensure that the current frame
+    /// lasted long enough to match the framerate limit.
+    /// SFML will try to match the given limit as much as it can,
+    /// but since it internally uses sf::sleep, whose precision
+    /// depends on the underlying OS, the results may be a little
+    /// unprecise as well (for example, you can get 65 FPS when
+    /// requesting 60).
+    ///
+    /// \param limit Framerate limit, in frames per seconds (use 0 to disable limit)
+    ///
+    ////////////////////////////////////////////////////////////
+    void setFramerateLimit(unsigned int limit);
+
+    ////////////////////////////////////////////////////////////
     /// \brief Display on screen what has been rendered to the window so far
     ///
     /// This function is typically called after all OpenGL rendering
@@ -163,7 +180,9 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    unsigned int m_defaultFrameBuffer; ///< Framebuffer to bind when targeting this window
+    unsigned int m_defaultFrameBuffer;  ///< Framebuffer to bind when targeting this window
+    Time         m_frameTimeLimit;      ///< Current framerate limit
+    Clock        m_clock;               ///< Clock for measuring the elapsed time between frames
 };
 
 } // namespace sf

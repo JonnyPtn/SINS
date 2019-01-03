@@ -28,6 +28,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTextureImplFBO.hpp>
+#include <SFML/System/Sleep.hpp>
 
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
@@ -36,7 +37,8 @@ namespace sf
 {
 ////////////////////////////////////////////////////////////
 RenderWindow::RenderWindow() :
-m_defaultFrameBuffer(0)
+m_defaultFrameBuffer(0),
+m_frameTimeLimit(Time::Zero)
 {
     // Nothing to do
 }
@@ -45,7 +47,8 @@ m_defaultFrameBuffer(0)
 ////////////////////////////////////////////////////////////
 RenderWindow::RenderWindow(VideoMode mode, const String& title, Uint32 style, const ContextSettings& settings) :
 RenderTarget(settings),
-m_defaultFrameBuffer(0)
+m_defaultFrameBuffer(0),
+m_frameTimeLimit(Time::Zero)
 {
     // Don't call the base class constructor because it contains virtual function calls
     create(mode, title, style);
@@ -55,7 +58,8 @@ m_defaultFrameBuffer(0)
 ////////////////////////////////////////////////////////////
 RenderWindow::RenderWindow(WindowHandle handle, const ContextSettings& settings) :
 RenderTarget(settings),
-m_defaultFrameBuffer(0)
+m_defaultFrameBuffer(0),
+m_frameTimeLimit(Time::Zero)
 {
     // Don't call the base class constructor because it contains virtual function calls
     create(handle);
@@ -85,6 +89,13 @@ void RenderWindow::setVerticalSyncEnabled(bool enabled)
 void RenderWindow::display()
 {
     bgfx::frame();
+
+    // Limit the framerate if needed
+    if (m_frameTimeLimit != Time::Zero)
+    {
+        sleep(m_frameTimeLimit - m_clock.getElapsedTime());
+        m_clock.restart();
+    }
 }
 
 ////////////////////////////////////////////////////////////
@@ -105,6 +116,15 @@ void RenderWindow::onResize()
 {
     // Update the current view (recompute the viewport, which is stored in relative coordinates)
     setView(getView());
+}
+
+////////////////////////////////////////////////////////////
+void RenderWindow::setFramerateLimit(unsigned int limit)
+{
+    if (limit > 0)
+        m_frameTimeLimit = seconds(1.f / limit);
+    else
+        m_frameTimeLimit = Time::Zero;
 }
 
 } // namespace sf
