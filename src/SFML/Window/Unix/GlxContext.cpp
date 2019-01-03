@@ -315,6 +315,8 @@ XVisualInfo GlxContext::selectBestVisual(::Display* display, unsigned int bitsPe
     // Make sure that extensions are initialized
     ensureExtensionsInit(display, DefaultScreen(display));
 
+    const int screen = DefaultScreen(display);
+
     // Retrieve all the visuals
     int count;
     XVisualInfo* visuals = XGetVisualInfo(display, 0, nullptr, &count);
@@ -325,6 +327,10 @@ XVisualInfo GlxContext::selectBestVisual(::Display* display, unsigned int bitsPe
         XVisualInfo bestVisual = XVisualInfo();
         for (int i = 0; i < count; ++i)
         {
+            // Filter by screen
+            if (visuals[i].screen != screen)
+                continue;
+
             // Check mandatory attributes
             int doubleBuffer;
             glXGetConfig(display, &visuals[i], GLX_DOUBLEBUFFER, &doubleBuffer);

@@ -1,63 +1,81 @@
-sudo: false
-dist: trusty
-language: c++
+language: cpp
 
 addons:
-  apt:
-    update: on
-    sources:
-        - ubuntu-toolchain-r-test
-        - llvm-toolchain-precise-3.6
-    packages:
+  apt_packages:
     - cmake
     - libxrandr-dev
     - libudev-dev
     - libopenal-dev
     - libflac-dev
     - libvorbis-dev
-    - libenet-dev
-    - libgtk-3-dev
     - g++-4.9
     - clang-3.6
 
 before_script:
-- eval "${MATRIX_EVAL}"
 - mkdir build && cd build
-- cmake .. -G"$GENERATOR" $CMAKE_FLAGS
+- cmake .. $CMAKE_FLAGS -DCMAKE_INSTALL_PREFIX=../install -DSFML_BUILD_EXAMPLES=TRUE
 
 script:
-- sudo cmake --build . --target install
+- cmake --build . --target install
 
 matrix:
   include:
 
-  # Linux - gcc 4.9
-  - os: linux
-    compiler: gcc-4.9
+  - name: "Linux gcc Dynamic"
+    os: linux
+    dist: xenial
+    compiler: gcc
+  
+  - name: "Linux gcc Static"
+    os: linux
+    dist: xenial
+    compiler: gcc
     env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-    - GENERATOR="Unix Makefiles"
-    - CMAKE_FLAGS="-DSFML_BUILD_EXAMPLES=TRUE"
+      - CMAKE_FLAGS="-DBUILD_SHARED_LIBS=FALSE"
 
-  # Linux - clang 3.4
-  - os: linux
-    compiler: clang-3.6
-    env:
-    - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
-    - GENERATOR="Unix Makefiles"
-    - CMAKE_FLAGS="-DSFML_BUILD_EXAMPLES=TRUE"
+  - name: "Linux clang Dynamic"
+    os: linux
+    dist: xenial
+    compiler: clang
 
-  # macOS - Xcode
-  - os: osx
+  - name: "Linux clang Static"
+    os: linux
+    dist: xenial
+    compiler: clang
     env:
-    - GENERATOR="Xcode"
-    - CMAKE_FLAGS="-DSFML_BUILD_FRAMEWORKS=TRUE -DSFML_BUILD_EXAMPLES=TRUE"
+      - CMAKE_FLAGS="-DBUILD_SHARED_LIBS=FALSE"
 
-  # iOS - Xcode
-  - os: osx
+  - name: "macOS Xcode 10 Dynamic"
+    os: osx
+    osx_image: xcode10
     env:
-    - GENERATOR="Xcode"
-    - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/iOS.toolchain.cmake -DSFML_BUILD_EXAMPLES=TRUE -DIOS_PLATFORM=SIMULATOR"
+     - CMAKE_FLAGS="-DSFML_DEPENDENCIES_INSTALL_PREFIX=../install"
+
+  - name: "macOS Xcode 10 Frameworks"
+    os: osx
+    osx_image: xcode10
+    env:
+     - CMAKE_FLAGS="-DSFML_DEPENDENCIES_INSTALL_PREFIX=../install -DSFML_BUILD_FRAMEWORKS=TRUE"
+
+  - name: "macOS Xcode 10 Static"
+    os: osx
+    osx_image: xcode10
+    env:
+     - CMAKE_FLAGS="-DSFML_DEPENDENCIES_INSTALL_PREFIX=../install -DBUILD_SHARED_LIBS=FALSE"
+
+  - name: "iOS Xcode 10"
+    os: osx
+    osx_image: xcode10
+    env:
+     - CMAKE_FLAGS="-GXcode -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/iOS.toolchain.cmake -DIOS_PLATFORM=SIMULATOR"
+
+  - name: "Visual studio 15 2017 Dynamic"
+    os: windows
+
+  - name: "Visual studio 15 2017 Static"
+    os: windows
+    env:
+      - CMAKE_FLAGS="-DBUILD_SHARED_LIBS=FALSE"
 
 notifications:
   email: false
