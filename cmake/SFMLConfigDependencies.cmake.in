@@ -52,12 +52,6 @@ if(SFML_STATIC_LIBRARIES)
         if(FIND_SFML_OS_LINUX)
             sfml_bind_dependency(TARGET UDev FRIENDLY_NAME "UDev" SEARCH_NAMES "udev" "libudev")
         endif()
-
-        if (FIND_SFML_OS_WINDOWS)
-            set_property(TARGET OpenGL APPEND PROPERTY INTERFACE_LINK_LIBRARIES "OpenGL32")
-        elseif(NOT FIND_SFML_OS_IOS)
-            sfml_bind_dependency(TARGET OpenGL FRIENDLY_NAME "OpenGL" SEARCH_NAMES "OpenGL" "GL")
-        endif()
     endif()
 
     # sfml-graphics
