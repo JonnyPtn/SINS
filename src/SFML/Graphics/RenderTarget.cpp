@@ -41,10 +41,10 @@
 #include <bgfx/bgfx.h>
 #include <bgfx/embedded_shader.h>
 
-#include "bgfx/../../examples/common/debugdraw/fs_debugdraw_lines.bin.h"
-#include "bgfx/../../examples/common/debugdraw/vs_debugdraw_lines.bin.h"
-#include "bgfx/../../examples/common/debugdraw/fs_debugdraw_fill_texture.bin.h"
-#include "bgfx/../../examples/common/debugdraw/vs_debugdraw_fill_texture.bin.h"
+#include "fs_debugdraw_lines.bin.h"
+#include "vs_debugdraw_lines.bin.h"
+#include "fs_debugdraw_fill_texture.bin.h"
+#include "vs_debugdraw_fill_texture.bin.h"
 
 static const bgfx::EmbeddedShader s_embeddedShaders[] =
 {
@@ -250,7 +250,18 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
         state |= BGFX_STATE_PT_LINESTRIP;
         break;
     case PrimitiveType::TriangleFan:
-        //eek
+        // Not supported by bgfx, so emulate it with an index buffer
+        bgfx::TransientIndexBuffer idb;
+        auto indexCount = vertexCount * 3;
+        bgfx::allocTransientIndexBuffer(&idb, indexCount);
+        std::uint16_t* indices = reinterpret_cast<std::uint16_t*>(idb.data);
+        for (int v = 0, i = 0; v < vertexCount; ++v, ++i)
+        {
+            indices[i] = 0;
+            indices[++i] = v;
+            indices[++i] = v+1;
+        }
+        bgfx::setIndexBuffer(&idb);
         break;
     }
     bgfx::setState(state);

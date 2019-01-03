@@ -52,13 +52,10 @@ endif()
 project(SFML)
 
 # add bgfx
-include(FetchContent)
-FetchContent_Declare(bgfx GIT_REPOSITORY https://github.com/joshuabrookover/bgfx.cmake)
-if(NOT bgfx_POPULATED)
-FetchContent_Populate(bgfx)
-execute_process(COMMAND ${CMAKE_COMMAND} ${bgfx_SOURCE_DIR} -DCMAKE_INSTALL_PREFIX=${bgfx_BINARY_DIR}/install WORKING_DIRECTORY ${bgfx_BINARY_DIR})
-execute_process(COMMAND ${CMAKE_COMMAND} --build . --target install WORKING_DIRECTORY ${bgfx_BINARY_DIR})
-endif()
+include(ExternalProject)
+ExternalProject_Add(bgfx 
+                    GIT_REPOSITORY https://github.com/joshuabrookover/bgfx.cmake
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/bgfx-install)
 
 # include the configuration file
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)

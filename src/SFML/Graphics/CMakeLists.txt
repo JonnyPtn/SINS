@@ -108,8 +108,15 @@ if(SFML_OS_ANDROID)
     target_link_libraries(sfml-graphics PRIVATE z)
 endif()
 
-sfml_find_package(BGFX INCLUDE "BGFX_INCLUDE_DIRS" LINK "BGFX_LIBRARIES")
-target_link_libraries(sfml-graphics PRIVATE BGFX)
+target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/include)
+
+target_link_libraries(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/lib/*)
+
+# bgfx compat includes
+if (MSVC)
+    target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/include/compat/msvc)
+    target_link_libraries(sfml-graphics PRIVATE Psapi)
+endif()
 
 # We use Metal on apple
 if(APPLE)
