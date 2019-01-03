@@ -29,8 +29,8 @@
 #include <SFML/Window/OSX/WindowImplCocoa.hpp>
 #include <SFML/System/Err.hpp>
 
-#import <SFML/Window/OSX/SFOpenGLView.h>
-#import <SFML/Window/OSX/SFOpenGLView+mouse_priv.h>
+#import <SFML/Window/OSX/SFView.h>
+#import <SFML/Window/OSX/SFView+mouse_priv.h>
 #import <SFML/Window/OSX/SFSilentResponder.h>
 
 
@@ -38,7 +38,7 @@
 /// SFOpenGLView class: Privates Methods Declaration
 ///
 ////////////////////////////////////////////////////////////
-@interface SFOpenGLView ()
+@interface SFView ()
 
 ////////////////////////////////////////////////////////////
 /// \brief Handle screen changed event
@@ -78,7 +78,7 @@
 
 @end
 
-@implementation SFOpenGLView
+@implementation SFView
 
 #pragma mark
 #pragma mark SFOpenGLView's methods

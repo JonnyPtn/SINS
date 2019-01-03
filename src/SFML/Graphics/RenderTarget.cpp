@@ -41,10 +41,10 @@
 #include <bgfx/bgfx.h>
 #include <bgfx/embedded_shader.h>
 
-#include "../bgfx.cmake/bgfx/examples/common/debugdraw/fs_debugdraw_lines.bin.h"
-#include "../bgfx.cmake/bgfx/examples/common/debugdraw/vs_debugdraw_lines.bin.h"
-#include "../bgfx.cmake/bgfx/examples/common/debugdraw/fs_debugdraw_fill_texture.bin.h"
-#include "../bgfx.cmake/bgfx/examples/common/debugdraw/vs_debugdraw_fill_texture.bin.h"
+#include "bgfx/../../examples/common/debugdraw/fs_debugdraw_lines.bin.h"
+#include "bgfx/../../examples/common/debugdraw/vs_debugdraw_lines.bin.h"
+#include "bgfx/../../examples/common/debugdraw/fs_debugdraw_fill_texture.bin.h"
+#include "bgfx/../../examples/common/debugdraw/vs_debugdraw_fill_texture.bin.h"
 
 static const bgfx::EmbeddedShader s_embeddedShaders[] =
 {

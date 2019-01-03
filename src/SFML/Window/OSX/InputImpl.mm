@@ -32,7 +32,7 @@
 #include <SFML/Window/OSX/HIDInputManager.hpp>
 #include <SFML/System/Err.hpp>
 
-#import <SFML/Window/OSX/SFOpenGLView.h>
+#import <SFML/Window/OSX/SFView.h>
 #import <AppKit/AppKit.h>
 
 ////////////////////////////////////////////////////////////
@@ -49,18 +49,18 @@ namespace sf
 namespace priv
 {
 ////////////////////////////////////////////////////////////
-/// \brief Extract the dedicated SFOpenGLView from the SFML window
+/// \brief Extract the dedicated SFView from the SFML window
 ///
 /// \param window a SFML window
 /// \return nil if something went wrong or a SFOpenGLView*.
 ///
 ////////////////////////////////////////////////////////////
-SFOpenGLView* getSFOpenGLViewFromSFMLWindow(const Window& window)
+SFView* getSFViewFromSFMLWindow(const Window& window)
 {
     id nsHandle = (id)window.getSystemHandle();
 
     // Get our SFOpenGLView from ...
-    SFOpenGLView* view = nil;
+    SFView* view = nil;
 
     if ([nsHandle isKindOfClass:[NSWindow class]])
     {
@@ -68,16 +68,16 @@ SFOpenGLView* getSFOpenGLViewFromSFMLWindow(const Window& window)
         view = [nsHandle contentView];
 
         // Subview doesn't match ?
-        if (![view isKindOfClass:[SFOpenGLView class]])
+        if (![view isKindOfClass:[SFView class]])
         {
             if([view isKindOfClass:[NSView class]])
             {
                 NSArray* subviews = [view subviews];
                 for (NSView* subview in subviews)
                 {
-                    if ([subview isKindOfClass:[SFOpenGLView class]])
+                    if ([subview isKindOfClass:[SFView class]])
                     {
-                        view = (SFOpenGLView*)subview;
+                        view = (SFView*)subview;
                         break;
                     }
                 }
@@ -99,9 +99,9 @@ SFOpenGLView* getSFOpenGLViewFromSFMLWindow(const Window& window)
         NSArray* subviews = [nsHandle subviews];
         for (NSView* subview in subviews)
         {
-            if ([subview isKindOfClass:[SFOpenGLView class]])
+            if ([subview isKindOfClass:[SFView class]])
             {
-                view = (SFOpenGLView*)subview;
+                view = (SFView*)subview;
                 break;
             }
         }
@@ -160,7 +160,7 @@ Vector2i InputImpl::getMousePosition()
 ////////////////////////////////////////////////////////////
 Vector2i InputImpl::getMousePosition(const Window& relativeTo)
 {
-    SFOpenGLView* view = getSFOpenGLViewFromSFMLWindow(relativeTo);
+    SFView* view = getSFViewFromSFMLWindow(relativeTo);
 
     // No view ?
     if (view == nil)
@@ -195,7 +195,7 @@ void InputImpl::setMousePosition(const Vector2i& position)
 ////////////////////////////////////////////////////////////
 void InputImpl::setMousePosition(const Vector2i& position, const Window& relativeTo)
 {
-    SFOpenGLView* view = getSFOpenGLViewFromSFMLWindow(relativeTo);
+    SFView* view = getSFViewFromSFMLWindow(relativeTo);
 
     // No view ?
     if (view == nil)

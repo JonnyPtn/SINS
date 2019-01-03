@@ -122,8 +122,7 @@ m_showCursor(true)
 ////////////////////////////////////////////////////////////
 WindowImplCocoa::WindowImplCocoa(VideoMode mode,
                                  const String& title,
-                                 unsigned long style,
-                                 const ContextSettings& /*settings*/) :
+                                 unsigned long style) :
 m_showCursor(true)
 {
     // Transform the app process.
@@ -159,13 +158,6 @@ WindowImplCocoa::~WindowImplCocoa()
     drainThreadPool(); // Make sure everything was freed
     // This solve some issue when sf::Window::Create is called for the
     // second time (nothing was render until the function was called again)
-}
-
-
-////////////////////////////////////////////////////////////
-void WindowImplCocoa::applyContext(NSOpenGLContextRef context) const
-{
-    [m_delegate applyContext:context];
 }
 
 

@@ -113,7 +113,7 @@ target_link_libraries(sfml-graphics PRIVATE BGFX)
 
 # We use Metal on apple
 if(APPLE)
-    target_link_libraries(sfml-graphics PUBLIC "-framework Metal -framework Quartzcore")
+    target_link_libraries(sfml-graphics PRIVATE "-framework Metal -framework Quartzcore -framework Foundation -framework Appkit")
 endif()
 
 sfml_find_package(Freetype INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")

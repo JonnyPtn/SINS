@@ -5,8 +5,10 @@
 
 #ifdef SFML_SYSTEM_WINDOWS
 #include <windows.h>
-#endif
 #include <gl/GL.h>
+#else
+#include <OpenGL/gl.h>
+#endif
 
 
 ////////////////////////////////////////////////////////////

@@ -30,8 +30,8 @@
 #include <SFML/Window/OSX/HIDInputManager.hpp> // For localizedKeys and nonLocalizedKeys
 
 #import <SFML/Window/OSX/SFKeyboardModifiersHelper.h>
-#import <SFML/Window/OSX/SFOpenGLView.h>
-#import <SFML/Window/OSX/SFOpenGLView+keyboard_priv.h>
+#import <SFML/Window/OSX/SFView.h>
+#import <SFML/Window/OSX/SFView+keyboard_priv.h>
 
 ////////////////////////////////////////////////////////////
 /// In this file, we implement keyboard handling for SFOpenGLView
@@ -39,7 +39,7 @@
 ////////////////////////////////////////////////////////////
 
 
-@implementation SFOpenGLView (keyboard)
+@implementation SFView (keyboard)
 
 
 ////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@
     // Handle key down event
     if (m_useKeyRepeat || ![theEvent isARepeat])
     {
-        sf::Event::KeyEvent key = [SFOpenGLView convertNSKeyEventToSFMLEvent:theEvent];
+        sf::Event::KeyEvent key = [SFView convertNSKeyEventToSFMLEvent:theEvent];
 
         if (key.code != sf::Keyboard::Key::Unknown) // The key is recognized.
             m_requester->keyDown(key);
@@ -97,7 +97,7 @@
     {
         // Ignore escape key and other non text keycode (See NSEvent.h)
         // because they produce a sound alert.
-        if ([SFOpenGLView isValidTextUnicode:theEvent])
+        if ([SFView isValidTextUnicode:theEvent])
         {
             // Send the event to the hidden text view for processing
             [m_hiddenTextView interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
@@ -156,7 +156,7 @@
     if (m_requester == 0)
         return;
 
-    sf::Event::KeyEvent key = [SFOpenGLView convertNSKeyEventToSFMLEvent:theEvent];
+    sf::Event::KeyEvent key = [SFView convertNSKeyEventToSFMLEvent:theEvent];
 
     if (key.code != sf::Keyboard::Key::Unknown) // The key is recognized.
         m_requester->keyUp(key);

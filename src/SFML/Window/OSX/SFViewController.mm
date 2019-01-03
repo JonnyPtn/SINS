@@ -30,7 +30,7 @@
 #include <SFML/Window/OSX/WindowImplCocoa.hpp>
 
 #import <SFML/Window/OSX/SFApplication.h>
-#import <SFML/Window/OSX/SFOpenGLView.h>
+#import <SFML/Window/OSX/SFView.h>
 #import <SFML/Window/OSX/SFViewController.h>
 
 @implementation SFViewController
@@ -44,7 +44,7 @@
         m_requester = 0;
 
         // Retain the view for our own use.
-        m_view = [view retain];
+        //m_view = [view retain];
 
         if (m_view == nil)
         {
@@ -53,12 +53,12 @@
         }
 
         // Create the view.
-        NSRect frame = [m_view frame];
+        NSRect frame = [view frame];
         frame.origin.x = 0;
         frame.origin.y = 0;
-        m_oglView = [[SFOpenGLView alloc] initWithFrame:frame];
+        m_view = [[SFView alloc] initWithFrame:frame];
 
-        if (m_oglView == nil)
+        if (m_view == nil)
         {
             sf::err() << "Could not create an instance of NSOpenGLView "
                      << "in (SFViewController -initWithView:)."
@@ -68,11 +68,11 @@
         }
 
         // Set the (OGL) view to the view as its "content" view.
-        [m_view addSubview:m_oglView];
+        [view addSubview:m_view];
 
-        [m_oglView setAutoresizingMask:[m_view autoresizingMask]];
+        [m_view setAutoresizingMask:[m_view autoresizingMask]];
 
-        [m_oglView finishInit];
+        [m_view finishInit];
     }
 
     return self;
@@ -85,7 +85,6 @@
     [self closeWindow];
 
     [m_view release];
-    [m_oglView release];
 
     [super dealloc];
 }
@@ -94,7 +93,7 @@
 ////////////////////////////////////////////////////////
 -(CGFloat)displayScaleFactor
 {
-    return [m_oglView displayScaleFactor];
+    return [m_view displayScaleFactor];
 }
 
 
@@ -102,7 +101,7 @@
 -(void)setRequesterTo:(sf::priv::WindowImplCocoa*)requester
 {
     // Forward to the view.
-    [m_oglView setRequesterTo:requester];
+    [m_view setRequesterTo:requester];
     m_requester = requester;
 }
 
@@ -117,21 +116,21 @@
 ////////////////////////////////////////////////////////
 -(BOOL)isMouseInside
 {
-    return [m_oglView isMouseInside];
+    return [m_view isMouseInside];
 }
 
 
 ////////////////////////////////////////////////////////
 -(void)setCursorGrabbed:(BOOL)grabbed
 {
-    [m_oglView setCursorGrabbed:grabbed];
+    [m_view setCursorGrabbed:grabbed];
 }
 
 
 ////////////////////////////////////////////////////////
 -(void)setCursor:(NSCursor*)cursor
 {
-    return [m_oglView setCursor:cursor];
+    return [m_view setCursor:cursor];
 }
 
 
@@ -155,7 +154,7 @@
 ////////////////////////////////////////////////////////////
 -(NSSize)size
 {
-    return [m_oglView frame].size;
+    return [m_view frame].size;
 }
 
 
@@ -168,7 +167,6 @@
                               height);
 
     [m_view setFrame:frame];
-    [m_oglView setFrame:frame];
 }
 
 
@@ -224,14 +222,14 @@
 ////////////////////////////////////////////////////////
 -(void)enableKeyRepeat
 {
-    [m_oglView enableKeyRepeat];
+    [m_view enableKeyRepeat];
 }
 
 
 ////////////////////////////////////////////////////////
 -(void)disableKeyRepeat
 {
-    [m_oglView disableKeyRepeat];
+    [m_view disableKeyRepeat];
 }
 
 
@@ -265,14 +263,6 @@
     // If we don't have a requester we don't fetch event.
     if (m_requester != 0)
         [SFApplication processEvent];
-}
-
-
-////////////////////////////////////////////////////////
--(void)applyContext:(NSOpenGLContext*)context
-{
-    [m_oglView setOpenGLContext:context];
-    [context setView:m_oglView];
 }
 
 

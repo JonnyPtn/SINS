@@ -66,7 +66,7 @@ namespace sf {
 /// the cursor (that was disconnected from the system).
 ///
 ////////////////////////////////////////////////////////////
-@interface SFOpenGLView : NSOpenGLView
+@interface SFView : NSView
 {
     sf::priv::WindowImplCocoa*    m_requester;      ///< View's requester
     BOOL                          m_useKeyRepeat;   ///< Key repeat setting
@@ -137,7 +137,7 @@ namespace sf {
 
 @end
 
-@interface SFOpenGLView (keyboard)
+@interface SFView (keyboard)
 
 ////////////////////////////////////////////////////////////
 /// \brief Enable key repeat
@@ -153,7 +153,7 @@ namespace sf {
 
 @end
 
-@interface SFOpenGLView (mouse)
+@interface SFView (mouse)
 
 ////////////////////////////////////////////////////////////
 /// \brief Set the system cursor for the window area

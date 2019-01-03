@@ -29,8 +29,8 @@
 #include <SFML/Window/OSX/WindowImplCocoa.hpp>
 #include <cmath>
 
-#import <SFML/Window/OSX/SFOpenGLView.h>
-#import <SFML/Window/OSX/SFOpenGLView+mouse_priv.h>
+#import <SFML/Window/OSX/SFView.h>
+#import <SFML/Window/OSX/SFView+mouse_priv.h>
 
 
 ////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@
 ///
 ////////////////////////////////////////////////////////////
 
-@implementation SFOpenGLView (mouse)
+@implementation SFView (mouse)
 
 ////////////////////////////////////////////////////////
 -(void)setCursor:(NSCursor*)cursor
@@ -129,7 +129,7 @@
 ////////////////////////////////////////////////////////
 -(void)handleMouseDown:(NSEvent*)theEvent
 {
-    sf::Mouse::Button button = [SFOpenGLView mouseButtonFromEvent:theEvent];
+    sf::Mouse::Button button = [SFView mouseButtonFromEvent:theEvent];
 
     if (m_requester != 0)
     {
@@ -174,7 +174,7 @@
 ////////////////////////////////////////////////////////////
 -(void)handleMouseUp:(NSEvent*)theEvent
 {
-    sf::Mouse::Button button = [SFOpenGLView mouseButtonFromEvent:theEvent];
+    sf::Mouse::Button button = [SFView mouseButtonFromEvent:theEvent];
 
     if (m_requester != 0)
     {

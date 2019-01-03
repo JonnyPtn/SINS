@@ -37,10 +37,9 @@
 #import <SFML/Window/OSX/NSImage+raw.h>
 #import <SFML/Window/OSX/Scaling.h>
 #import <SFML/Window/OSX/SFApplication.h>
-#import <SFML/Window/OSX/SFOpenGLView.h>
+#import <SFML/Window/OSX/SFView.h>
 #import <SFML/Window/OSX/SFWindow.h>
 #import <SFML/Window/OSX/SFWindowController.h>
-#import <OpenGL/OpenGL.h>
 
 ////////////////////////////////////////////////////////////
 /// SFBlackView is a simple view filled with black, nothing more
@@ -95,7 +94,7 @@
     if ((self = [super init]))
     {
         m_window = nil;
-        m_oglView = nil;
+        m_View = nil;
         m_requester = 0;
         m_fullscreen = NO; // assuming this is the case... too hard to handle anyway.
         m_restoreResize = NO;
@@ -110,10 +109,10 @@
         }
 
         // Create the view.
-        m_oglView = [[SFOpenGLView alloc] initWithFrame:[[m_window contentView] frame]
+        m_View = [[SFView alloc] initWithFrame:[[m_window contentView] frame]
                                              fullscreen:NO];
 
-        if (m_oglView == nil)
+        if (m_View == nil)
         {
             sf::err() << "Could not create an instance of NSOpenGLView "
                       << "in -[SFWindowController initWithWindow:]."
@@ -122,7 +121,7 @@
         }
 
         // Set the view to the window as its content view.
-        [m_window setContentView:m_oglView];
+        [m_window setContentView:window.contentView];
     }
 
     return self;
@@ -147,7 +146,7 @@
     if ((self = [super init]))
     {
         m_window = nil;
-        m_oglView = nil;
+        m_View = nil;
         m_requester = 0;
         m_fullscreen = (style & sf::Style::Fullscreen);
         m_restoreResize = NO;
@@ -157,7 +156,7 @@
         else
             [self setupWindowWithMode:mode andStyle:style];
 
-        [m_oglView finishInit];
+        [m_View finishInit];
     }
     return self;
 }
@@ -215,10 +214,10 @@
     CGFloat y = (desktop.height - height) / 2.0;
     NSRect oglRect = NSMakeRect(x, y, width, height);
 
-    m_oglView = [[SFOpenGLView alloc] initWithFrame:oglRect
+    m_View = [[SFView alloc] initWithFrame:oglRect
                                          fullscreen:YES];
 
-    if (m_oglView == nil)
+    if (m_View == nil)
     {
         sf::err() << "Could not create an instance of NSOpenGLView "
                   << "in -[SFWindowController setupFullscreenViewWithMode:]."
@@ -227,7 +226,7 @@
     }
 
     // Populate the window and views
-    [masterView addSubview:m_oglView];
+    [masterView addSubview:m_View];
     [m_window setContentView:masterView];
 }
 
@@ -274,10 +273,10 @@
     }
 
     // Create the view.
-    m_oglView = [[SFOpenGLView alloc] initWithFrame:[[m_window contentView] frame]
+    m_View = [[SFView alloc] initWithFrame:[[m_window contentView] frame]
                                          fullscreen:NO];
 
-    if (m_oglView == nil)
+    if (m_View == nil)
     {
         sf::err() << "Could not create an instance of NSOpenGLView "
                   << "in -[SFWindowController setupWindowWithMode:andStyle:]."
@@ -287,7 +286,7 @@
     }
 
     // Set the view to the window as its content view.
-    [m_window setContentView:m_oglView];
+    [m_window setContentView:m_View];
 
     // Register for event.
     [m_window setDelegate:self];
@@ -308,7 +307,7 @@
     [NSMenu setMenuBarVisible:YES];
 
     [m_window release];
-    [m_oglView release];
+    [m_View release];
 
     [super dealloc];
 }
@@ -321,7 +320,7 @@
 ////////////////////////////////////////////////////////
 -(CGFloat)displayScaleFactor
 {
-    return [m_oglView displayScaleFactor];
+    return [m_View displayScaleFactor];
 }
 
 
@@ -329,7 +328,7 @@
 -(void)setRequesterTo:(sf::priv::WindowImplCocoa*)requester
 {
     // Forward to the view.
-    [m_oglView setRequesterTo:requester];
+    [m_View setRequesterTo:requester];
     m_requester = requester;
 }
 
@@ -344,7 +343,7 @@
 ////////////////////////////////////////////////////////
 -(BOOL)isMouseInside
 {
-    return [m_oglView isMouseInside];
+    return [m_View isMouseInside];
 }
 
 
@@ -367,14 +366,14 @@
     }
 
     // Forward to our view
-    [m_oglView setCursorGrabbed:grabbed];
+    [m_View setCursorGrabbed:grabbed];
 }
 
 
 ////////////////////////////////////////////////////////
 -(void)setCursor:(NSCursor*)cursor
 {
-    return [m_oglView setCursor:cursor];
+    return [m_View setCursor:cursor];
 }
 
 
@@ -386,14 +385,14 @@
     // its width and height.
 
     // Position of the bottom-left corner in the different coordinate systems:
-    NSRect corner = [m_oglView frame]; // bottom left; size is ignored
-    NSRect view   = [m_oglView convertRectToBacking:corner];
-    NSRect window = [m_oglView convertRect:view toView:nil];
-    NSRect screen = [[m_oglView window] convertRectToScreen:window];
+    NSRect corner = [m_View frame]; // bottom left; size is ignored
+    NSRect view   = [m_View convertRectToBacking:corner];
+    NSRect window = [m_View convertRect:view toView:nil];
+    NSRect screen = [[m_View window] convertRectToScreen:window];
 
     // Get the top-left corner in screen coordinates
     CGFloat x = screen.origin.x;
-    CGFloat y = screen.origin.y + [m_oglView frame].size.height;
+    CGFloat y = screen.origin.y + [m_View frame].size.height;
 
     // Flip y-axis (titlebar was already taken into account above)
     y = [self screenHeight] - y;
@@ -414,14 +413,14 @@
     [m_window setFrameTopLeftPoint:point];
 
     // In case the cursor was grabbed we need to update its position
-    [m_oglView updateCursorGrabbed];
+    [m_View updateCursorGrabbed];
 }
 
 
 ////////////////////////////////////////////////////////
 -(NSSize)size
 {
-    return [m_oglView frame].size;
+    return [m_View frame].size;
 }
 
 
@@ -442,8 +441,8 @@
         CGFloat y = (desktop.height - height) / 2.0;
         NSRect oglRect = NSMakeRect(x, y, width, height);
 
-        [m_oglView setFrame:oglRect];
-        [m_oglView setNeedsDisplay:YES];
+        [m_View setFrame:oglRect];
+        [m_View setNeedsDisplay:YES];
     }
     else
     {
@@ -506,7 +505,6 @@
 ////////////////////////////////////////////////////////
 -(void)closeWindow
 {
-    [self applyContext:nil];
     [m_window close];
     [m_window setDelegate:nil];
     [self setRequesterTo:0];
@@ -533,14 +531,14 @@
 ////////////////////////////////////////////////////////
 -(void)enableKeyRepeat
 {
-    [m_oglView enableKeyRepeat];
+    [m_View enableKeyRepeat];
 }
 
 
 ////////////////////////////////////////////////////////
 -(void)disableKeyRepeat
 {
-    [m_oglView disableKeyRepeat];
+    [m_View disableKeyRepeat];
 }
 
 
@@ -577,14 +575,6 @@
     // If we don't have a requester we don't fetch event.
     if (m_requester != 0)
         [SFApplication processEvent];
-}
-
-
-////////////////////////////////////////////////////////
--(void)applyContext:(NSOpenGLContext*)context
-{
-    [m_oglView setOpenGLContext:context];
-    [context setView:m_oglView];
 }
 
 

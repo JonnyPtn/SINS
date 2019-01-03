@@ -39,7 +39,7 @@ namespace sf {
     }
 }
 
-@class SFOpenGLView;
+@class SFView;
 
 ////////////////////////////////////////////////////////////
 /// \brief Implementation of WindowImplDelegateProtocol for window management
@@ -58,7 +58,7 @@ namespace sf {
 @interface SFWindowController : NSResponder <WindowImplDelegateProtocol, NSWindowDelegate>
 {
     NSWindow*                   m_window;           ///< Underlying Cocoa window to be controlled
-    SFOpenGLView*               m_oglView;          ///< OpenGL view for rendering
+    SFView*                     m_View;             ///< View for rendering
     sf::priv::WindowImplCocoa*  m_requester;        ///< Requester
     BOOL                        m_fullscreen;       ///< Indicate whether the window is fullscreen or not
     BOOL                        m_restoreResize;    ///< See note above

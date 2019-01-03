@@ -132,6 +132,12 @@ elseif(SFML_OS_MACOSX)
         ${SRCROOT}/OSX/SFSilentResponder.m
         ${SRCROOT}/OSX/SFWindow.h
         ${SRCROOT}/OSX/SFWindow.m
+        ${SRCROOT}/OSX/SFView.h
+        ${SRCROOT}/OSX/SFView.mm
+        ${SRCROOT}/OSX/SFView+keyboard_priv.h
+        ${SRCROOT}/OSX/SFView+keyboard.mm
+        ${SRCROOT}/OSX/SFView+mouse_priv.h
+        ${SRCROOT}/OSX/SFView+mouse.mm
         ${SRCROOT}/OSX/SFWindowController.h
         ${SRCROOT}/OSX/SFWindowController.mm
         ${SRCROOT}/OSX/SFViewController.h

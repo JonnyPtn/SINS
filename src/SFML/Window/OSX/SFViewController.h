@@ -31,7 +31,7 @@
 ////////////////////////////////////////////////////////////
 /// Predefine some classes
 ////////////////////////////////////////////////////////////
-@class SFOpenGLView;
+@class SFView;
 
 ////////////////////////////////////////////////////////////
 /// \brief Implementation of WindowImplDelegateProtocol for view management
@@ -40,8 +40,7 @@
 
 @interface SFViewController : NSObject <WindowImplDelegateProtocol>
 {
-    NSView*                     m_view;         ///< Underlying Cocoa view
-    SFOpenGLView*               m_oglView;      ///< OpenGL view
+    SFView*                     m_view;         ///< Underlying Cocoa view
     sf::priv::WindowImplCocoa*  m_requester;    ///< View's requester
 }
 
