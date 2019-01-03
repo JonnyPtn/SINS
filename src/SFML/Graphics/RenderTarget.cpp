@@ -222,7 +222,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
         textureSize = states.texture->getSize();
     }
        
-    for (int i = 0; i < vertexCount; ++i)
+    for (int i = 0u; i < vertexCount; ++i)
     {
         Vertex* data = reinterpret_cast<Vertex*>(tvb.data);
         data[i] = vertices[i];
@@ -255,7 +255,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
         auto indexCount = vertexCount * 3;
         bgfx::allocTransientIndexBuffer(&idb, indexCount);
         std::uint16_t* indices = reinterpret_cast<std::uint16_t*>(idb.data);
-        for (int v = 0, i = 0; v < vertexCount; ++v, ++i)
+        for (int v = 0u, i = 0u; v < vertexCount; ++v, ++i)
         {
             indices[i] = 0;
             indices[++i] = v;
@@ -290,8 +290,53 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, const RenderStates& st
 void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVertex,
                         std::size_t vertexCount, const RenderStates& states)
 {
-    //TODO
-    assert(false);
+    bgfx::setVertexBuffer(0, bgfx::DynamicVertexBufferHandle{ static_cast<std::uint16_t>(vertexBuffer.getNativeHandle()) }, firstVertex, vertexCount);
+    auto state = BGFX_STATE_WRITE_RGB | BGFX_STATE_BLEND_ALPHA;
+    auto type = vertexBuffer.getPrimitiveType();
+    switch (type)
+    {
+    case PrimitiveType::Triangles:
+        state |= BGFX_STATE_DEFAULT;
+        break;
+    case PrimitiveType::TriangleStrip:
+        state |= BGFX_STATE_PT_TRISTRIP;
+        break;
+    case PrimitiveType::Points:
+        state |= BGFX_STATE_PT_POINTS;
+        break;
+    case PrimitiveType::Lines:
+        state |= BGFX_STATE_PT_LINES;
+        break;
+    case PrimitiveType::LineStrip:
+        state |= BGFX_STATE_PT_LINESTRIP;
+        break;
+    case PrimitiveType::TriangleFan:
+        // Not supported by bgfx, so emulate it with an index buffer
+        bgfx::TransientIndexBuffer idb;
+        auto indexCount = vertexCount * 3;
+        bgfx::allocTransientIndexBuffer(&idb, indexCount);
+        std::uint16_t* indices = reinterpret_cast<std::uint16_t*>(idb.data);
+        for (int v = 0, i = 0; v < vertexCount; ++v, ++i)
+        {
+            indices[i] = 0;
+            indices[++i] = v;
+            indices[++i] = v + 1;
+        }
+        bgfx::setIndexBuffer(&idb);
+        break;
+    }
+    bgfx::setState(state);
+    bgfx::setTransform(states.transform.getMatrix());
+    if (states.texture)
+    {
+        bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
+        bgfx::setTexture(0, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
+        bgfx::submit(0, fillTextureProgram);
+    }
+    else
+    {
+        bgfx::submit(0, fillProgram);
+    }
 }
 
 ////////////////////////////////////////////////////////////

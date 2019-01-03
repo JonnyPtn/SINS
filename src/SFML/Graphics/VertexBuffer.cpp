@@ -47,7 +47,7 @@ namespace sf
 
 struct VertexBuffer::impl
 {
-    bgfx::DynamicVertexBufferHandle handle;
+    bgfx::DynamicVertexBufferHandle handle = { bgfx::kInvalidHandle };
 };
 
 ////////////////////////////////////////////////////////////
@@ -127,9 +127,11 @@ bool VertexBuffer::create(std::size_t vertexCount)
     if (!bgfx::isValid(m_impl->handle))
     {
         bgfx::VertexDecl vertexDecl;
-        vertexDecl.add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float); // position
-        vertexDecl.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8); // Is color0 correct?
-        vertexDecl.add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float); // texcoords
+        vertexDecl.begin()
+            .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
+            .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
+            .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
+            .end();
         m_impl->handle = bgfx::createDynamicVertexBuffer(vertexCount, vertexDecl);
     }
 
@@ -175,10 +177,10 @@ bool VertexBuffer::update(const Vertex* vertices, std::size_t vertexCount, unsig
     // Check if we need to resize or orphan the buffer
     if (vertexCount >= m_size)
     {
-        //TODO: resize bgfx buffer?
-
         m_size = vertexCount;
     }
+
+    bgfx::update(m_impl->handle, offset, bgfx::makeRef(vertices, vertexCount * sizeof(Vertex)));
 
     return true;
 }
