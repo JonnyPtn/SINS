@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Window/Export.hpp>
 
 
@@ -45,7 +46,7 @@ public:
     /// \brief Key codes
     ///
     ////////////////////////////////////////////////////////////
-    enum class Key : unsigned char
+    MML_COMPAT_ENUM Key
     {
         Unknown = static_cast<unsigned char>(-1), ///< Unhandled key
 
@@ -161,6 +162,8 @@ public:
         SemiColon = Semicolon,    ///< \deprecated Use Semicolon instead
         Return    = Enter         ///< \deprecated Use Enter instead
     };
+    
+    MML_COMPAT_ALIAS(KeyCount, Key::Count)
 
     ////////////////////////////////////////////////////////////
     /// \brief Check if a key is pressed

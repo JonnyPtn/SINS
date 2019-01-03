@@ -88,7 +88,7 @@ m_joystickThreshold(0.1f)
     for (unsigned int i = 0; i < Joystick::Count; ++i)
     {
         m_joystickStates[i] = JoystickManager::getInstance().getState(i);
-        std::fill_n(m_previousAxes[i], static_cast<std::size_t>(Joystick::Axis::Count), 0.f);
+        std::fill_n(m_previousAxes[i], static_cast<std::size_t>(Joystick::AxisCount), 0.f);
     }
 
     // Get the initial sensor states
@@ -182,13 +182,13 @@ void WindowImpl::processJoystickEvents()
 
             // Clear previous axes positions
             if (connected)
-                std::fill_n(m_previousAxes[i], static_cast<std::size_t>(Joystick::Axis::Count), 0.f);
+                std::fill_n(m_previousAxes[i], static_cast<std::size_t>(Joystick::AxisCount), 0.f);
         }
 
         if (connected)
         {
             // Axes
-            for (auto axisIndex = 0u; axisIndex < static_cast<size_t>(Joystick::Axis::Count); ++axisIndex)
+            for (auto axisIndex = 0u; axisIndex < Joystick::AxisCount; ++axisIndex)
             {
                 if (caps.axes[axisIndex])
                 {

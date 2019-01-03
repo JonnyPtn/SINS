@@ -51,7 +51,7 @@ struct JoystickCaps
     }
 
     unsigned int buttonCount;               ///< Number of buttons supported by the joystick
-    bool         axes[static_cast<size_t>(Joystick::Axis::Count)]; ///< Support for each axis
+    bool         axes[Joystick::AxisCount]; ///< Support for each axis
 };
 
 
@@ -69,7 +69,7 @@ struct JoystickState
     }
 
     bool  connected;                      ///< Is the joystick currently connected?
-    float axes[static_cast<size_t>(Joystick::Axis::Count)];      ///< Position of each axis, in range [-100, 100]
+    float axes[Joystick::AxisCount];      ///< Position of each axis, in range [-100, 100]
     bool  buttons[Joystick::ButtonCount]; ///< Status of each button (true = pressed)
 };
 

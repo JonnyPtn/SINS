@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Window/Export.hpp>
 #include <SFML/System/Vector2.hpp>
 
@@ -48,7 +49,7 @@ public:
     /// \brief Mouse buttons
     ///
     ////////////////////////////////////////////////////////////
-    enum class Button : unsigned char
+    MML_COMPAT_ENUM Button
     {
         Left,       ///< The left mouse button
         Right,      ///< The right mouse button
@@ -59,11 +60,13 @@ public:
         Count       ///< Keep last -- the total number of mouse buttons
     };
 
+    MML_COMPAT_ALIAS(ButtonCount, Button::Count)
+
     ////////////////////////////////////////////////////////////
     /// \brief Mouse wheels
     ///
     ////////////////////////////////////////////////////////////
-    enum class Wheel : unsigned char
+    MML_COMPAT_ENUM Wheel
     {
         VerticalWheel,  ///< The vertical mouse wheel
         HorizontalWheel ///< The horizontal mouse wheel

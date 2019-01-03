@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Network/Export.hpp>
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/TcpSocket.hpp>
@@ -59,7 +60,7 @@ public:
         /// \brief Enumerate the available HTTP methods for a request
         ///
         ////////////////////////////////////////////////////////////
-        enum class Method : unsigned char
+        MML_COMPAT_ENUM Method
         {
             Get,   ///< Request in get mode, standard method to retrieve a page
             Post,  ///< Request in post mode, usually to send data to a page
@@ -198,7 +199,7 @@ public:
         /// \brief Enumerate all the valid status codes for a response
         ///
         ////////////////////////////////////////////////////////////
-        enum class Status : unsigned short
+        MML_COMPAT_ENUM Status
         {
             // 2xx: success
             Ok             = 200, ///< Most common code returned when operation was successful

@@ -212,6 +212,12 @@ if(SFML_OS_LINUX OR SFML_OS_FREEBSD OR SFML_OPENBSD)
     target_link_libraries(sfml-window PRIVATE X11)
 endif()
 
+# Compatibility for:
+# - sf::Event::EventType
+if(MML_SFML_COMPAT)
+    target_compile_definitions(sfml-window PUBLIC "-DMML_SFML_COMPAT")
+endif()
+
 if(SFML_OS_WINDOWS AND NOT SFML_COMPILER_MSVC)
     include(CheckIncludeFile)
     check_include_file(dinput.h DINPUT_H_FOUND)

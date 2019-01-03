@@ -22,33 +22,19 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_PRIMITIVETYPE_HPP
-#define SFML_PRIMITIVETYPE_HPP
+#ifndef SFML_COMPATIBILITY_HPP
+#define SFML_COMPATIBILITY_HPP
 
-#include <SFML/Compatibility.hpp>
+#ifdef MML_SFML_COMPAT
+    #define MML_COMPAT_ENUM enum
+#else
+    #define MML_COMPAT_ENUM enum class
+#endif
 
-namespace sf
-{
-////////////////////////////////////////////////////////////
-/// \ingroup graphics
-/// \brief Types of primitives that a sf::VertexArray can render
-///
-/// Points and lines have no area, therefore their thickness
-/// will always be 1 pixel, regardless the current transform
-/// and view.
-///
-////////////////////////////////////////////////////////////
-MML_COMPAT_ENUM PrimitiveType
-{
-    Points,        ///< List of individual points
-    Lines,         ///< List of individual lines
-    LineStrip,     ///< List of connected lines, a point uses the previous point to form a line
-    Triangles,     ///< List of individual triangles
-    TriangleStrip, ///< List of connected triangles, a point uses the two previous points to form a triangle
-    TriangleFan,   ///< List of connected triangles, a point uses the common center and the previous point to form a triangle
-};
+#ifdef MML_SFML_COMPAT
+    #define MML_COMPAT_ALIAS(newName, aliasExpr) static constexpr auto newName = aliasExpr;
+#else
+    #define MML_COMPAT_ALIAS(newName, aliasExpr)
+#endif
 
-} // namespace sf
-
-
-#endif // SFML_PRIMITIVETYPE_HPP
+#endif // SFML_COMPATIBILITY_HPP

@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Window/Export.hpp>
 #include <SFML/System/Vector3.hpp>
 #include <SFML/System/Time.hpp>
@@ -47,7 +48,7 @@ public:
     /// \brief Sensor type
     ///
     ////////////////////////////////////////////////////////////
-    enum class Type : unsigned char
+    MML_COMPAT_ENUM Type
     {
         Accelerometer,    ///< Measures the raw acceleration (m/s^2)
         Gyroscope,        ///< Measures the raw rotation rates (degrees/s)

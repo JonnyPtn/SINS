@@ -92,6 +92,9 @@ sfml_set_option(SFML_BUILD_NETWORK TRUE BOOL "TRUE to build SFML's Network modul
 # add an option for building the API documentation
 sfml_set_option(SFML_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
 
+# add an option for SFML compatibility, temporarily
+sfml_set_option(MML_SFML_COMPAT FALSE BOOL "TRUE to include API alterations allowing compatibility with SFML")
+
 # Mac OS X specific options
 if(SFML_OS_MACOSX)
     # add an option to build frameworks instead of dylibs (release only)
@@ -349,6 +352,7 @@ else()
     # add the non-optional SFML headers
     add_custom_command(TARGET SFML POST_BUILD COMMAND cp -r
                        ${PROJECT_SOURCE_DIR}/include/SFML/Config.hpp
+                       ${PROJECT_SOURCE_DIR}/include/SFML/Compatibility.hpp
                        ${PROJECT_SOURCE_DIR}/include/SFML/GpuPreference.hpp
                        ${PROJECT_SOURCE_DIR}/include/SFML/System.hpp
                        ${PROJECT_SOURCE_DIR}/include/SFML/Main.hpp

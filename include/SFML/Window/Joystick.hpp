@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Window/Export.hpp>
 #include <SFML/System/String.hpp>
 
@@ -49,14 +50,15 @@ public:
     enum
     {
         Count       = 8,  ///< Maximum number of supported joysticks
-        ButtonCount = 32  ///< Maximum number of supported buttons
+        ButtonCount = 32, ///< Maximum number of supported buttons
+        AxisCount   = 8   ///< Maximum number of supported axes
     };
 
     ////////////////////////////////////////////////////////////
     /// \brief Axes supported by SFML joysticks
     ///
     ////////////////////////////////////////////////////////////
-    enum class Axis : unsigned char
+    MML_COMPAT_ENUM Axis
     {
         X,    ///< The X axis
         Y,    ///< The Y axis
@@ -66,8 +68,6 @@ public:
         V,    ///< The V axis
         PovX, ///< The X axis of the point-of-view hat
         PovY, ///< The Y axis of the point-of-view hat
-
-        Count ///< Maximum number of supported axes
     };
 
     ////////////////////////////////////////////////////////////

@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <SFML/Compatibility.hpp>
 #include <SFML/Network/Export.hpp>
 #include <SFML/Network/SocketHandle.hpp>
 #include <SFML/System/NonCopyable.hpp>
@@ -50,7 +51,7 @@ public:
     /// \brief Status codes that may be returned by socket functions
     ///
     ////////////////////////////////////////////////////////////
-    enum class Status : unsigned char
+    MML_COMPAT_ENUM Status
     {
         Done,         ///< The socket has sent / received the data
         NotReady,     ///< The socket is not ready to send / receive data yet
