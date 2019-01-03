@@ -10,6 +10,7 @@ addons:
     - libvorbis-dev
     - g++-4.9
     - clang-3.6
+    - libgl1-mesa-dev
 
 before_script:
 - mkdir build && cd build
