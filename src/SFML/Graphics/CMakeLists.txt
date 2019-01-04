@@ -111,7 +111,7 @@ endif()
 target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/include)
 
 file(GLOB BGFX_LIBS ${CMAKE_BINARY_DIR}/bgfx-install/lib/*)
-target_link_libraries(sfml-graphics PRIVATE ${BGFX_LIBS})
+target_link_libraries(sfml-graphics PUBLIC ${BGFX_LIBS})
 
 # bgfx compat includes
 if (MSVC)
