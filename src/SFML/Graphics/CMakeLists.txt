@@ -113,7 +113,7 @@ target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-instal
 set(BGFX_LIBS_INPUT bgfx bx bimg )
 foreach(lib ${BGFX_LIBS_INPUT})
     STRING(APPEND lib "$<$<CONFIG:Debug>:d>")
-    STRING(PREPEND lib ${CMAKE_BINARY_DIR}/bgfx-install/lib/)
+    STRING(PREPEND lib ${CMAKE_BINARY_DIR}/bgfx-install/lib/${CMAKE_STATIC_LIBRARY_PREFIX})
     STRING(APPEND lib ${CMAKE_STATIC_LIBRARY_SUFFIX})
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         STRING(APPEND lib ${CMAKE_DEBUG_POSTFIX})
