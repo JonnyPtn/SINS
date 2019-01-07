@@ -120,6 +120,7 @@ void RenderTarget::clear(const Color& color)
     const auto rect = getViewport(getView());
     bgfx::setViewRect(0, rect.left, rect.top, rect.width, rect.height);
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, color.toInteger());
+    bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
 }
 
 
@@ -231,12 +232,24 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     }
     bgfx::setVertexBuffer(0, &tvb);
 
-    auto state = BGFX_STATE_WRITE_RGB | BGFX_STATE_BLEND_ALPHA;
+    auto state = BGFX_STATE_WRITE_RGB;
+
+    if (states.blendMode == BlendAlpha)
+    {
+        state |= BGFX_STATE_BLEND_ALPHA;
+    }
+    else if (states.blendMode == BlendAdd)
+    {
+        state |= BGFX_STATE_BLEND_ADD;
+    }
+
     switch (type)
     {
     case PrimitiveType::Triangles:
-        state |= BGFX_STATE_DEFAULT;
+    {
+        state |= BGFX_STATE_DEFAULT | BGFX_STATE_CULL_CCW;
         break;
+    }
     case PrimitiveType::TriangleStrip:
         state |= BGFX_STATE_PT_TRISTRIP;
         break;
