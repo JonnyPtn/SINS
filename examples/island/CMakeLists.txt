@@ -11,5 +11,5 @@ sfml_add_example(island GUI_APP
                  RESOURCES_DIR resources)
 
 if(SFML_OS_LINUX OR SFML_OS_FREEBSD)
-    target_link_libraries(island PRIVATE pthread)
+	target_link_libraries(island PRIVATE pthread dl GL ${CMAKE_BINARY_DIR}/bgfx-install/lib/libbx.a)
 endif()

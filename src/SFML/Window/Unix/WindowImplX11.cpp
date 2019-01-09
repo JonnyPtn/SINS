@@ -48,14 +48,6 @@
 #include <mutex>
 #include <cstring>
 
-#ifdef SFML_OPENGL_ES
-    #include <SFML/Window/EglContext.hpp>
-    typedef sf::priv::EglContext ContextType;
-#else
-    #include <SFML/Window/Unix/GlxContext.hpp>
-    typedef sf::priv::GlxContext ContextType;
-#endif
-
 ////////////////////////////////////////////////////////////
 // Private data
 ////////////////////////////////////////////////////////////
@@ -528,7 +520,7 @@ m_lastInputTime  (0)
 
 
 ////////////////////////////////////////////////////////////
-WindowImplX11::WindowImplX11(VideoMode mode, const String& title, unsigned long style, const ContextSettings& settings) :
+WindowImplX11::WindowImplX11(VideoMode mode, const String& title, unsigned long style) :
 m_window         (0),
 m_screen         (0),
 m_inputMethod    (nullptr),
@@ -571,12 +563,14 @@ m_lastInputTime  (0)
     int width  = mode.width;
     int height = mode.height;
 
+    // TODO - Need a replacement for this?
     // Choose the visual according to the context settings
-    XVisualInfo visualInfo = ContextType::selectBestVisual(m_display, mode.bitsPerPixel, settings);
+    //XVisualInfo visualInfo = ContextType::selectBestVisual(m_display, mode.bitsPerPixel, settings);
 
     // Define the window attributes
     XSetWindowAttributes attributes;
-    attributes.colormap = XCreateColormap(m_display, DefaultRootWindow(m_display), visualInfo.visual, AllocNone);
+    //attributes.colormap = XCreateColormap(m_display, DefaultRootWindow(m_display), visualInfo.visual, AllocNone);
+    // TODO ^?
     attributes.event_mask = eventMask;
     attributes.override_redirect = (m_fullscreen && !ewmhSupported()) ? True : False;
 
@@ -585,9 +579,11 @@ m_lastInputTime  (0)
                              windowPosition.x, windowPosition.y,
                              width, height,
                              0,
-                             visualInfo.depth,
+                             //visualInfo.depth,
+			     0, // TODO ^?
                              InputOutput,
-                             visualInfo.visual,
+                             //visualInfo.visual,
+			     0, // TODO ^?
                              CWEventMask | CWOverrideRedirect | CWColormap,
                              &attributes);
 

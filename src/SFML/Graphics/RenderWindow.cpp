@@ -103,7 +103,7 @@ void RenderWindow::onCreate()
 {
     // Set the window handle for bgfx then initialise the rendertarget
     bgfx::PlatformData pd;
-    pd.nwh = getSystemHandle();
+    pd.nwh = (void*)getSystemHandle();
     pd.ndt = NULL;
     bgfx::setPlatformData(pd);
     //bgfx::renderFrame();
