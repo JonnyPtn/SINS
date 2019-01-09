@@ -48,15 +48,20 @@ if(NOT CMAKE_OSX_SYSROOT)
                     ERROR_QUIET)
 endif()
 
+# add bgfx
+if (CMAKE_TOOLCHAIN_FILE)
+set(EXTRA_CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/${CMAKE_TOOLCHAIN_FILE}
+-DIOS_PLATFORM=${IOS_PLATFORM})
+endif()
+    include(ExternalProject)
+    ExternalProject_Add(bgfx 
+                    GIT_REPOSITORY https://github.com/jonnyptn/bgfx.cmake
+                    GIT_TAG fpic
+                    CMAKE_ARGS ${EXTRA_CMAKE_ARGS}
+                               -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/bgfx-install)
+
 # project name
 project(SFML)
-
-# add bgfx
-include(ExternalProject)
-ExternalProject_Add(bgfx 
-                    GIT_REPOSITORY https://github.com/jonnyptn/bgfx.cmake
-		    GIT_TAG fpic
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/bgfx-install)
 
 # include the configuration file
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)
