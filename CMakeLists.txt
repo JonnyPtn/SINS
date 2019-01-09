@@ -54,7 +54,8 @@ project(SFML)
 # add bgfx
 include(ExternalProject)
 ExternalProject_Add(bgfx 
-                    GIT_REPOSITORY https://github.com/joshuabrookover/bgfx.cmake
+                    GIT_REPOSITORY https://github.com/jonnyptn/bgfx.cmake
+		    GIT_TAG fpic
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/bgfx-install)
 
 # include the configuration file
