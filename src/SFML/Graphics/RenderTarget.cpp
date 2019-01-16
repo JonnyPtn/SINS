@@ -368,7 +368,7 @@ void RenderTarget::initialize()
     switch (m_contextSettings.backend)
     {
     case ContextSettings::Backend::OpenGL:
-        //init.type = bgfx::RendererType::OpenGL;
+        init.type = bgfx::RendererType::OpenGL;
         break;
 
     default:

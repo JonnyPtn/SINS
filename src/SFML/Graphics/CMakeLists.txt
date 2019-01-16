@@ -119,6 +119,7 @@ foreach(lib ${BGFX_LIBS_INPUT})
         STRING(APPEND lib ${CMAKE_DEBUG_POSTFIX})
     endif()
     list(APPEND BGFX_LIBS ${lib})
+    add_dependencies(sfml-graphics bgfx)
 endforeach()
 target_link_libraries(sfml-graphics PUBLIC ${BGFX_LIBS})
 

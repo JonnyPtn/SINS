@@ -56,7 +56,7 @@ public:
     /// \brief Types of shaders
     ///
     ////////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Type
+    SFML_COMPAT_ENUM Type
     {
         Vertex,   ///< %Vertex shader
         Geometry, ///< Geometry shader

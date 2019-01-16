@@ -48,7 +48,7 @@ public:
     /// \brief Enumeration of the sound source states
     ///
     ////////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Status
+    SFML_COMPAT_ENUM Status
     {
         Stopped, ///< Sound is not playing
         Paused,  ///< Sound is paused

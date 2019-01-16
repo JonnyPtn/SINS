@@ -49,7 +49,7 @@ public:
     /// \brief Mouse buttons
     ///
     ////////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Button
+    SFML_COMPAT_ENUM Button
     {
         Left,       ///< The left mouse button
         Right,      ///< The right mouse button
@@ -60,13 +60,13 @@ public:
         Count       ///< Keep last -- the total number of mouse buttons
     };
 
-    MML_COMPAT_ALIAS(ButtonCount, Button::Count)
+    SFML_COMPAT_ALIAS(ButtonCount, Button::Count)
 
     ////////////////////////////////////////////////////////////
     /// \brief Mouse wheels
     ///
     ////////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Wheel
+        SFML_COMPAT_ENUM Wheel
     {
         VerticalWheel,  ///< The vertical mouse wheel
         HorizontalWheel ///< The horizontal mouse wheel

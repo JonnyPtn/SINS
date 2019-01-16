@@ -38,7 +38,7 @@ namespace sf
 /// and view.
 ///
 ////////////////////////////////////////////////////////////
-MML_COMPAT_ENUM PrimitiveType
+SFML_COMPAT_ENUM PrimitiveType
 {
     Points,        ///< List of individual points
     Lines,         ///< List of individual lines

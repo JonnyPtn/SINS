@@ -53,7 +53,7 @@ public:
     /// \brief Enumeration of transfer modes
     ///
     ////////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM TransferMode
+    SFML_COMPAT_ENUM TransferMode
     {
         Binary, ///< Binary mode (file is transfered as a sequence of bytes)
         Ascii,  ///< Text mode using ASCII encoding
@@ -72,7 +72,7 @@ public:
         /// \brief Status codes possibly returned by a FTP response
         ///
         ////////////////////////////////////////////////////////////
-        MML_COMPAT_ENUM Status
+        SFML_COMPAT_ENUM Status
         {
             // 1xx: the requested action is being initiated,
             // expect another reply before proceeding with a new command

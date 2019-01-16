@@ -51,7 +51,7 @@ public:
     /// \brief Status codes that may be returned by socket functions
     ///
     ////////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Status
+    SFML_COMPAT_ENUM Status
     {
         Done,         ///< The socket has sent / received the data
         NotReady,     ///< The socket is not ready to send / receive data yet

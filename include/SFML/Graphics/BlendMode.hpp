@@ -46,7 +46,7 @@ struct SFML_GRAPHICS_API BlendMode
     /// The factors are mapped directly to their OpenGL equivalents,
     /// specified by glBlendFunc() or glBlendFuncSeparate().
     ////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Factor
+    SFML_COMPAT_ENUM Factor
     {
         Zero,             ///< (0, 0, 0, 0)
         One,              ///< (1, 1, 1, 1)
@@ -66,7 +66,7 @@ struct SFML_GRAPHICS_API BlendMode
     /// The equations are mapped directly to their OpenGL equivalents,
     /// specified by glBlendEquation() or glBlendEquationSeparate().
     ////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Equation
+    SFML_COMPAT_ENUM Equation
     {
         Add,            ///< Pixel = Src * SrcFactor + Dst * DstFactor
         Subtract,       ///< Pixel = Src * SrcFactor - Dst * DstFactor

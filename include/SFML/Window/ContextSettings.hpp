@@ -63,9 +63,10 @@ namespace sf
     /// \param minor        Minor number of the context version
     /// \param attributes   Attribute flags of the context
     /// \param sRgb         sRGB capable framebuffer
+    /// \param backend      Which backend to use (defaults to OpenGL)
     ///
     ////////////////////////////////////////////////////////////
-    explicit ContextSettings(unsigned int depth = 0, unsigned int stencil = 0, unsigned int antialiasing = 0, unsigned int major = 1, unsigned int minor = 1, unsigned int attributes = Default, bool sRgb = false, Backend backendAPI = Backend::Default) :
+    explicit ContextSettings(unsigned int depth = 0, unsigned int stencil = 0, unsigned int antialiasing = 0, unsigned int major = 1, unsigned int minor = 1, unsigned int attributes = Default, bool sRgb = false, Backend backendAPI = Backend::OpenGL) :
     depthBits        (depth),
     stencilBits      (stencil),
     antialiasingLevel(antialiasing),

@@ -58,7 +58,7 @@ public:
     /// \brief Axes supported by SFML joysticks
     ///
     ////////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Axis
+    SFML_COMPAT_ENUM Axis
     {
         X,    ///< The X axis
         Y,    ///< The Y axis

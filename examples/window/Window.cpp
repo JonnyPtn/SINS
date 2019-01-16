@@ -14,9 +14,13 @@
 int main()
 {
     // Create the main window
-    sf::Window window(sf::VideoMode(640, 480), "SFML window", sf::Style::Default);
+    const auto title = "SFML window";
+    std::uint8_t style = sf::Style::Default;
+    const auto width = 640u, height = 480u, bpp = 32u;
+    sf::Window window({ width, height, bpp }, title, style);
 
     std::cout << "Window created, system handle: " << window.getSystemHandle() << std::endl;
+    std::cout << "Arrows move the window. Press F to toggle full screen" << std::endl;
 
     while (window.isOpen())
     {
@@ -46,10 +50,42 @@ int main()
                 std::cout << "Focus gained" << std::endl;
                 break;
             }
-            default:
+            case sf::Event::Type::KeyPressed:
             {
-                std::cout << "Some other mysterious event..." << std::endl;
+                const auto pos = window.getPosition();
+                const auto movement = 10;
+                switch (event.key.code)
+                {
+                    case sf::Keyboard::Key::Left:
+                    {
+                        window.setPosition({ pos.x - movement, pos.y });
+                        break;
+                    }
+                    case sf::Keyboard::Key::Right:
+                    {
+                        window.setPosition({ pos.x + movement, pos.y });
+                        break;
+                    }
+                    case sf::Keyboard::Key::Up:
+                    {
+                        window.setPosition({ pos.x, pos.y - movement });
+                        break;
+                    }
+                    case sf::Keyboard::Key::Down:
+                    {
+                        window.setPosition({ pos.x, pos.y + movement });
+                        break;
+                    }
+                    case sf::Keyboard::Key::F:
+                    {
+                        style ^= sf::Style::Fullscreen;
+                        auto size = window.getSize();
+                        window.create({ size.x, size.y, bpp }, title, style);
+                    }
+                }
             }
+            default:
+                break;
             }
         }
     }

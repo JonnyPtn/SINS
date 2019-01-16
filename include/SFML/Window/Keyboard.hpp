@@ -46,7 +46,7 @@ public:
     /// \brief Key codes
     ///
     ////////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Key
+    SFML_COMPAT_ENUM Key
     {
         Unknown = static_cast<unsigned char>(-1), ///< Unhandled key
 
@@ -163,7 +163,7 @@ public:
         Return    = Enter         ///< \deprecated Use Enter instead
     };
     
-    MML_COMPAT_ALIAS(KeyCount, Key::Count)
+    SFML_COMPAT_ALIAS(KeyCount, Key::Count)
 
     ////////////////////////////////////////////////////////////
     /// \brief Check if a key is pressed

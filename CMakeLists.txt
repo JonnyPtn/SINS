@@ -93,7 +93,7 @@ sfml_set_option(SFML_BUILD_NETWORK TRUE BOOL "TRUE to build SFML's Network modul
 sfml_set_option(SFML_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
 
 # add an option for SFML compatibility, temporarily
-sfml_set_option(MML_SFML_COMPAT FALSE BOOL "TRUE to include API alterations allowing compatibility with SFML")
+sfml_set_option(SFML_COMPAT TRUE BOOL "TRUE (default) to include API alterations allowing compatibility with SFML")
 
 # Mac OS X specific options
 if(SFML_OS_MACOSX)

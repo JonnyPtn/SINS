@@ -25,16 +25,16 @@
 #ifndef SFML_COMPATIBILITY_HPP
 #define SFML_COMPATIBILITY_HPP
 
-#ifdef MML_SFML_COMPAT
-    #define MML_COMPAT_ENUM enum
+#ifdef SFML_COMPAT
+    #define SFML_COMPAT_ENUM enum
 #else
-    #define MML_COMPAT_ENUM enum class
+    #define SFML_COMPAT_ENUM enum class
 #endif
 
-#ifdef MML_SFML_COMPAT
-    #define MML_COMPAT_ALIAS(newName, aliasExpr) static constexpr auto newName = aliasExpr;
+#ifdef SFML_COMPAT
+    #define SFML_COMPAT_ALIAS(newName, aliasExpr) static constexpr auto newName = aliasExpr;
 #else
-    #define MML_COMPAT_ALIAS(newName, aliasExpr)
+    #define SFML_COMPAT_ALIAS(newName, aliasExpr)
 #endif
 
 #endif // SFML_COMPATIBILITY_HPP

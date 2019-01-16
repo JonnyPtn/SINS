@@ -60,7 +60,7 @@ public:
         /// \brief Enumerate the available HTTP methods for a request
         ///
         ////////////////////////////////////////////////////////////
-        MML_COMPAT_ENUM Method
+        SFML_COMPAT_ENUM Method
         {
             Get,   ///< Request in get mode, standard method to retrieve a page
             Post,  ///< Request in post mode, usually to send data to a page
@@ -199,7 +199,7 @@ public:
         /// \brief Enumerate all the valid status codes for a response
         ///
         ////////////////////////////////////////////////////////////
-        MML_COMPAT_ENUM Status
+        SFML_COMPAT_ENUM Status
         {
             // 2xx: success
             Ok             = 200, ///< Most common code returned when operation was successful

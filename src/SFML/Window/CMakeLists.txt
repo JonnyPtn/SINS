@@ -214,8 +214,8 @@ endif()
 
 # Compatibility for:
 # - sf::Event::EventType
-if(MML_SFML_COMPAT)
-    target_compile_definitions(sfml-window PUBLIC "-DMML_SFML_COMPAT")
+if(SFML_COMPAT)
+    target_compile_definitions(sfml-window PUBLIC "-DSFML_COMPAT")
 endif()
 
 if(SFML_OS_WINDOWS AND NOT SFML_COMPILER_MSVC)

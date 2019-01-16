@@ -48,7 +48,7 @@ public:
     /// \brief Sensor type
     ///
     ////////////////////////////////////////////////////////////
-    MML_COMPAT_ENUM Type
+    SFML_COMPAT_ENUM Type
     {
         Accelerometer,    ///< Measures the raw acceleration (m/s^2)
         Gyroscope,        ///< Measures the raw rotation rates (degrees/s)
