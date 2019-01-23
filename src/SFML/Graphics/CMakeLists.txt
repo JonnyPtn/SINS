@@ -127,10 +127,12 @@ target_link_libraries(sfml-graphics PUBLIC ${BGFX_LIBS})
 if (MSVC)
     target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/include/compat/msvc)
     target_link_libraries(sfml-graphics PRIVATE Psapi)
+elseif(IOS)
+    target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/include/compat/ios)
 endif()
 
 # We use Metal on apple
-if(APPLE)
+if(APPLE AND NOT IOS)
     target_link_libraries(sfml-graphics PRIVATE "-framework Metal -framework Quartzcore -framework Foundation -framework Appkit")
 endif()
 

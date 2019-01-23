@@ -47,8 +47,7 @@ WindowImplUIKit::WindowImplUIKit(WindowHandle handle)
 ////////////////////////////////////////////////////////////
 WindowImplUIKit::WindowImplUIKit(VideoMode mode,
                                  const String& title,
-                                 unsigned long style,
-                                 const ContextSettings& /*settings*/)
+                                 unsigned long style)
 {
     m_backingScale = [SFAppDelegate getInstance].backingScaleFactor;
 
@@ -100,15 +99,14 @@ WindowImplUIKit::~WindowImplUIKit()
 ////////////////////////////////////////////////////////////
 void WindowImplUIKit::processEvents()
 {
-    while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0001, true) == kCFRunLoopRunHandledSource)
-        ;
+    while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0001, true) == kCFRunLoopRunHandledSource);
 }
 
 
 ////////////////////////////////////////////////////////////
 WindowHandle WindowImplUIKit::getSystemHandle() const
 {
-    return (__bridge WindowHandle)m_window;
+    return (__bridge WindowHandle)m_view.layer;
 }
 
 
@@ -231,9 +229,9 @@ void WindowImplUIKit::forwardEvent(Event event)
 
 
 ////////////////////////////////////////////////////////////
-SFView* WindowImplUIKit::getGlView() const
+SFViewController* WindowImplUIKit::getRootViewController() const
 {
-    return m_view;
+    return m_window.rootViewController;
 }
 
 
