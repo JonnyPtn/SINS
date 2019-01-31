@@ -33,6 +33,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Angle.hpp>
 
+#include <array>
 
 namespace sf
 {
@@ -359,7 +360,7 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    float m_matrix[16]; ///< 4x4 matrix defining the transformation
+    std::array<float,16> m_matrix; ///< 4x4 matrix defining the transformation
 };
 
 ////////////////////////////////////////////////////////////

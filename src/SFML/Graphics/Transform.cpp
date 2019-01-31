@@ -61,7 +61,7 @@ Transform::Transform(float a00, float a01, float a02,
 ////////////////////////////////////////////////////////////
 const float* Transform::getMatrix() const
 {
-    return m_matrix;
+    return m_matrix.data();
 }
 
 
@@ -141,8 +141,8 @@ FloatRect Transform::transformRect(const FloatRect& rectangle) const
 ////////////////////////////////////////////////////////////
 Transform& Transform::combine(const Transform& transform)
 {
-    const float* a = m_matrix;
-    const float* b = transform.m_matrix;
+    const float* a = m_matrix.data();
+    const float* b = transform.m_matrix.data();
 
     *this = Transform(a[0] * b[0]  + a[4] * b[1]  + a[12] * b[3],
                       a[0] * b[4]  + a[4] * b[5]  + a[12] * b[7],
