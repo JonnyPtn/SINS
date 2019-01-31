@@ -64,10 +64,9 @@ public:
     /// \param mode     Video mode to use
     /// \param title    Title of the window
     /// \param style    Window style (resizable, fixed, or fullscren)
-    /// \param settings Additional settings for the underlying OpenGL context
     ///
     ////////////////////////////////////////////////////////////
-    WindowImplUIKit(VideoMode mode, const String& title, unsigned long style, const ContextSettings& settings);
+    WindowImplUIKit(VideoMode mode, const String& title, unsigned long style);
 
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
@@ -163,7 +162,7 @@ public:
     /// \param cursor Native system cursor type to display
     ///
     ////////////////////////////////////////////////////////////
-    virtual void setMouseCursor(const CursorImpl& cursor);
+    virtual void setMouseCursor(const CursorImpl& cursor) override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Enable or disable automatic key-repeat
@@ -199,12 +198,12 @@ public:
     void forwardEvent(Event event);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the window's view
+    /// \brief Get the root view controller
     ///
-    /// \return Pointer to the window's view
+    /// \return Pointer to the root view controller
     ///
     ////////////////////////////////////////////////////////////
-    SFView* getGlView() const;
+    SFViewController* getRootViewController() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Show or hide the virtual keyboard

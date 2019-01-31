@@ -26,6 +26,7 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Window/iOS/SFAppDelegate.hpp>
+#include <SFML/Window/iOS/SFViewController.hpp>
 #include <SFML/Window/iOS/SFMain.hpp>
 #include <vector>
 
@@ -171,7 +172,7 @@ namespace
     if (!self.sfWindow)
         return false;
 
-    UIViewController* rootViewController = [((__bridge UIWindow*)(self.sfWindow->getSystemHandle())) rootViewController];
+    SFViewController* rootViewController = self.sfWindow->getRootViewController();
     if (!rootViewController || ![rootViewController shouldAutorotate])
         return false;
 

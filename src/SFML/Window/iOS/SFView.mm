@@ -40,8 +40,6 @@
 
 @implementation SFView
 
-@synthesize context;
-
 
 ////////////////////////////////////////////////////////////
 -(BOOL)canBecomeFirstResponder
@@ -162,16 +160,17 @@
 ////////////////////////////////////////////////////////////
 - (void)layoutSubviews
 {
-    // update the attached context's buffers
-    if (self.context)
-        self.context->recreateRenderBuffers(self);
 }
 
 
 ////////////////////////////////////////////////////////////
 + (Class)layerClass
 {
+#if HAS_METAL_SDK
+    return [CAMetalLayer class];
+#else
     return [CAEAGLLayer class];
+#endif
 }
 
 ////////////////////////////////////////////////////////////
@@ -183,16 +182,7 @@
 
     if (self)
     {
-        self.context = nullptr;
         self.touches = [NSMutableArray array];
-
-        // Configure the EAGL layer
-        CAEAGLLayer* eaglLayer = (CAEAGLLayer*)self.layer;
-        eaglLayer.opaque = YES;
-        eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking,
-                                        kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat,
-                                        nil];
 
         // Enable user interactions on the view (multi-touch events)
         self.userInteractionEnabled = true;
