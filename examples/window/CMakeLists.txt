@@ -4,13 +4,11 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/examples/window)
 # all source files
 set(SRC ${SRCROOT}/Window.cpp)
 
-find_package(OpenGL REQUIRED)
-
 # define the window target
 sfml_add_example(window GUI_APP
                  SOURCES ${SRC}
-                 DEPENDS sfml-window ${OPENGL_gl_LIBRARY})
+                 DEPENDS sfml-window)
 
 if (APPLE)
-    target_link_libraries(window PRIVATE "-framework OpenGL -Objc")
+    target_link_libraries(window PRIVATE "-Objc")
 endif()

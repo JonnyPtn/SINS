@@ -70,29 +70,6 @@ void Window::create(VideoMode mode, const String& title, Uint32 style)
     // Destroy the previous window implementation
     close();
 
-    // Fullscreen style requires some tests
-    if (style & Style::Fullscreen)
-    {
-        // Make sure there's not already a fullscreen window (only one is allowed)
-        if (getFullscreenWindow())
-        {
-            err() << "Creating two fullscreen windows is not allowed, switching to windowed mode" << std::endl;
-            style &= ~Style::Fullscreen;
-        }
-        else
-        {
-            // Make sure that the chosen video mode is compatible
-            if (!mode.isValid())
-            {
-                err() << "The requested video mode is not available, switching to a valid mode" << std::endl;
-                mode = VideoMode::getFullscreenModes()[0];
-            }
-
-            // Update the fullscreen window
-            setFullscreenWindow(this);
-        }
-    }
-
     // Check validity of style according to the underlying platform
     #if defined(SFML_SYSTEM_IOS) || defined(SFML_SYSTEM_ANDROID)
         if (style & Style::Fullscreen)
@@ -118,9 +95,6 @@ void Window::create(WindowHandle handle)
     // Destroy the previous window implementation
     close();
 
-    // Recreate the window implementation
-    WindowBase::create(handle);
-
     // Perform common initializations
     initialize();
 }
@@ -131,10 +105,6 @@ void Window::close()
 {
     // Reset the window implementation
     m_impl.reset();
-
-    // Update the fullscreen window
-    if (this == fullscreenWindow)
-        fullscreenWindow = nullptr;
 }
 
 

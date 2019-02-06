@@ -126,25 +126,6 @@ public:
     virtual void create(VideoMode mode, const String& title, Uint32 style = Style::Default);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Create (or recreate) the window
-    ///
-    /// If the window was already created, it closes it first.
-    /// If \a style contains Style::Fullscreen, then \a mode
-    /// must be a valid video mode.
-    ///
-    /// The fourth parameter is an optional structure specifying
-    /// advanced OpenGL context settings such as antialiasing,
-    /// depth-buffer bits, etc.
-    ///
-    /// \param mode     Video mode to use (defines the width, height and depth of the rendering area of the window)
-    /// \param title    Title of the window
-    /// \param style    %Window style, a bitwise OR combination of sf::Style enumerators
-    /// \param settings Additional settings for the underlying OpenGL context
-    ///
-    ////////////////////////////////////////////////////////////
-    void create(VideoMode mode, const String& title, Uint32 style = Style::Default);
-
-    ////////////////////////////////////////////////////////////
     /// \brief Create (or recreate) the window from an existing control
     ///
     /// Use this function if you want to create an OpenGL
@@ -172,6 +153,18 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     virtual void close();
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Tell whether or not the window is open
+    ///
+    /// This function returns whether or not the window exists.
+    /// Note that a hidden window (setVisible(false)) is open
+    /// (therefore this function would return true).
+    ///
+    /// \return True if the window is open, false if it has been closed
+    ///
+    ////////////////////////////////////////////////////////////
+    bool isOpen() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Pop the event on top of the event queue, if any, and return it

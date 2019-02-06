@@ -47,7 +47,7 @@ Vector2i Mouse::getPosition()
 
 
 ////////////////////////////////////////////////////////////
-Vector2i Mouse::getPosition(const WindowBase& relativeTo)
+Vector2i Mouse::getPosition(const Window& relativeTo)
 {
     return priv::InputImpl::getMousePosition(relativeTo);
 }
@@ -61,7 +61,7 @@ void Mouse::setPosition(const Vector2i& position)
 
 
 ////////////////////////////////////////////////////////////
-void Mouse::setPosition(const Vector2i& position, const WindowBase& relativeTo)
+void Mouse::setPosition(const Vector2i& position, const Window& relativeTo)
 {
     priv::InputImpl::setMousePosition(position, relativeTo);
 }

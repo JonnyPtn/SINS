@@ -161,7 +161,7 @@ public:
 
 private:
 
-    friend class WindowBase;
+    friend class Window;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get access to the underlying implementation
