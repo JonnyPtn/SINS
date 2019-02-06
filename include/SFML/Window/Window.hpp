@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2018 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2019 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -118,6 +118,20 @@ public:
     /// If \a style contains Style::Fullscreen, then \a mode
     /// must be a valid video mode.
     ///
+    /// \param mode     Video mode to use (defines the width, height and depth of the rendering area of the window)
+    /// \param title    Title of the window
+    /// \param style    %Window style, a bitwise OR combination of sf::Style enumerators
+    ///
+    ////////////////////////////////////////////////////////////
+    virtual void create(VideoMode mode, const String& title, Uint32 style = Style::Default);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Create (or recreate) the window
+    ///
+    /// If the window was already created, it closes it first.
+    /// If \a style contains Style::Fullscreen, then \a mode
+    /// must be a valid video mode.
+    ///
     /// The fourth parameter is an optional structure specifying
     /// advanced OpenGL context settings such as antialiasing,
     /// depth-buffer bits, etc.
@@ -157,19 +171,7 @@ public:
     /// and will have no effect on closed windows.
     ///
     ////////////////////////////////////////////////////////////
-    void close();
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Tell whether or not the window is open
-    ///
-    /// This function returns whether or not the window exists.
-    /// Note that a hidden window (setVisible(false)) is open
-    /// (therefore this function would return true).
-    ///
-    /// \return True if the window is open, false if it has been closed
-    ///
-    ////////////////////////////////////////////////////////////
-    bool isOpen() const;
+    virtual void close();
 
     ////////////////////////////////////////////////////////////
     /// \brief Pop the event on top of the event queue, if any, and return it

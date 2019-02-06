@@ -35,6 +35,8 @@ set(SRC
     ${SRCROOT}/VideoModeImpl.hpp
     ${SRCROOT}/Window.cpp
     ${INCROOT}/Window.hpp
+    ${SRCROOT}/WindowBase.cpp
+    ${INCROOT}/WindowBase.hpp
     ${INCROOT}/WindowHandle.hpp
     ${SRCROOT}/WindowImpl.cpp
     ${SRCROOT}/WindowImpl.hpp
@@ -217,6 +219,7 @@ endif()
 if(SFML_COMPAT)
     target_compile_definitions(sfml-window PUBLIC "-DSFML_COMPAT")
 endif()
+target_link_libraries(sfml-window PRIVATE OpenGL)
 
 if(SFML_OS_WINDOWS AND NOT SFML_COMPILER_MSVC)
     include(CheckIncludeFile)

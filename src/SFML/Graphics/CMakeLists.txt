@@ -105,6 +105,7 @@ if(SFML_OS_LINUX)
 endif()
 
 if(SFML_OS_ANDROID)
+<<<<<<< HEAD
     target_link_libraries(sfml-graphics PRIVATE z)
 endif()
 
@@ -134,6 +135,8 @@ endif()
 # We use Metal on apple
 if(APPLE AND NOT IOS)
     target_link_libraries(sfml-graphics PRIVATE "-framework Metal -framework Quartzcore -framework Foundation -framework Appkit")
+elseif(SFML_OS_IOS)
+    target_link_libraries(sfml-graphics PRIVATE z bz2)
 endif()
 
 sfml_find_package(Freetype INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")

@@ -4,6 +4,14 @@
 #include <SFML/Window.hpp>
 #include <iostream>
 
+#ifdef SFML_SYSTEM_IOS
+#include <SFML/Main.hpp>
+#endif
+
+#ifdef SFML_OPENGL_ES
+#define glClearDepth glClearDepthf
+#define glFrustum glFrustumf
+#endif
 
 ////////////////////////////////////////////////////////////
 /// Entry point of application
@@ -38,6 +46,12 @@ int main()
             {
                 auto size = event.size;
                 std::cout << "Window resized to " << size.width << "," << size.height << std::endl;
+
+                glViewport(0, 0, event.size.width, event.size.height);
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                GLfloat ratio = static_cast<float>(event.size.width) / event.size.height;
+                glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, 500.f);
                 break;
             }
             case sf::Event::Type::LostFocus:

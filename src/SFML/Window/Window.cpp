@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2018 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2019 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -29,12 +29,6 @@
 #include <SFML/Window/WindowImpl.hpp>
 #include <SFML/System/Sleep.hpp>
 #include <SFML/System/Err.hpp>
-
-
-namespace
-{
-    const sf::Window* fullscreenWindow = nullptr;
-}
 
 
 namespace sf
@@ -80,7 +74,7 @@ void Window::create(VideoMode mode, const String& title, Uint32 style)
     if (style & Style::Fullscreen)
     {
         // Make sure there's not already a fullscreen window (only one is allowed)
-        if (fullscreenWindow)
+        if (getFullscreenWindow())
         {
             err() << "Creating two fullscreen windows is not allowed, switching to windowed mode" << std::endl;
             style &= ~Style::Fullscreen;
@@ -95,7 +89,7 @@ void Window::create(VideoMode mode, const String& title, Uint32 style)
             }
 
             // Update the fullscreen window
-            fullscreenWindow = this;
+            setFullscreenWindow(this);
         }
     }
 
@@ -125,7 +119,7 @@ void Window::create(WindowHandle handle)
     close();
 
     // Recreate the window implementation
-    m_impl = priv::WindowImpl::create(handle);
+    WindowBase::create(handle);
 
     // Perform common initializations
     initialize();

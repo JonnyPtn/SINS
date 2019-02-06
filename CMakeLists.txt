@@ -101,7 +101,7 @@ sfml_set_option(SFML_BUILD_DOC FALSE BOOL "TRUE to generate the API documentatio
 # add an option for SFML compatibility, temporarily
 sfml_set_option(SFML_COMPAT TRUE BOOL "TRUE (default) to include API alterations allowing compatibility with SFML")
 
-# Mac OS X specific options
+# macOS specific options
 if(SFML_OS_MACOSX)
     # add an option to build frameworks instead of dylibs (release only)
     sfml_set_option(SFML_BUILD_FRAMEWORKS FALSE BOOL "TRUE to build SFML as frameworks libraries (release only), FALSE to build according to BUILD_SHARED_LIBS")
@@ -114,6 +114,14 @@ if(SFML_OS_MACOSX)
 else()
     # add an option to let the user specify a custom directory for external libraries installation
     sfml_set_option(SFML_DEPENDENCIES_INSTALL_PREFIX "." PATH "External libraries (FLAC, Freetype, Vorbis, ...) installation directory")
+endif()
+
+# iOS specific options
+if(SFML_OS_IOS)
+    # At the moment the minimal deployement target version is 10.2 only because the externals for iOS were built with that requirement.
+    sfml_set_option(SFML_IOS_DEPLOYMENT_TARGET "10.2" STRING "The minimal iOS version that will be able to run the built binaries. Cannot be lower than 10.2.")
+
+    sfml_set_option(SFML_CODE_SIGN_IDENTITY "iPhone Developer" STRING "The code signing identity to use when building for a real device")
 endif()
 
 # Android options
