@@ -105,7 +105,6 @@ if(SFML_OS_LINUX)
 endif()
 
 if(SFML_OS_ANDROID)
-<<<<<<< HEAD
     target_link_libraries(sfml-graphics PRIVATE z)
 endif()
 
