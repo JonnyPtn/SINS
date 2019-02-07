@@ -1,4 +1,5 @@
 # Copyright (c) 2016, Bogdan Cristea <cristeab@gmail.com>
+# Modified work Copyright (c) 2018, Jonny Paton
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,13 +18,7 @@
 
 # Options:
 #
-# IOS_PLATFORM = OS (default) or SIMULATOR
-#   This decides if SDKS will be selected from the iPhoneOS.platform or iPhoneSimulator.platform folders
-#   OS - the default, used to build for iPhone and iPad physical devices, which have an arm arch.
-#   SIMULATOR - used to build for the Simulator platforms, which have an x86_64 arch.
-#
 # IOS_DEVELOPER_ROOT = automatic(default) or /path/to/platform/Developer folder
-#   By default this location is automatcially chosen based on the IOS_PLATFORM value above.
 #   If set manually, it will override the default location and force the user of a particular Developer Platform
 #
 # IOS_SDK_ROOT = automatic(default) or /path/to/platform/Developer/SDKs/SDK folder
@@ -101,30 +96,9 @@ if (NOT DEFINED CMAKE_INSTALL_NAME_TOOL)
 	find_program(CMAKE_INSTALL_NAME_TOOL install_name_tool)
 endif (NOT DEFINED CMAKE_INSTALL_NAME_TOOL)
 
-# Setup iOS platform unless specified manually with IOS_PLATFORM
-if (NOT DEFINED IOS_PLATFORM)
-	set (IOS_PLATFORM "OS")
-endif (NOT DEFINED IOS_PLATFORM)
-set (IOS_PLATFORM ${IOS_PLATFORM} CACHE STRING "Type of iOS Platform: OS or SIMULATOR")
-
-# Check the platform selection and setup for developer root
-if (IOS_PLATFORM STREQUAL OS)
-	set (IOS_PLATFORM_LOCATION "iPhoneOS.platform")
-
-	# This causes the installers to properly locate the output libraries
-	set (CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphoneos")
-elseif (IOS_PLATFORM STREQUAL SIMULATOR)
-	set (IOS_PLATFORM_LOCATION "iPhoneSimulator.platform")
-
-	# This causes the installers to properly locate the output libraries
-	set (CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphonesimulator")
-else ()
-    message (FATAL_ERROR "Unsupported IOS_PLATFORM value '${IOS_PLATFORM}' selected. Please choose OS or SIMULATOR")
-endif ()
-
 # Setup iOS developer location unless specified manually with IOS_DEVELOPER_ROOT
 exec_program(/usr/bin/xcode-select ARGS -print-path OUTPUT_VARIABLE XCODE_DEVELOPER_DIR)
-set (IOS_DEVELOPER_ROOT "${XCODE_DEVELOPER_DIR}/Platforms/${IOS_PLATFORM_LOCATION}/Developer" CACHE PATH "Location of iOS Platform")
+set (IOS_DEVELOPER_ROOT "${XCODE_DEVELOPER_DIR}/Platforms/iPhoneOS.platform/Developer" CACHE PATH "Location of iOS Platform")
 
 # Find and use the most recent iOS sdk unless specified manually with IOS_SDK_ROOT
 if (NOT DEFINED IOS_SDK_ROOT)
@@ -142,16 +116,6 @@ set (IOS_SDK_ROOT ${IOS_SDK_ROOT} CACHE PATH "Location of the selected iOS SDK")
 
 # Set the sysroot default to the most recent SDK
 set (CMAKE_OSX_SYSROOT ${IOS_SDK_ROOT} CACHE PATH "Sysroot used for iOS support")
-
-# set the architecture for iOS 
-if (${IOS_PLATFORM} STREQUAL OS)
-    set (OSX_UNIVERSAL true)
-    set (IOS_ARCH arm64)
-elseif (${IOS_PLATFORM} STREQUAL SIMULATOR)
-    set (IOS_ARCH x86_64)
-endif (${IOS_PLATFORM} STREQUAL OS)
-
-set (CMAKE_OSX_ARCHITECTURES ${IOS_ARCH} CACHE STRING "Build architecture for iOS" FORCE)
 
 # Set the find root to the iOS developer roots and to user defined paths
 set (CMAKE_FIND_ROOT_PATH ${IOS_DEVELOPER_ROOT} ${IOS_SDK_ROOT} ${CMAKE_PREFIX_PATH} CACHE STRING "iOS find search path root")

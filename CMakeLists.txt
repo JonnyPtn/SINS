@@ -50,13 +50,13 @@ endif()
 
 # add bgfx
 if (CMAKE_TOOLCHAIN_FILE)
-set(EXTRA_CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/${CMAKE_TOOLCHAIN_FILE}
--DIOS_PLATFORM=${IOS_PLATFORM})
+set(EXTRA_CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/bgfx-prefix/src/bgfx/cmake/toolchains/iOS.toolchain.cmake
+    -DBGFX_BUILD_TOOLS=OFF
+    -DBGFX_BUILD_EXAMPLES=OFF)
 endif()
     include(ExternalProject)
     ExternalProject_Add(bgfx 
-                    GIT_REPOSITORY https://github.com/jonnyptn/bgfx.cmake
-                    GIT_TAG fpic
+                    GIT_REPOSITORY https://github.com/joshuabrookover/bgfx.cmake
                     CMAKE_ARGS ${EXTRA_CMAKE_ARGS}
                                -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/bgfx-install)
 
@@ -114,14 +114,6 @@ if(SFML_OS_MACOSX)
 else()
     # add an option to let the user specify a custom directory for external libraries installation
     sfml_set_option(SFML_DEPENDENCIES_INSTALL_PREFIX "." PATH "External libraries (FLAC, Freetype, Vorbis, ...) installation directory")
-endif()
-
-# iOS specific options
-if(SFML_OS_IOS)
-    # At the moment the minimal deployement target version is 10.2 only because the externals for iOS were built with that requirement.
-    sfml_set_option(SFML_IOS_DEPLOYMENT_TARGET "10.2" STRING "The minimal iOS version that will be able to run the built binaries. Cannot be lower than 10.2.")
-
-    sfml_set_option(SFML_CODE_SIGN_IDENTITY "iPhone Developer" STRING "The code signing identity to use when building for a real device")
 endif()
 
 # Android options
