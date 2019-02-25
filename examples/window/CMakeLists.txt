@@ -10,5 +10,5 @@ sfml_add_example(window GUI_APP
                  DEPENDS sfml-window)
 
 if (APPLE)
-    target_link_libraries(window PRIVATE "-Objc")
+    target_link_libraries(window PRIVATE "-framework OpenGLES -Objc")
 endif()
