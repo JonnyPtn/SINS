@@ -66,7 +66,7 @@ namespace sf
     /// \param backend      Which backend to use (defaults to OpenGL)
     ///
     ////////////////////////////////////////////////////////////
-    explicit ContextSettings(unsigned int depth = 0, unsigned int stencil = 0, unsigned int antialiasing = 0, unsigned int major = 1, unsigned int minor = 1, unsigned int attributes = Default, bool sRgb = false, Backend backendAPI = Backend::OpenGL) :
+    explicit ContextSettings(unsigned int depth = 0, unsigned int stencil = 0, unsigned int antialiasing = 0, unsigned int major = 1, unsigned int minor = 1, unsigned int attributes = Default, bool sRgb = false, Backend backendAPI = Backend::Default) :
     depthBits        (depth),
     stencilBits      (stencil),
     antialiasingLevel(antialiasing),

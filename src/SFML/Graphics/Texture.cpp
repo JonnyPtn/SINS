@@ -305,7 +305,7 @@ void Texture::update(const Texture& texture, unsigned int x, unsigned int y)
     if (!bgfx::isValid(m_impl->texture))
         return;
 
-    update(texture.copyToImage(), x, y);
+    bgfx::blit(0, m_impl->texture, x, y, texture.m_impl->texture);
 }
 
 
