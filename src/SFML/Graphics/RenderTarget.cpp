@@ -247,7 +247,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     {
     case PrimitiveType::Triangles:
     {
-        state |= BGFX_STATE_DEFAULT | BGFX_STATE_CULL_CCW;
+        // default
         break;
     }
     case PrimitiveType::TriangleStrip:
@@ -309,7 +309,6 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
     switch (type)
     {
     case PrimitiveType::Triangles:
-        state |= BGFX_STATE_DEFAULT;
         break;
     case PrimitiveType::TriangleStrip:
         state |= BGFX_STATE_PT_TRISTRIP;
@@ -371,6 +370,18 @@ void RenderTarget::initialize()
         init.type = bgfx::RendererType::OpenGL;
         break;
 
+    case ContextSettings::Backend::DX9:
+        init.type = bgfx::RendererType::Direct3D9;
+        break;
+
+    case ContextSettings::Backend::DX11:
+        init.type = bgfx::RendererType::Direct3D11;
+        break;
+
+    case ContextSettings::Backend::DX12:
+        init.type = bgfx::RendererType::Direct3D12;
+        break;
+
     default:
         break;
     }
@@ -410,7 +421,7 @@ void RenderTarget::applyCurrentView()
 {
     // Set the viewport
     const auto viewport = m_view.getViewport();
-    //bgfx::setViewRect(0, viewport.left, viewport.top, viewport.width, viewport.height);
+    bgfx::setViewRect(0, viewport.left, viewport.top, viewport.width, viewport.height);
 
     // And the view transform
     const auto transform = m_view.getTransform();

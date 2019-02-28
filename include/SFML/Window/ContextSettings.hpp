@@ -50,6 +50,10 @@ namespace sf
     enum class Backend
     {
         OpenGL,
+        DX9,
+        DX11,
+        DX12,
+
         Default
     };
 
