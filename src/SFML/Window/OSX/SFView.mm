@@ -118,25 +118,11 @@
         m_hiddenTextView = [[NSTextView alloc] initWithFrame:NSZeroRect];
         [m_hiddenTextView setNextResponder:m_silentResponder];
 
-        // Request high resolution on high DPI displays
-        [self setWantsBestResolutionOpenGLSurface:YES];
-
         // At that point, the view isn't attached to a window. We defer the rest of
         // the initialization process to later.
     }
 
     return self;
-}
-
-
-////////////////////////////////////////////////////////
--(void)update
-{
-    // In order to prevent an infinite recursion when the window/view is
-    // resized to zero-height/width, we ignore update event when resizing.
-    if (![self inLiveResize]) {
-        [super update];
-    }
 }
 
 
@@ -251,9 +237,6 @@
     // Update mouse internal state.
     [self updateMouseState];
     [self updateCursorGrabbed];
-
-    // Update the OGL view to fit the new size.
-    [self update];
 
     // Send an event
     if (m_requester == 0)
