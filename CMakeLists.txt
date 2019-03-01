@@ -31,20 +31,13 @@ if (NOT CMAKE_VERSION VERSION_LESS 3.9)
     cmake_policy(SET CMP0068 NEW)
 endif()
 
-# add bgfx
-if (CMAKE_TOOLCHAIN_FILE)
-set(EXTRA_CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/bgfx-prefix/src/bgfx/cmake/toolchains/iOS.toolchain.cmake
-    -DBGFX_BUILD_TOOLS=OFF
-    -DBGFX_BUILD_EXAMPLES=OFF)
-endif()
-    include(ExternalProject)
-    ExternalProject_Add(bgfx 
-                    GIT_REPOSITORY https://github.com/joshuabrookover/bgfx.cmake
-                    CMAKE_ARGS ${EXTRA_CMAKE_ARGS}
-                               -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/bgfx-install)
-
 # project name
 project(SFML)
+
+# add bgfx 
+set(BGFX_BUILD_TOOLS OFF CACHE BOOL "")
+set(BGFX_BUILD_EXAMPLES OFF CACHE BOOL "")
+add_subdirectory(bgfx.cmake)
 
 # include the configuration file
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)
@@ -498,4 +491,5 @@ elseif(SFML_OS_ANDROID)
 
 endif()
 
-sfml_export_targets()
+# Jonny - disabling this until I work out what to do...
+#sfml_export_targets()

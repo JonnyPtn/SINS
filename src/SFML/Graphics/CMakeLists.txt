@@ -110,18 +110,7 @@ endif()
 
 target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/include)
 
-set(BGFX_LIBS_INPUT bgfx bx bimg )
-foreach(lib ${BGFX_LIBS_INPUT})
-    STRING(APPEND lib "$<$<CONFIG:Debug>:d>")
-    STRING(PREPEND lib ${CMAKE_BINARY_DIR}/bgfx-install/lib/${CMAKE_STATIC_LIBRARY_PREFIX})
-    STRING(APPEND lib ${CMAKE_STATIC_LIBRARY_SUFFIX})
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        STRING(APPEND lib ${CMAKE_DEBUG_POSTFIX})
-    endif()
-    list(APPEND BGFX_LIBS ${lib})
-    add_dependencies(sfml-graphics bgfx)
-endforeach()
-target_link_libraries(sfml-graphics PUBLIC ${BGFX_LIBS})
+target_link_libraries(sfml-graphics PUBLIC bgfx)
 
 # bgfx compat includes
 if (MSVC)
