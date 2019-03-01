@@ -55,39 +55,24 @@ set(CODECS_SRC
 )
 source_group("codecs" FILES ${CODECS_SRC})
 
-# let CMake know about our additional audio libraries paths (on Windows and OSX)
-if(SFML_OS_WINDOWS)
-    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/AL")
-elseif(SFML_OS_MACOSX)
-    set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/Frameworks")
-elseif(SFML_OS_ANDROID)
-    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/AL")
-    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/android")
-endif()
-
-# find external libraries
-sfml_find_package(OpenAL INCLUDE "OPENAL_INCLUDE_DIR" LINK "OPENAL_LIBRARY")
-sfml_find_package(Vorbis INCLUDE "VORBIS_INCLUDE_DIRS" LINK "VORBIS_LIBRARIES")
-sfml_find_package(FLAC INCLUDE "FLAC_INCLUDE_DIR" LINK "FLAC_LIBRARY")
-
-# avoids warnings in vorbisfile.h
-target_compile_definitions(Vorbis INTERFACE "OV_EXCLUDE_STATIC_CALLBACKS")
-target_compile_definitions(FLAC INTERFACE "FLAC__NO_DLL")
-
 # define the sfml-audio target
 sfml_add_library(sfml-audio
                  SOURCES ${SRC} ${CODECS_SRC})
 
 # setup dependencies
+target_include_directories(sfml-audio PRIVATE $<TARGET_PROPERTY:OpenAL,INCLUDE_DIRECTORIES>)
 target_link_libraries(sfml-audio PRIVATE OpenAL)
 
 if(SFML_OS_ANDROID)
     target_link_libraries(sfml-audio PRIVATE android OpenSLES)
 endif()
 
+target_include_directories(sfml-audio PRIVATE
+                        $<TARGET_PROPERTY:FLAC,INCLUDE_DIRECTORIES>
+                        $<TARGET_PROPERTY:vorbis,INCLUDE_DIRECTORIES>)
 target_link_libraries(sfml-audio
                       PUBLIC sfml-system
-                      PRIVATE Vorbis FLAC)
+                      PRIVATE vorbis vorbisfile vorbisenc FLAC)
 
 if(SFML_OS_LINUX OR SFML_OS_FREEBSD)
     target_link_libraries(sfml-audio PRIVATE pthread)

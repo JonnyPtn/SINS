@@ -30,8 +30,8 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Config.hpp>
 
-#include <al.h>
-#include <alc.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 
 namespace sf
 {

@@ -78,13 +78,13 @@ source_group("render texture" FILES ${RENDER_TEXTURE_SRC})
 
 # define the sfml-graphics target
 sfml_add_library(sfml-graphics
-                 SOURCES ${SRC} ${DRAWABLES_SRC} ${RENDER_TEXTURE_SRC} ${STB_SRC})
+                 SOURCES ${SRC} ${DRAWABLES_SRC} ${RENDER_TEXTURE_SRC})
 
 # setup dependencies
 target_link_libraries(sfml-graphics PUBLIC sfml-window)
 
 # stb_image sources
-target_include_directories(sfml-graphics PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image")
+target_include_directories(sfml-graphics PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/SFML-dependencies/stb")
 
 # let CMake know about our additional graphics libraries paths
 if(SFML_OS_WINDOWS)
@@ -108,17 +108,7 @@ if(SFML_OS_ANDROID)
     target_link_libraries(sfml-graphics PRIVATE z)
 endif()
 
-target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/include)
-
 target_link_libraries(sfml-graphics PUBLIC bgfx)
-
-# bgfx compat includes
-if (MSVC)
-    target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/include/compat/msvc)
-    target_link_libraries(sfml-graphics PRIVATE Psapi)
-elseif(IOS)
-    target_include_directories(sfml-graphics PRIVATE ${CMAKE_BINARY_DIR}/bgfx-install/include/compat/ios)
-endif()
 
 # We use Metal on apple
 if(APPLE AND NOT IOS)
@@ -127,8 +117,8 @@ elseif(SFML_OS_IOS)
     target_link_libraries(sfml-graphics PRIVATE z bz2)
 endif()
 
-sfml_find_package(Freetype INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")
-target_link_libraries(sfml-graphics PRIVATE Freetype)
+target_include_directories(sfml-graphics PRIVATE $<TARGET_PROPERTY:freetype,INCLUDE_DIRECTORIES>)
+target_link_libraries(sfml-graphics PRIVATE freetype)
 
 # add preprocessor symbols
 target_compile_definitions(sfml-graphics PRIVATE "STBI_FAILURE_USERMSG")

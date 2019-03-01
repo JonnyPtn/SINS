@@ -34,11 +34,6 @@ endif()
 # project name
 project(SFML)
 
-# add bgfx 
-set(BGFX_BUILD_TOOLS OFF CACHE BOOL "")
-set(BGFX_BUILD_EXAMPLES OFF CACHE BOOL "")
-add_subdirectory(bgfx.cmake)
-
 # include the configuration file
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)
 
@@ -49,7 +44,7 @@ set(VERSION_PATCH 1)
 
 # add an option for choosing the build type (shared or static)
 if(NOT (SFML_OS_IOS OR SFML_OS_ANDROID))
-    sfml_set_option(BUILD_SHARED_LIBS TRUE BOOL "TRUE to build SFML as shared libraries, FALSE to build it as static libraries")
+    sfml_set_option(BUILD_SHARED_LIBS FALSE BOOL "TRUE to build SFML as shared libraries, FALSE to build it as static libraries")
 else()
     if(SFML_OS_IOS)
         set(BUILD_SHARED_LIBS FALSE)
@@ -57,6 +52,14 @@ else()
         set(BUILD_SHARED_LIBS TRUE)
     endif()
 endif()
+
+# add bgfx 
+set(BGFX_BUILD_TOOLS OFF CACHE BOOL "")
+set(BGFX_BUILD_EXAMPLES OFF CACHE BOOL "")
+add_subdirectory(bgfx.cmake)
+
+# Add the other dependencies
+add_subdirectory(extlibs/SFML-dependencies)
 
 # add an option for building the examples
 if(NOT SFML_OS_ANDROID)
@@ -491,5 +494,5 @@ elseif(SFML_OS_ANDROID)
 
 endif()
 
-# Jonny - disabling this until I work out what to do...
+# Jonny - disabling this until I work out what to do#...
 #sfml_export_targets()
