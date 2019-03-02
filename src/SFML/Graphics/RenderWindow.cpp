@@ -82,7 +82,7 @@ Vector2u RenderWindow::getSize() const
 ////////////////////////////////////////////////////////////
 void RenderWindow::setVerticalSyncEnabled(bool enabled)
 {
-    //bgfx::reset(getSize().x, getSize().y, enabled ? BGFX_RESET_VSYNC : BGFX_RESET_NONE);
+    bgfx::reset(getSize().x, getSize().y, enabled ? BGFX_RESET_VSYNC : BGFX_RESET_NONE);
 }
 
 ////////////////////////////////////////////////////////////
