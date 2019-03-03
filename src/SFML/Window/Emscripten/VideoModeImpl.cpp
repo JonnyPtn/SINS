@@ -22,26 +22,35 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_CLIPBOARDIMPL_HPP
-#define SFML_CLIPBOARDIMPL_HPP
-
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Config.hpp>
+#include <SFML/Window/VideoModeImpl.hpp>
+#include <SFML/Window/Unix/Display.hpp>
+#include <SFML/System/Err.hpp>
+#include <X11/Xlib.h>
+#include <algorithm>
 
-#if defined(SFML_SYSTEM_WINDOWS)
-    #include <SFML/Window/Win32/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_LINUX) || defined(SFML_SYSTEM_FREEBSD) || defined(SFML_SYSTEM_OPENBSD)
-    #include <SFML/Window/Unix/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_MACOS)
-    #include <SFML/Window/OSX/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_IOS)
-    #include <SFML/Window/iOS/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_ANDROID)
-    #include <SFML/Window/Android/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
-    #include <SFML/Window/Emscripten/ClipboardImpl.hpp>
-#endif
 
-#endif // SFML_CLIPBOARDIMPL_HPP
+namespace sf
+{
+namespace priv
+{
+////////////////////////////////////////////////////////////
+std::vector<VideoMode> VideoModeImpl::getFullscreenModes()
+{
+    return {};
+}
+
+
+////////////////////////////////////////////////////////////
+VideoMode VideoModeImpl::getDesktopMode()
+{
+    VideoMode desktopMode;
+
+    return desktopMode;
+}
+
+} // namespace priv
+
+} // namespace sf

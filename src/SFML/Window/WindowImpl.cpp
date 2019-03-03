@@ -58,6 +58,11 @@
     #include <SFML/Window/Android/WindowImplAndroid.hpp>
     typedef sf::priv::WindowImplAndroid WindowImplType;
 
+#elif defined(SFML_SYSTEM_EMSCRIPTEN)
+
+    #include <SFML/Window/Emscripten/WindowImplEmscripten.hpp>
+    typedef sf::priv::WindowImplEmscripten WindowImplType;
+
 #endif
 
 

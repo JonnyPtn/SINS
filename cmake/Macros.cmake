@@ -219,7 +219,7 @@ macro(sfml_add_example target)
     endif()
 
     # create the target
-    if(THIS_GUI_APP AND SFML_OS_WINDOWS AND NOT DEFINED CMAKE_CONFIGURATION_TYPES AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    if(THIS_GUI_APP AND SFML_OS_WINDOWS AND NOT DEFINED CMAKE_CONFIGURATION_TYPES AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
         add_executable(${target} WIN32 ${target_input})
         target_link_libraries(${target} PRIVATE sfml-main)
     elseif(THIS_GUI_APP AND SFML_OS_IOS)
@@ -293,6 +293,17 @@ macro(sfml_add_example target)
         install(DIRECTORY ${THIS_RESOURCES_DIR}
                 DESTINATION ${target_install_dir}
                 COMPONENT examples)
+    endif()
+
+    if (SFML_OS_EMSCRIPTEN)
+        set(EXTRA_FLAGS
+            "-s TOTAL_MEMORY=268435456 \
+            -s PRECISE_F32=1 \
+            --memory-init-file 1")
+        if (THIS_RESOURCES_DIR)
+            set(EXTRA_FLAGS "${EXTRA_FLAGS} --preload-file ${THIS_RESOURCES_DIR}")
+        endif()
+        set_target_properties(${target} PROPERTIES LINK_FLAGS "${EXTRA_FLAGS}")
     endif()
 
 endmacro()

@@ -50,6 +50,10 @@
 
     #include <SFML/Window/Android/CursorImpl.hpp>
 
+#elif defined(SFML_SYSTEM_EMSCRIPTEN)
+
+    #include <SFML/Window/Emscripten/CursorImpl.hpp>
+
 #endif
 
 

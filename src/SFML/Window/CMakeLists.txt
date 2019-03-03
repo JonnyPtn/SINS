@@ -194,6 +194,23 @@ elseif(SFML_OS_ANDROID)
         ${SRCROOT}/Android/SensorImpl.cpp
     )
     source_group("android" FILES ${PLATFORM_SRC})
+elseif(SFML_OS_EMSCRIPTEN)
+    set(PLATFORM_SRC
+        ${SRCROOT}/Emscripten/CursorImpl.hpp
+        ${SRCROOT}/Emscripten/CursorImpl.cpp
+        ${SRCROOT}/Emscripten/ClipboardImpl.hpp
+        ${SRCROOT}/Emscripten/ClipboardImpl.cpp
+        ${SRCROOT}/Emscripten/InputImpl.cpp
+        ${SRCROOT}/Emscripten/InputImpl.hpp
+        ${SRCROOT}/Emscripten/JoystickImpl.cpp
+        ${SRCROOT}/Emscripten/JoystickImpl.hpp
+        ${SRCROOT}/Emscripten/SensorImpl.cpp
+        ${SRCROOT}/Emscripten/SensorImpl.hpp
+        ${SRCROOT}/Emscripten/VideoModeImpl.cpp
+        ${SRCROOT}/Emscripten/WindowImplEmscripten.cpp
+        ${SRCROOT}/Emscripten/WindowImplEmscripten.hpp
+    )
+    source_group("Emscripten" FILES ${PLATFORM_SRC})
 endif()
 
 # define the sfml-window target

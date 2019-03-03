@@ -22,26 +22,67 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_CLIPBOARDIMPL_HPP
-#define SFML_CLIPBOARDIMPL_HPP
-
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Config.hpp>
+#include <SFML/Window/SensorImpl.hpp>
 
-#if defined(SFML_SYSTEM_WINDOWS)
-    #include <SFML/Window/Win32/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_LINUX) || defined(SFML_SYSTEM_FREEBSD) || defined(SFML_SYSTEM_OPENBSD)
-    #include <SFML/Window/Unix/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_MACOS)
-    #include <SFML/Window/OSX/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_IOS)
-    #include <SFML/Window/iOS/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_ANDROID)
-    #include <SFML/Window/Android/ClipboardImpl.hpp>
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
-    #include <SFML/Window/Emscripten/ClipboardImpl.hpp>
-#endif
 
-#endif // SFML_CLIPBOARDIMPL_HPP
+namespace sf
+{
+namespace priv
+{
+////////////////////////////////////////////////////////////
+void SensorImpl::initialize()
+{
+    // To be implemented
+}
+
+
+////////////////////////////////////////////////////////////
+void SensorImpl::cleanup()
+{
+    // To be implemented
+}
+
+
+////////////////////////////////////////////////////////////
+bool SensorImpl::isAvailable(Sensor::Type /*sensor*/)
+{
+    // To be implemented
+    return false;
+}
+
+
+////////////////////////////////////////////////////////////
+bool SensorImpl::open(Sensor::Type /*sensor*/)
+{
+    // To be implemented
+    return false;
+}
+
+
+////////////////////////////////////////////////////////////
+void SensorImpl::close()
+{
+    // To be implemented
+}
+
+
+////////////////////////////////////////////////////////////
+Vector3f SensorImpl::update()
+{
+    // To be implemented
+    return Vector3f(0, 0, 0);
+}
+
+
+////////////////////////////////////////////////////////////
+void SensorImpl::setEnabled(bool /*enabled*/)
+{
+    // To be implemented
+}
+
+} // namespace priv
+
+} // namespace sf

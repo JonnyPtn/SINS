@@ -60,8 +60,10 @@ sfml_add_library(sfml-audio
                  SOURCES ${SRC} ${CODECS_SRC})
 
 # setup dependencies
-target_include_directories(sfml-audio PRIVATE $<TARGET_PROPERTY:OpenAL,INCLUDE_DIRECTORIES>)
-target_link_libraries(sfml-audio PRIVATE OpenAL)
+if (NOT EMSCRIPTEN)
+    target_include_directories(sfml-audio PRIVATE $<TARGET_PROPERTY:OpenAL,INCLUDE_DIRECTORIES>)
+    target_link_libraries(sfml-audio PRIVATE OpenAL)
+endif()
 
 if(SFML_OS_ANDROID)
     target_link_libraries(sfml-audio PRIVATE android OpenSLES)
