@@ -44,6 +44,7 @@
 #include <mutex>
 #include <cstring>
 #include <limits>
+#include <iostream>
 
 namespace sf
 {
@@ -232,10 +233,26 @@ void WindowImplEmscripten::initialize()
         {
             switch(eventType)
             {
+                case EMSCRIPTEN_EVENT_KEYDOWN:
                 case EMSCRIPTEN_EVENT_KEYPRESS:
                 {
                     sf::Event ev;
                     ev.type = sf::Event::KeyPressed;
+                    switch(e->keyCode)
+                    {
+                        case 37: ev.key.code = sf::Keyboard::Key::Left; break;
+                        case 38: ev.key.code = sf::Keyboard::Key::Up; break;
+                        case 39: ev.key.code = sf::Keyboard::Key::Right; break;
+                        case 40: ev.key.code = sf::Keyboard::Key::Down; break;
+                        case ' ': ev.key.code = sf::Keyboard::Key::Space; break;
+                    }
+                    static_cast<WindowImplEmscripten*>(windowptr)->m_events.emplace_back(ev);
+                    return true;
+                }
+                case EMSCRIPTEN_EVENT_KEYUP:
+                {
+                    sf::Event ev;
+                    ev.type = sf::Event::KeyReleased;
                     switch(e->keyCode)
                     {
                         case 37: ev.key.code = sf::Keyboard::Key::Left; break;

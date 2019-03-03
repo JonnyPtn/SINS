@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////
 #include <emscripten.h>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <cmath>
 
@@ -17,6 +18,8 @@ namespace
 
     std::unique_ptr<sf::RenderWindow> window;
     std::unique_ptr<sf::Font> font;
+    std::unique_ptr<sf::SoundBuffer> soundBuffer;
+    std::unique_ptr<sf::Sound> sound;
     sf::RectangleShape leftPaddle;
     sf::RectangleShape rightPaddle;
     sf::CircleShape ball;
@@ -66,11 +69,16 @@ void emscriptenMain()
         ball.setFillColor(sf::Color::White);
         ball.setOrigin(ballRadius / 2, ballRadius / 2);
 
-        // Load the text font
         font = std::make_unique<sf::Font>();
-        if (!font->loadFromFile("resources/sansation.ttf"))
+        // Load the text font
+        font->loadFromFile("sansation.ttf");
+
+        // Load the sound
+        sound = std::make_unique<sf::Sound>();
+        soundBuffer = std::make_unique<sf::SoundBuffer>();
+        if (soundBuffer->loadFromFile("ball.wav"))
         {
-         //   return EXIT_FAILURE;
+            sound->setBuffer(*soundBuffer);
         }
 
         // Initialize the pause message
@@ -100,7 +108,6 @@ void emscriptenMain()
                 switch (event.key.code)
                 {
                     case sf::Keyboard::Key::Space:
-                    std::cout << "Space pressed" << std::endl;
                     if (!isPlaying)
                     {
                         // (re)start the game
@@ -189,7 +196,7 @@ void emscriptenMain()
             float factor = ballSpeed * deltaTime;
             ball.move(std::cos(ballAngle) * factor, std::sin(ballAngle) * factor);
 
-            const std::string inputString = "Press space to restart or\nescape to exit";
+            const std::string inputString = "Press space to restart";
             
             // Check collisions between the ball and the screen
             if (ball.getPosition().x - ballRadius < 0.f)
@@ -204,11 +211,13 @@ void emscriptenMain()
             }
             if (ball.getPosition().y - ballRadius < 0.f)
             {
+                sound->play();
                 ballAngle = -ballAngle;
                 ball.setPosition(ball.getPosition().x, ballRadius + 0.1f);
             }
             if (ball.getPosition().y + ballRadius > gameHeight)
             {
+                sound->play();
                 ballAngle = -ballAngle;
                 ball.setPosition(ball.getPosition().x, gameHeight - ballRadius - 0.1f);
             }
@@ -220,6 +229,7 @@ void emscriptenMain()
                 ball.getPosition().y + ballRadius >= leftPaddle.getPosition().y - paddleSize.y / 2 &&
                 ball.getPosition().y - ballRadius <= leftPaddle.getPosition().y + paddleSize.y / 2)
             {
+                sound->play();
                 if (ball.getPosition().y > leftPaddle.getPosition().y)
                     ballAngle = pi - ballAngle + (std::rand() % 20) * pi / 180;
                 else
@@ -234,6 +244,7 @@ void emscriptenMain()
                 ball.getPosition().y + ballRadius >= rightPaddle.getPosition().y - paddleSize.y / 2 &&
                 ball.getPosition().y - ballRadius <= rightPaddle.getPosition().y + paddleSize.y / 2)
             {
+                sound->play();
                 if (ball.getPosition().y > rightPaddle.getPosition().y)
                     ballAngle = pi - ballAngle + (std::rand() % 20) * pi / 180;
                 else

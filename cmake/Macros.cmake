@@ -301,7 +301,7 @@ macro(sfml_add_example target)
             -s PRECISE_F32=1 \
             --memory-init-file 1")
         if (THIS_RESOURCES_DIR)
-            set(EXTRA_FLAGS "${EXTRA_FLAGS} --preload-file ${THIS_RESOURCES_DIR}")
+            set(EXTRA_FLAGS "${EXTRA_FLAGS} --preload-file ${THIS_RESOURCES_DIR}@/")
         endif()
         set_target_properties(${target} PROPERTIES LINK_FLAGS "${EXTRA_FLAGS}")
     endif()

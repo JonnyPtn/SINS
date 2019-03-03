@@ -32,3 +32,7 @@ endif()
 if(SFML_BUILD_GRAPHICS AND SFML_BUILD_AUDIO)
     add_subdirectory(pong)
 endif()
+
+if(SFML_OS_EMSCRIPTEN)
+    add_subdirectory(emscripten)
+endif()

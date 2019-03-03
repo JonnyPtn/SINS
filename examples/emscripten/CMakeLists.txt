@@ -7,4 +7,5 @@ set(SRC ${SRCROOT}/Emscripten.cpp)
 # define the window target
 sfml_add_example(emscripten GUI_APP
                  SOURCES ${SRC}
-                 DEPENDS sfml-graphics)
+                 DEPENDS sfml-graphics sfml-audio
+                 RESOURCES_DIR resources)
