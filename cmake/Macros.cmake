@@ -293,6 +293,11 @@ macro(sfml_add_example target)
         install(DIRECTORY ${THIS_RESOURCES_DIR}
                 DESTINATION ${target_install_dir}
                 COMPONENT examples)
+
+        # add the resource to the binary dir
+        add_custom_command(TARGET ${target} COMMAND
+            ${CMAKE_COMMAND} -E copy ${THIS_RESOURCES_DIR} $<TARGET_FILE_DIR:${target}>
+            COMMENT "Copying resources to output")
     endif()
 
     if (SFML_OS_EMSCRIPTEN)
