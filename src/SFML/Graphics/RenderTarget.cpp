@@ -215,6 +215,9 @@ void RenderTarget::draw(const Drawable& drawable, const RenderStates& states)
 void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     PrimitiveType type, const RenderStates& states)
 {
+    if (vertexCount == 0)
+        return;
+    
     bgfx::TransientVertexBuffer tvb;
     bgfx::allocTransientVertexBuffer(&tvb, vertexCount, defaultVertexDecl);
     sf::Vector2u textureSize = { 1,1 };
@@ -263,6 +266,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
         state |= BGFX_STATE_PT_LINESTRIP;
         break;
     case PrimitiveType::TriangleFan:
+        {
         // Not supported by bgfx, so emulate it with an index buffer
         bgfx::TransientIndexBuffer idb;
         auto indexCount = vertexCount * 3;
@@ -276,6 +280,26 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
         }
         bgfx::setIndexBuffer(&idb);
         break;
+        }
+    case PrimitiveType::Quads:
+        {
+        // Not supported by bgfx, so emulate it with an index buffer
+        bgfx::TransientIndexBuffer idb;
+        auto indexCount = (vertexCount * 3) / 2;
+        bgfx::allocTransientIndexBuffer(&idb, indexCount);
+        std::uint16_t* indices = reinterpret_cast<std::uint16_t*>(idb.data);
+        for (int v = 0u, i = 0u; v < vertexCount; ++v, ++i)
+        {
+            indices[i] = v;
+            indices[++i] = ++v;
+            indices[++i] = v+2;
+            indices[++i] = v;
+            indices[++i] = ++v;
+            indices[++i] = ++v;
+        }
+        bgfx::setIndexBuffer(&idb);
+        break;
+        }
     }
     bgfx::setState(state);
     bgfx::setTransform(states.transform.getMatrix());

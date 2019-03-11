@@ -344,7 +344,7 @@ void Shader::setUniform(const std::string& name, float x)
 {
     // Don't see a float uniform type?! should it be an array with a single element?
     auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Int1);
-    bgfx::setUniform(uniform, &x);
+    //bgfx::setUniform(uniform, &x);
 
     // TODO really need to delete the uniforms here, but... not sure when
 }
@@ -355,7 +355,7 @@ void Shader::setUniform(const std::string& name, const sf::Vector2f& v)
 {
     // Kind of guessing the type here
     auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Vec4);
-    bgfx::setUniform(uniform, &v);
+    //bgfx::setUniform(uniform, &v);
 
     // TODO really need to delete the uniforms here, but... not sure when
 }
@@ -366,7 +366,7 @@ void Shader::setUniform(const std::string& name, const sf::Vector3f& v)
 {
     // Kind of guessing the type here
     auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Vec4);
-    bgfx::setUniform(uniform, &v);
+    //bgfx::setUniform(uniform, &v);
 
     // TODO really need to delete the uniforms here, but... not sure when
 }
@@ -377,7 +377,7 @@ void Shader::setUniform(const std::string& name, const sf::Color& v)
 {
     // Kind of guessing the type here
     auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Vec4);
-    bgfx::setUniform(uniform, &v);
+    //bgfx::setUniform(uniform, &v);
 
     // TODO really need to delete the uniforms here, but... not sure when
 }
@@ -388,7 +388,7 @@ void Shader::setUniform(const std::string& name, int x)
 {
     // Kind of guessing the type here
     auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Vec4);
-    bgfx::setUniform(uniform, &x);
+    //bgfx::setUniform(uniform, &x);
 
     // TODO really need to delete the uniforms here, but... not sure when
 }
@@ -399,7 +399,7 @@ void Shader::setUniform(const std::string& name, const sf::Vector2i& v)
 {
     // Kind of guessing the type here
     auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Vec4);
-    bgfx::setUniform(uniform, &v);
+    //bgfx::setUniform(uniform, &v);
 
     // TODO really need to delete the uniforms here, but... not sure when
 }
@@ -468,7 +468,7 @@ void Shader::setUniform(const std::string& name, const Texture& texture)
     // Kind of guessing the type here
     auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Int1);
     auto handle = texture.getNativeHandle();
-    bgfx::setUniform(uniform, &handle);
+    //bgfx::setUniform(uniform, &handle);
 
     // TODO really need to delete the uniforms here, but... not sure when
 }
