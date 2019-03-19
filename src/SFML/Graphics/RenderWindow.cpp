@@ -114,6 +114,7 @@ void RenderWindow::onCreate()
 ////////////////////////////////////////////////////////////
 void RenderWindow::onResize()
 {
+    bgfx::reset(getSize().x, getSize().y);
     // Update the current view (recompute the viewport, which is stored in relative coordinates)
     setView(getView());
 }
