@@ -39,22 +39,6 @@
 #include <mutex>
 
 #include <bgfx/bgfx.h>
-#include <bgfx/embedded_shader.h>
-
-#include "fs_debugdraw_lines.bin.h"
-#include "vs_debugdraw_lines.bin.h"
-#include "fs_debugdraw_fill_texture.bin.h"
-#include "vs_debugdraw_fill_texture.bin.h"
-
-static const bgfx::EmbeddedShader s_embeddedShaders[] =
-{
-    BGFX_EMBEDDED_SHADER(vs_debugdraw_lines),
-    BGFX_EMBEDDED_SHADER(fs_debugdraw_lines),
-    BGFX_EMBEDDED_SHADER(vs_debugdraw_fill_texture),
-    BGFX_EMBEDDED_SHADER(fs_debugdraw_fill_texture),
-
-    BGFX_EMBEDDED_SHADER_END()
-};
 
 namespace
 {
@@ -79,14 +63,6 @@ namespace
 
     // A bgfx vertexdecl to match our vertex types
     bgfx::VertexDecl defaultVertexDecl;
-
-    // The handle to the texture uniform
-    bgfx::UniformHandle defaultTextureUniform = { bgfx::kInvalidHandle };
-
-    // The default program/shader to use
-    bgfx::ProgramHandle fillProgram = { bgfx::kInvalidHandle };
-    bgfx::ProgramHandle fillTextureProgram = { bgfx::kInvalidHandle };
-
 }
 
 
@@ -307,12 +283,8 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     {
         bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
         bgfx::setTexture(0, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
-        bgfx::submit(0, fillTextureProgram);
     }
-    else
-    {
-        bgfx::submit(0, fillProgram);
-    }
+    bgfx::submit(0, {sf::Shader::getDefaultShaderProgramHandle(states.texture != nullptr)});
 }
 
 
@@ -367,12 +339,8 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
     {
         bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
         bgfx::setTexture(0, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
-        bgfx::submit(0, fillTextureProgram);
     }
-    else
-    {
-        bgfx::submit(0, fillProgram);
-    }
+    bgfx::submit(0, {sf::Shader::getDefaultShaderProgramHandle(states.texture != nullptr)});
 }
 
 ////////////////////////////////////////////////////////////
@@ -427,16 +395,10 @@ void RenderTarget::initialize()
         .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
         .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
         .end();
-
-    fillProgram = bgfx::createProgram(
-        bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "vs_debugdraw_lines"),
-        bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "fs_debugdraw_lines"),
-        true);
-
-    fillTextureProgram = bgfx::createProgram(
-        bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "vs_debugdraw_fill_texture"),
-        bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "fs_debugdraw_fill_texture"),
-        true);
+    
+    // TODO: This is needed to make sure default shaders are loaded. Should be improved
+    sf::Shader shader;
+    
 }
 
 

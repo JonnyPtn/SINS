@@ -670,6 +670,42 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     static bool isAvailable();
+    
+    ////////////////////////////////////////////////////////////
+    /// \brief Tell whether or not the system supports shaders
+    ///
+    /// This function should always be called before using
+    /// the shader features. If it returns false, then
+    /// any attempt to use sf::Shader will fail.
+    ///
+    /// \return True if shaders are supported, false otherwise
+    ///
+    ////////////////////////////////////////////////////////////
+    static std::uint16_t getDefaultVertexShaderHandle(bool withTexture = false);
+    
+    ////////////////////////////////////////////////////////////
+    /// \brief Tell whether or not the system supports shaders
+    ///
+    /// This function should always be called before using
+    /// the shader features. If it returns false, then
+    /// any attempt to use sf::Shader will fail.
+    ///
+    /// \return True if shaders are supported, false otherwise
+    ///
+    ////////////////////////////////////////////////////////////
+    static std::uint16_t getDefaultFragmentShaderHandle(bool withTexture = false);
+    
+    ////////////////////////////////////////////////////////////
+    /// \brief Tell whether or not the system supports shaders
+    ///
+    /// This function should always be called before using
+    /// the shader features. If it returns false, then
+    /// any attempt to use sf::Shader will fail.
+    ///
+    /// \return True if shaders are supported, false otherwise
+    ///
+    ////////////////////////////////////////////////////////////
+    static std::uint16_t getDefaultShaderProgramHandle(bool withTexture = false);
 
     ////////////////////////////////////////////////////////////
     /// \brief Tell whether or not the system supports geometry shaders

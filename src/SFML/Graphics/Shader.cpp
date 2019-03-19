@@ -36,6 +36,22 @@
 #include <vector>
 
 #include <bgfx/bgfx.h>
+#include <bgfx/embedded_shader.h>
+
+#include "fs_debugdraw_lines.bin.h"
+#include "vs_debugdraw_lines.bin.h"
+#include "fs_debugdraw_fill_texture.bin.h"
+#include "vs_debugdraw_fill_texture.bin.h"
+
+static const bgfx::EmbeddedShader s_embeddedShaders[] =
+{
+    BGFX_EMBEDDED_SHADER(vs_debugdraw_lines),
+    BGFX_EMBEDDED_SHADER(fs_debugdraw_lines),
+    BGFX_EMBEDDED_SHADER(vs_debugdraw_fill_texture),
+    BGFX_EMBEDDED_SHADER(fs_debugdraw_fill_texture),
+    
+    BGFX_EMBEDDED_SHADER_END()
+};
 
 namespace
 {
@@ -127,6 +143,17 @@ namespace
 
         return contiguous;
     }
+    
+    // The handle to the texture uniform
+    bgfx::UniformHandle defaultTextureUniform = { bgfx::kInvalidHandle };
+    
+    // The default program/shader to use
+    bgfx::ShaderHandle defaultVertexShader = {bgfx::kInvalidHandle};
+    bgfx::ShaderHandle defaultFragmentShader = {bgfx::kInvalidHandle};
+    bgfx::ShaderHandle defaultVertexShaderWithTexture = {bgfx::kInvalidHandle};
+    bgfx::ShaderHandle defaultFragmentShaderWithTexture = {bgfx::kInvalidHandle};
+    bgfx::ProgramHandle defaultProgram = { bgfx::kInvalidHandle };
+    bgfx::ProgramHandle defaultProgramWithTexture = { bgfx::kInvalidHandle };
 }
 
 
@@ -143,6 +170,20 @@ m_currentTexture(-1),
 m_textures      (),
 m_uniforms      ()
 {
+    static bool initialised{};
+    if (!initialised)
+    {
+        defaultVertexShader = bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "vs_debugdraw_lines");
+        defaultFragmentShader = bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "fs_debugdraw_lines");
+        
+        defaultVertexShaderWithTexture = bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "vs_debugdraw_fill_texture");
+        defaultFragmentShaderWithTexture = bgfx::createEmbeddedShader(s_embeddedShaders, bgfx::getRendererType(), "fs_debugdraw_fill_texture");
+        
+        defaultProgram = bgfx::createProgram(defaultVertexShader, defaultFragmentShader, true);
+        defaultProgramWithTexture = bgfx::createProgram(defaultVertexShaderWithTexture, defaultFragmentShaderWithTexture, true);
+        
+        initialised = true;
+    }
 }
 
 
@@ -610,5 +651,24 @@ int Shader::getUniformLocation(const std::string& name)
     // TODO: Needed?
     return 0;
 }
+
+////////////////////////////////////////////////////////////
+std::uint16_t Shader::getDefaultVertexShaderHandle(bool withTexture)
+{
+    return withTexture ? defaultVertexShaderWithTexture.idx : defaultVertexShader.idx;
+}
+
+////////////////////////////////////////////////////////////
+std::uint16_t Shader::getDefaultFragmentShaderHandle(bool withTexture)
+{
+    return withTexture ? defaultFragmentShaderWithTexture.idx : defaultFragmentShader.idx;
+}
+
+////////////////////////////////////////////////////////////
+std::uint16_t Shader::getDefaultShaderProgramHandle(bool withTexture)
+{
+    return withTexture ? defaultProgramWithTexture.idx : defaultProgram.idx;
+}
+    
 
 } // namespace sf
