@@ -5,8 +5,7 @@ else()
     cmake_minimum_required(VERSION 3.0.2)
 endif()
 
-# set the minimum required C++ standard to C++14
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # define a macro that helps defining an option
