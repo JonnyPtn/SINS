@@ -284,7 +284,14 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
         bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
         bgfx::setTexture(0, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
     }
-    bgfx::submit(0, {sf::Shader::getDefaultShaderProgramHandle(states.texture != nullptr)});
+    if ( states.shader )
+    {
+        bgfx::submit( 0, { states.shader->getNativeHandle() } );
+    }
+    else
+    {
+        bgfx::submit( 0, { sf::Shader::getDefaultShaderProgramHandle( states.texture != nullptr ) } );
+    }
 }
 
 

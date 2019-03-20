@@ -18,5 +18,5 @@ endif()
 
 # Compile the shaders
 add_custom_command(TARGET shader POST_BUILD
-                    COMMAND $<TARGET_FILE:shaderc> -f ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.frag -o ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.bin --type fs
+                    COMMAND $<TARGET_FILE:shaderc> -f ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.sc -o ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.bin --type fs --platform windows -p ps_5_0 -O 3
                     COMMENT "Compiling shaders...")

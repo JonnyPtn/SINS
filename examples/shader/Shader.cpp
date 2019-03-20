@@ -30,9 +30,8 @@ public:
         m_sprite.setTexture(m_texture);
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/pixelate.frag", sf::Shader::Type::Fragment))
+        if (!m_shader.loadFromFile("resources/pixelate.bin", sf::Shader::Type::Fragment))
             return false;
-        m_shader.setUniform("texture", sf::Shader::CurrentTexture);
 
         return true;
     }
