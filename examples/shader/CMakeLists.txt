@@ -15,3 +15,8 @@ sfml_add_example(shader GUI_APP
 if(SFML_OS_LINUX OR SFML_OS_FREEBSD)
 	target_link_libraries(shader PRIVATE pthread dl GL ${CMAKE_BINARY_DIR}/bgfx-install/lib/libbx.a)
 endif()
+
+# Compile the shaders
+add_custom_command(TARGET shader POST_BUILD
+                    COMMAND $<TARGET_FILE:shaderc> -f ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.frag -o ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.bin --type fs
+                    COMMENT "Compiling shaders...")

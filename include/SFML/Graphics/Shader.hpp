@@ -33,9 +33,9 @@
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
-#include <cstddef>
 #include <map>
 #include <string>
+#include <vector>
 
 
 namespace sf
@@ -742,7 +742,7 @@ private:
     /// \return True on success, false if any error happened
     ///
     ////////////////////////////////////////////////////////////
-    bool compile(const std::vector<std::byte>& vertexShaderCode, const std::vector<std::byte>& geometryShaderCode, const std::vector<std::byte>& fragmentShaderCode);
+    bool compile(const std::string& vertexShaderCode, const std::string& geometryShaderCode, const std::string& fragmentShaderCode);
 
     ////////////////////////////////////////////////////////////
     /// \brief Bind all the textures used by the shader

@@ -37,7 +37,6 @@ set(VERSION_MINOR 5)
 set(VERSION_PATCH 1)
 
 # add bgfx 
-set(BGFX_BUILD_TOOLS OFF CACHE BOOL "")
 set(BGFX_BUILD_EXAMPLES OFF CACHE BOOL "")
 add_subdirectory(bgfx.cmake)
 
