@@ -33,6 +33,7 @@
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
+#include <cstddef>
 #include <map>
 #include <string>
 
@@ -634,7 +635,7 @@ public:
     /// \return OpenGL handle of the shader or 0 if not yet loaded
     ///
     ////////////////////////////////////////////////////////////
-    unsigned int getNativeHandle() const;
+    std::uint16_t getNativeHandle() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Bind a shader for rendering
@@ -741,7 +742,7 @@ private:
     /// \return True on success, false if any error happened
     ///
     ////////////////////////////////////////////////////////////
-    bool compile(const char* vertexShaderCode, const char* geometryShaderCode, const char* fragmentShaderCode);
+    bool compile(const std::vector<std::byte>& vertexShaderCode, const std::vector<std::byte>& geometryShaderCode, const std::vector<std::byte>& fragmentShaderCode);
 
     ////////////////////////////////////////////////////////////
     /// \brief Bind all the textures used by the shader

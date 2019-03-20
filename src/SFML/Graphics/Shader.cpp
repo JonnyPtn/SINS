@@ -56,7 +56,7 @@ static const bgfx::EmbeddedShader s_embeddedShaders[] =
 namespace
 {
     // Read the contents of a file into an array of char
-    bool getFileContents(const std::string& filename, std::vector<char>& buffer)
+    bool getFileContents(const std::string& filename, std::vector<std::byte>& buffer)
     {
         std::ifstream file(filename.c_str(), std::ios_base::binary);
         if (file)
@@ -67,9 +67,8 @@ namespace
             {
                 file.seekg(0, std::ios_base::beg);
                 buffer.resize(static_cast<std::size_t>(size));
-                file.read(buffer.data(), size);
+                file.read(reinterpret_cast<char*>(buffer.data()), size);
             }
-            buffer.push_back('\0');
             return true;
         }
         else
@@ -79,7 +78,7 @@ namespace
     }
 
     // Read the contents of a stream into an array of char
-    bool getStreamContents(sf::InputStream& stream, std::vector<char>& buffer)
+    bool getStreamContents(sf::InputStream& stream, std::vector<std::byte>& buffer)
     {
         bool success = true;
         sf::Int64 size = stream.getSize();
@@ -90,7 +89,6 @@ namespace
             sf::Int64 read = stream.read(buffer.data(), size);
             success = (read == size);
         }
-        buffer.push_back('\0');
         return success;
     }
 
@@ -201,20 +199,37 @@ Shader::~Shader()
 bool Shader::loadFromFile(const std::string& filename, Type type)
 {
     // Read the file
-    std::vector<char> shader;
+    std::vector<std::byte> shader;
     if (!getFileContents(filename, shader))
     {
         err() << "Failed to open shader file \"" << filename << "\"" << std::endl;
         return false;
     }
+    
+    //TODO: Copy necessary?
+    auto handle = bgfx::createShader(bgfx::copy(shader.data(), shader.size()));
+    
+    if (!bgfx::isValid(handle))
+    {
+        return false;
+    }
 
-    // Compile the shader program
-    if (type == Type::Vertex)
-        return compile(shader.data(), nullptr, nullptr);
-    else if (type == Type::Geometry)
-        return compile(nullptr, shader.data(), nullptr);
-    else
-        return compile(nullptr, nullptr, shader.data());
+    switch(type)
+    {
+        case Type::Vertex:
+            m_shaderProgram = bgfx::createProgram(handle, {defaultFragmentShader}).idx;
+            break;
+        
+        case Type::Fragment:
+            m_shaderProgram = bgfx::createProgram({defaultVertexShaderWithTexture}, handle).idx;
+            break;
+    }
+    
+    const auto maxHandles = 12; // why 12? who knows...
+    std::array<bgfx::UniformHandle, maxHandles> uniforms{};
+    auto count = bgfx::getShaderUniforms(handle, uniforms.data(), maxHandles);
+    
+    return bgfx::isValid(bgfx::ProgramHandle({m_shaderProgram}));
 }
 
 
@@ -222,7 +237,7 @@ bool Shader::loadFromFile(const std::string& filename, Type type)
 bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::string& fragmentShaderFilename)
 {
     // Read the vertex shader file
-    std::vector<char> vertexShader;
+    std::vector<std::byte> vertexShader;
     if (!getFileContents(vertexShaderFilename, vertexShader))
     {
         err() << "Failed to open vertex shader file \"" << vertexShaderFilename << "\"" << std::endl;
@@ -230,7 +245,7 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
     }
 
     // Read the fragment shader file
-    std::vector<char> fragmentShader;
+    std::vector<std::byte> fragmentShader;
     if (!getFileContents(fragmentShaderFilename, fragmentShader))
     {
         err() << "Failed to open fragment shader file \"" << fragmentShaderFilename << "\"" << std::endl;
@@ -238,7 +253,7 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
     }
 
     // Compile the shader program
-    return compile(vertexShader.data(), nullptr, fragmentShader.data());
+    return compile(vertexShader, {}, fragmentShader);
 }
 
 
@@ -246,7 +261,7 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
 bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::string& geometryShaderFilename, const std::string& fragmentShaderFilename)
 {
     // Read the vertex shader file
-    std::vector<char> vertexShader;
+    std::vector<std::byte> vertexShader;
     if (!getFileContents(vertexShaderFilename, vertexShader))
     {
         err() << "Failed to open vertex shader file \"" << vertexShaderFilename << "\"" << std::endl;
@@ -254,7 +269,7 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
     }
 
     // Read the geometry shader file
-    std::vector<char> geometryShader;
+    std::vector<std::byte> geometryShader;
     if (!getFileContents(geometryShaderFilename, geometryShader))
     {
         err() << "Failed to open geometry shader file \"" << geometryShaderFilename << "\"" << std::endl;
@@ -262,7 +277,7 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
     }
 
     // Read the fragment shader file
-    std::vector<char> fragmentShader;
+    std::vector<std::byte> fragmentShader;
     if (!getFileContents(fragmentShaderFilename, fragmentShader))
     {
         err() << "Failed to open fragment shader file \"" << fragmentShaderFilename << "\"" << std::endl;
@@ -270,7 +285,7 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
     }
 
     // Compile the shader program
-    return compile(vertexShader.data(), geometryShader.data(), fragmentShader.data());
+    return compile(vertexShader, geometryShader, fragmentShader);
 }
 
 
@@ -278,12 +293,12 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
 bool Shader::loadFromMemory(const std::string& shader, Type type)
 {
     // Compile the shader program
-    if (type == Type::Vertex)
-        return compile(shader.c_str(), nullptr, nullptr);
+    /*if (type == Type::Vertex)
+        return compile(shader, nullptr, nullptr);
     else if (type == Type::Geometry)
         return compile(nullptr, shader.c_str(), nullptr);
     else
-        return compile(nullptr, nullptr, shader.c_str());
+        return compile(nullptr, nullptr, shader.c_str());*/
 }
 
 
@@ -291,7 +306,8 @@ bool Shader::loadFromMemory(const std::string& shader, Type type)
 bool Shader::loadFromMemory(const std::string& vertexShader, const std::string& fragmentShader)
 {
     // Compile the shader program
-    return compile(vertexShader.c_str(), nullptr, fragmentShader.c_str());
+    //return compile(vertexShader.c_str(), nullptr, fragmentShader.c_str());
+    return false;
 }
 
 
@@ -299,7 +315,8 @@ bool Shader::loadFromMemory(const std::string& vertexShader, const std::string& 
 bool Shader::loadFromMemory(const std::string& vertexShader, const std::string& geometryShader, const std::string& fragmentShader)
 {
     // Compile the shader program
-    return compile(vertexShader.c_str(), geometryShader.c_str(), fragmentShader.c_str());
+    //return compile(vertexShader.c_str(), geometryShader.c_str(), fragmentShader.c_str());
+    return false;
 }
 
 
@@ -307,7 +324,7 @@ bool Shader::loadFromMemory(const std::string& vertexShader, const std::string& 
 bool Shader::loadFromStream(InputStream& stream, Type type)
 {
     // Read the shader code from the stream
-    std::vector<char> shader;
+    std::vector<std::byte> shader;
     if (!getStreamContents(stream, shader))
     {
         err() << "Failed to read shader from stream" << std::endl;
@@ -316,11 +333,11 @@ bool Shader::loadFromStream(InputStream& stream, Type type)
 
     // Compile the shader program
     if (type == Type::Vertex)
-        return compile(shader.data(), nullptr, nullptr);
+        return compile(shader, {}, {});
     else if (type == Type::Geometry)
-        return compile(nullptr, shader.data(), nullptr);
+        return compile({}, shader, {});
     else
-        return compile(nullptr, nullptr, shader.data());
+        return compile({}, {}, shader);
 }
 
 
@@ -328,7 +345,7 @@ bool Shader::loadFromStream(InputStream& stream, Type type)
 bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& fragmentShaderStream)
 {
     // Read the vertex shader code from the stream
-    std::vector<char> vertexShader;
+    std::vector<std::byte> vertexShader;
     if (!getStreamContents(vertexShaderStream, vertexShader))
     {
         err() << "Failed to read vertex shader from stream" << std::endl;
@@ -336,7 +353,7 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& fragme
     }
 
     // Read the fragment shader code from the stream
-    std::vector<char> fragmentShader;
+    std::vector<std::byte> fragmentShader;
     if (!getStreamContents(fragmentShaderStream, fragmentShader))
     {
         err() << "Failed to read fragment shader from stream" << std::endl;
@@ -344,7 +361,7 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& fragme
     }
 
     // Compile the shader program
-    return compile(vertexShader.data(), nullptr, fragmentShader.data());
+    return compile(vertexShader, {}, fragmentShader);
 }
 
 
@@ -352,7 +369,7 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& fragme
 bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& geometryShaderStream, InputStream& fragmentShaderStream)
 {
     // Read the vertex shader code from the stream
-    std::vector<char> vertexShader;
+    std::vector<std::byte> vertexShader;
     if (!getStreamContents(vertexShaderStream, vertexShader))
     {
         err() << "Failed to read vertex shader from stream" << std::endl;
@@ -360,7 +377,7 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& geomet
     }
 
     // Read the geometry shader code from the stream
-    std::vector<char> geometryShader;
+    std::vector<std::byte> geometryShader;
     if (!getStreamContents(geometryShaderStream, geometryShader))
     {
         err() << "Failed to read geometry shader from stream" << std::endl;
@@ -368,7 +385,7 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& geomet
     }
 
     // Read the fragment shader code from the stream
-    std::vector<char> fragmentShader;
+    std::vector<std::byte> fragmentShader;
     if (!getStreamContents(fragmentShaderStream, fragmentShader))
     {
         err() << "Failed to read fragment shader from stream" << std::endl;
@@ -376,7 +393,7 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& geomet
     }
 
     // Compile the shader program
-    return compile(vertexShader.data(), geometryShader.data(), fragmentShader.data());
+    return compile(vertexShader, geometryShader, fragmentShader);
 }
 
 
@@ -384,10 +401,9 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& geomet
 void Shader::setUniform(const std::string& name, float x)
 {
     // Don't see a float uniform type?! should it be an array with a single element?
-    auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Int1);
-    //bgfx::setUniform(uniform, &x);
-
-    // TODO really need to delete the uniforms here, but... not sure when
+    auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Vec4);
+    bgfx::setUniform(uniform, &x);
+    bgfx::destroy(uniform);
 }
 
 
@@ -396,9 +412,8 @@ void Shader::setUniform(const std::string& name, const sf::Vector2f& v)
 {
     // Kind of guessing the type here
     auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Vec4);
-    //bgfx::setUniform(uniform, &v);
-
-    // TODO really need to delete the uniforms here, but... not sure when
+    bgfx::setUniform(uniform, &v);
+    bgfx::destroy(uniform);
 }
 
 
@@ -607,7 +622,7 @@ void Shader::setUniformArray(const std::string& name, const sf::Color* vectorArr
 
 
 ////////////////////////////////////////////////////////////
-unsigned int Shader::getNativeHandle() const
+std::uint16_t Shader::getNativeHandle() const
 {
     return m_shaderProgram;
 }
@@ -630,11 +645,21 @@ bool Shader::isAvailable()
 }
 
 ////////////////////////////////////////////////////////////
-bool Shader::compile(const char* vertexShaderCode, const char* geometryShaderCode, const char* fragmentShaderCode)
+bool Shader::compile(const std::vector<std::byte>& vertexShaderCode, const std::vector<std::byte>& geometryShaderCode, const std::vector<std::byte>& fragmentShaderCode)
 {
-   //TODO: bgfx shaders are meant to be precompiled, but also see https://github.com/bkaradzic/bgfx/issues/156
+    bgfx::ShaderHandle vertShader = defaultVertexShader, fragShader = defaultFragmentShader;
+    if (vertexShaderCode.size())
+    {
+        vertShader = bgfx::createShader(bgfx::copy(vertexShaderCode.data(), vertexShaderCode.size()));
+    }
+    if (fragmentShaderCode.size())
+    {
+        fragShader = bgfx::createShader(bgfx::copy(fragmentShaderCode.data(), fragmentShaderCode.size()));
+    }
 
-    return true;
+    m_shaderProgram = bgfx::createProgram(vertShader, fragShader).idx;
+    
+    return bgfx::isValid(bgfx::ProgramHandle({m_shaderProgram}));
 }
 
 
