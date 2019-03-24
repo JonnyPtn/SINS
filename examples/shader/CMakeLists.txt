@@ -17,6 +17,14 @@ if(SFML_OS_LINUX OR SFML_OS_FREEBSD)
 endif()
 
 # Compile the shaders
+if (SFML_OS_WINDOWS)
+    # Assuming DX11
+    set(SHADERC_FLAGS --platform windows -p ps_5_0 -O 3)
+elseif(SFML_OS_MACOSX)
+    # Assuming Metal
+    set(SHADERC_FLAGS --platform osx -p metal)
+endif()
+
 add_custom_command(TARGET shader POST_BUILD
-                    COMMAND $<TARGET_FILE:shaderc> -f ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.sc -o ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.bin --type fs --platform windows -p ps_5_0 -O 3
+                    COMMAND $<TARGET_FILE:shaderc> -f ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.sc -o ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.bin --type fs ${SHADERC_FLAGS}
                     COMMENT "Compiling shaders...")

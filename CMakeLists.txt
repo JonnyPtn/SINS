@@ -5,6 +5,10 @@ else()
     cmake_minimum_required(VERSION 3.0.2)
 endif()
 
+# add bgfx 
+set(BGFX_BUILD_EXAMPLES OFF CACHE BOOL "")
+add_subdirectory(bgfx.cmake)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -35,10 +39,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)
 set(VERSION_MAJOR 2)
 set(VERSION_MINOR 5)
 set(VERSION_PATCH 1)
-
-# add bgfx 
-set(BGFX_BUILD_EXAMPLES OFF CACHE BOOL "")
-add_subdirectory(bgfx.cmake)
 
 # Add the other dependencies
 add_subdirectory(extlibs/SFML-dependencies)

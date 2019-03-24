@@ -296,7 +296,7 @@ macro(sfml_add_example target)
 
         # add the resource to the binary dir
         add_custom_command(TARGET ${target} COMMAND
-            ${CMAKE_COMMAND} -E copy ${THIS_RESOURCES_DIR} $<TARGET_FILE_DIR:${target}>
+            ${CMAKE_COMMAND} -E copy_directory ${THIS_RESOURCES_DIR} $<TARGET_FILE_DIR:${target}>/resources
             COMMENT "Copying resources to output")
     endif()
 
