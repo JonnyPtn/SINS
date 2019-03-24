@@ -16,7 +16,7 @@ if(SFML_OS_LINUX OR SFML_OS_FREEBSD)
 	target_link_libraries(shader PRIVATE pthread dl GL ${CMAKE_BINARY_DIR}/bgfx-install/lib/libbx.a)
 endif()
 
-# Compile the shaders
+# Platform specific flags for shaderc
 if (SFML_OS_WINDOWS)
     # Assuming DX11
     set(SHADERC_FLAGS --platform windows -p ps_5_0 -O 3)
@@ -25,6 +25,18 @@ elseif(SFML_OS_MACOSX)
     set(SHADERC_FLAGS --platform osx -p metal)
 endif()
 
+# Collect shaders by type
+file(GLOB FRAG_SHADERS resources/*.frag.sc)
+file(GLOB VERT_SHADERS resources/*.vert.sc)
+
+foreach(FRAG_SHADER ${FRAG_SHADERS})
 add_custom_command(TARGET shader POST_BUILD
-                    COMMAND $<TARGET_FILE:shaderc> -f ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.sc -o ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.bin --type fs ${SHADERC_FLAGS}
-                    COMMENT "Compiling shaders...")
+    COMMAND $<TARGET_FILE:shaderc> -f ${FRAG_SHADER} -o ${FRAG_SHADER}.bin --type fs ${SHADERC_FLAGS}
+    COMMENT "Compiling ${FRAG_SHADER}")
+endforeach()
+
+foreach(VERT_SHADER ${VERT_SHADERS})
+add_custom_command(TARGET shader POST_BUILD
+    COMMAND $<TARGET_FILE:shaderc> -f ${VERT_SHADER} -o ${VERT_SHADER}.bin --type vs ${SHADERC_FLAGS}
+    COMMENT "Compiling ${VERT_SHADER}")
+endforeach()

@@ -217,7 +217,7 @@ bool Shader::loadFromFile(const std::string& filename, Type type)
     switch(type)
     {
         case Type::Vertex:
-            m_shaderProgram = bgfx::createProgram(handle, {defaultFragmentShader}).idx;
+            m_shaderProgram = bgfx::createProgram(handle, {defaultFragmentShaderWithTexture}).idx;
             break;
         
         case Type::Fragment:

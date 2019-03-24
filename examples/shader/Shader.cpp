@@ -30,7 +30,7 @@ public:
         m_sprite.setTexture(m_texture);
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/pixelate.bin", sf::Shader::Type::Fragment))
+        if (!m_shader.loadFromFile("resources/pixelate.frag.sc.bin", sf::Shader::Type::Fragment))
             return false;
 
         return true;
@@ -93,7 +93,7 @@ public:
         m_text.setPosition(30, 20);
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/wave.vert", "resources/blur.frag"))
+        if (!m_shader.loadFromFile("resources/wave.vert.sc.bin", "resources/blur.frag.sc.bin"))
             return false;
 
         return true;
