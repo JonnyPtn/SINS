@@ -146,7 +146,7 @@ public:
         }
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/storm.vert", "resources/blink.frag"))
+        if (!m_shader.loadFromFile("resources/storm.vert.sc.bin", "resources/blink.frag.sc.bin"))
             return false;
 
         return true;
@@ -213,7 +213,7 @@ public:
         }
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/edge.frag", sf::Shader::Type::Fragment))
+        if (!m_shader.loadFromFile("resources/edge.frag.sc.bin", sf::Shader::Type::Fragment))
             return false;
         m_shader.setUniform("texture", sf::Shader::CurrentTexture);
 
