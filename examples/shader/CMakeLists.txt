@@ -35,6 +35,11 @@ add_custom_command(TARGET shader POST_BUILD
     COMMENT "Compiling ${FRAG_SHADER}")
 endforeach()
 
+# Need to use different flag for vert shaders on DX11
+if (SFML_OS_WINDOWS)
+set(SHADERC_FLAGS --platform windows -p vs_5_0 -O 3)
+endif()
+
 foreach(VERT_SHADER ${VERT_SHADERS})
 add_custom_command(TARGET shader POST_BUILD
     COMMAND $<TARGET_FILE:shaderc> -f ${VERT_SHADER} -o ${VERT_SHADER}.bin --type vs ${SHADERC_FLAGS}
