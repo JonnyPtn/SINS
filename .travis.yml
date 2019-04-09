@@ -54,13 +54,13 @@ matrix:
     os: osx
     osx_image: xcode10
     env:
-     - CMAKE_FLAGS="-DSFML_DEPENDENCIES_INSTALL_PREFIX=../install -DSFML_BUILD_TEST_SUITE=TRUE"
+     - CMAKE_FLAGS="-DSFML_BUILD_TEST_SUITE=TRUE"
 
   - name: "macOS Xcode 10 Static"
     os: osx
     osx_image: xcode10g
     env:
-     - CMAKE_FLAGS="-DSFML_DEPENDENCIES_INSTALL_PREFIX=../install -DSFML_BUILD_TEST_SUITE=TRUE -DBUILD_SHARED_LIBS=FALSE"
+     - CMAKE_FLAGS="-DSFML_BUILD_TEST_SUITE=TRUE -DBUILD_SHARED_LIBS=FALSE"
 
   - name: "iOS Xcode 10"
     os: osx
