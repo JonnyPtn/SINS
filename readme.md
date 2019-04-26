@@ -4,7 +4,9 @@
 
 # SINS — SINS Is Not SFML
 
-SFML is a simple, fast, cross-platform and object-oriented multimedia API. It provides access to windowing, graphics, audio and network. It is written in C++, and has bindings for various languages such as C, .Net, Ruby, Python.
+~~SFML is a simple, fast, cross-platform and object-oriented multimedia API. It provides access to windowing, graphics, audio and network. It is written in C++, and has bindings for various languages such as C, .Net, Ruby, Python.~~
+
+SINS is like SFML, but uses BGFX as a graphics backend (so it can support more platforms better, including emscripten/webGL), and also uses c++14 and has some other changes I fancied putting in. It's still under heavy development, but should pretty much be a drop in replacement for SFML. Please try it, and log a github issue if you have trouble
 
 **SINS is NOT SFML! And for complete clarity, it's not an attempt to undermine SFML in anyway. SFML is a fantastic library, you should use it.**
 
