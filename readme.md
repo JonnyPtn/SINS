@@ -1,6 +1,6 @@
 [![SFML logo](https://www.sfml-dev.org/images/logo.png)](https://www.sfml-dev.org)
 
-[![Travis build](https://travis-ci.org/JonnyPtn/SINS.svg?branch=master)](https://travis-ci.org/JonnyPtn/SINS
+[![Travis build](https://travis-ci.org/JonnyPtn/SINS.svg?branch=master)](https://travis-ci.org/JonnyPtn/SINS)
 
 # SINS — SINS Is Not SFML
 
