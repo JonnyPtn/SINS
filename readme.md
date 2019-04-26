@@ -1,7 +1,6 @@
 [![SFML logo](https://www.sfml-dev.org/images/logo.png)](https://www.sfml-dev.org)
 
-[![Travis build](https://travis-ci.org/MML-Dev/MML.svg?branch=master)](https://travis-ci.org/MML-Dev/MML)
-[![Appveyor build](https://ci.appveyor.com/api/projects/status/2sro7tlqvgrw1trr/branch/master?svg=true)](https://ci.appveyor.com/project/JonnyPtn/mml)
+[![Travis build](https://travis-ci.org/JonnyPtn/SINS.svg?branch=master)](https://travis-ci.org/JonnyPtn/SINS
 
 # SINS — SINS Is Not SFML
 
