@@ -520,15 +520,14 @@ void Shader::setUniform(const std::string& name, bool x)
 
 
 ////////////////////////////////////////////////////////////
-//void Shader::setUniform(const std::string& name, const Texture& texture)
-//{
-//    // Kind of guessing the type here
-//    auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Int1);
-//    auto handle = texture.getNativeHandle();
-//    //bgfx::setUniform(uniform, &handle);
-//
-//    // TODO really need to delete the uniforms here, but... not sure when
-//}
+void Shader::setUniform(const std::string& name, const Texture& texture)
+{
+    // Kind of guessing the type here
+    auto uniform = bgfx::createUniform(name.c_str(), bgfx::UniformType::Int1);
+    auto handle = texture.getNativeHandle();
+    bgfx::setUniform(uniform, &handle);
+    bgfx::destroy(uniform);
+}
 
 
 ////////////////////////////////////////////////////////////
