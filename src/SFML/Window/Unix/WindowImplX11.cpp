@@ -566,21 +566,22 @@ m_lastInputTime  (0)
     Visual* visual = NULL;
     int depth = 0;
 
+    //@todo jonny work out what needs to be done here... presumably nothing as we don't deal with openGL contexts anymore?
     // Check if the user chose to not create an OpenGL context (settings.attributeFlags will be 0xFFFFFFFF)
-    if (settings.attributeFlags == 0xFFFFFFFF)
+    //if (settings.attributeFlags == 0xFFFFFFFF)
     {
         // Choose default visual since the user is going to use their own rendering API
         visual = DefaultVisual(m_display, m_screen);
         depth = DefaultDepth(m_display, m_screen);
     }
-    else
-    {
-        // Choose the visual according to the context settings
-        XVisualInfo visualInfo = ContextType::selectBestVisual(m_display, mode.bitsPerPixel, settings);
-
-        visual = visualInfo.visual;
-        depth = visualInfo.depth;
-    }
+    //else
+    //{
+    //    // Choose the visual according to the context settings
+    //    XVisualInfo visualInfo = ContextType::selectBestVisual(m_display, mode.bitsPerPixel, settings);
+    //
+    //    visual = visualInfo.visual;
+    //    depth = visualInfo.depth;
+    //}
 
     // Define the window attributes
     XSetWindowAttributes attributes;
