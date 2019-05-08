@@ -191,6 +191,8 @@ void RenderTarget::draw(const Drawable& drawable, const RenderStates& states)
 void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     PrimitiveType type, const RenderStates& states)
 {
+    setupDraw(false, states);
+
     if (vertexCount == 0)
         return;
     
