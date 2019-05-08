@@ -24,9 +24,10 @@ if(SFML_BUILD_GRAPHICS)
 
     if (NOT SFML_OS_IOS)
         add_subdirectory(joystick)
-        add_subdirectory(shader)
-        add_subdirectory(island)
     endif()
+
+    add_subdirectory(shader)
+    add_subdirectory(island)
 
 endif()
 if(SFML_BUILD_GRAPHICS AND SFML_BUILD_AUDIO)

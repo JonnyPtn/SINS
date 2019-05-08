@@ -9,6 +9,6 @@ sfml_add_example(window GUI_APP
                  SOURCES ${SRC}
                  DEPENDS sfml-window)
 
-if (APPLE)
+if (APPLE AND NOT IOS)
     target_link_libraries(window PRIVATE "-framework OpenGL -Objc")
 endif()

@@ -60,7 +60,9 @@ sfml_add_library(sfml-audio
                  SOURCES ${SRC} ${CODECS_SRC})
 
 # setup dependencies
-if (NOT EMSCRIPTEN)
+if (IOS)
+    target_link_libraries(sfml-audio PRIVATE "-framework OpenAL")
+elseif (NOT EMSCRIPTEN)
     target_include_directories(sfml-audio PRIVATE $<TARGET_PROPERTY:OpenAL,INCLUDE_DIRECTORIES>)
     target_link_libraries(sfml-audio PRIVATE OpenAL)
 endif()

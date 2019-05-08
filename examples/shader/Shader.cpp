@@ -7,6 +7,19 @@
 #include <cmath>
 #include <memory>
 
+#ifdef SFML_SYSTEM_IOS
+#include <SFML/Main.hpp>
+#endif
+
+std::string resourcesDir()
+{
+#ifdef SFML_SYSTEM_IOS
+    return "";
+#else
+    return "resources/";
+#endif
+}
+
 
 const sf::Font* Effect::s_font = nullptr;
 
@@ -25,12 +38,12 @@ public:
     bool onLoad()
     {
         // Load the texture and initialize the sprite
-        if (!m_texture.loadFromFile("resources/background.jpg"))
+        if (!m_texture.loadFromFile(resourcesDir() + "background.jpg"))
             return false;
         m_sprite.setTexture(m_texture);
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/pixelate.frag.sc.bin", sf::Shader::Type::Fragment))
+        if (!m_shader.loadFromFile(resourcesDir() + "pixelate.frag.sc.bin", sf::Shader::Type::Fragment))
             return false;
 
         return true;
@@ -93,7 +106,7 @@ public:
         m_text.setPosition(30, 20);
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/wave.vert.sc.bin", "resources/blur.frag.sc.bin"))
+        if (!m_shader.loadFromFile(resourcesDir() + "wave.vert.sc.bin", resourcesDir() + "blur.frag.sc.bin"))
             return false;
 
         return true;
@@ -146,7 +159,7 @@ public:
         }
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/storm.vert.sc.bin", "resources/blink.frag.sc.bin"))
+        if (!m_shader.loadFromFile(resourcesDir() + "storm.vert.sc.bin", resourcesDir() + "blink.frag.sc.bin"))
             return false;
 
         return true;
@@ -194,10 +207,10 @@ public:
         m_surface.setSmooth(true);
 
         // Load the textures
-        if (!m_backgroundTexture.loadFromFile("resources/sfml.png"))
+        if (!m_backgroundTexture.loadFromFile(resourcesDir() + "sfml.png"))
             return false;
         m_backgroundTexture.setSmooth(true);
-        if (!m_entityTexture.loadFromFile("resources/devices.png"))
+        if (!m_entityTexture.loadFromFile(resourcesDir() + "devices.png"))
             return false;
         m_entityTexture.setSmooth(true);
 
@@ -213,7 +226,7 @@ public:
         }
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/edge.frag.sc.bin", sf::Shader::Type::Fragment))
+        if (!m_shader.loadFromFile(resourcesDir() + "edge.frag.sc.bin", sf::Shader::Type::Fragment))
             return false;
         m_shader.setUniform("texture", sf::Shader::CurrentTexture);
 
@@ -287,11 +300,11 @@ public:
         }
 
         // Load the texture
-        if (!m_logoTexture.loadFromFile("resources/logo.png"))
+        if (!m_logoTexture.loadFromFile(resourcesDir() + "logo.png"))
             return false;
 
         // Load the shader
-        if (!m_shader.loadFromFile("resources/billboard.vert", "resources/billboard.geom", "resources/billboard.frag"))
+        if (!m_shader.loadFromFile(resourcesDir() + "billboard.vert", resourcesDir() + "billboard.geom", resourcesDir() + "billboard.frag"))
             return false;
         m_shader.setUniform("texture", sf::Shader::CurrentTexture);
 
@@ -352,7 +365,7 @@ int main()
 
     // Load the application font and pass it to the Effect class
     sf::Font font;
-    if (!font.loadFromFile("resources/sansation.ttf"))
+    if (!font.loadFromFile(resourcesDir() + "sansation.ttf"))
         return EXIT_FAILURE;
     Effect::setFont(font);
 
@@ -371,7 +384,7 @@ int main()
 
     // Create the messages background
     sf::Texture textBackgroundTexture;
-    if (!textBackgroundTexture.loadFromFile("resources/text-background.png"))
+    if (!textBackgroundTexture.loadFromFile(resourcesDir() + "text-background.png"))
         return EXIT_FAILURE;
     sf::Sprite textBackground(textBackgroundTexture);
     textBackground.setPosition(0, 520);
@@ -433,8 +446,13 @@ int main()
         }
 
         // Update the current example
+#ifdef SFML_SYSTEM_IOS
+        float x = static_cast<float>(sf::Touch::getPosition(0).x) / window.getSize().x;
+        float y = static_cast<float>(sf::Touch::getPosition(0).y) / window.getSize().y;
+#else
         float x = static_cast<float>(sf::Mouse::getPosition(window).x) / window.getSize().x;
         float y = static_cast<float>(sf::Mouse::getPosition(window).y) / window.getSize().y;
+#endif
         effects[current]->update(clock.getElapsedTime().asSeconds(), x, y);
 
         // Clear the window

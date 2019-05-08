@@ -14,6 +14,10 @@
 #include <thread>
 #include <mutex>
 
+#ifdef SFML_SYSTEM_IOS
+#include <SFML/Main.hpp>
+#endif
+
 namespace
 {
     // Width and height of the application window
