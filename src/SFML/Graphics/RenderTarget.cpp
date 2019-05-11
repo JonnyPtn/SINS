@@ -216,7 +216,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     }
     bgfx::setVertexBuffer(0, &tvb);
 
-    auto state = BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A;
+    auto state = BGFX_STATE_WRITE_RGB;
 
     if (states.blendMode == BlendAlpha)
     {
@@ -312,7 +312,7 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
                         std::size_t vertexCount, const RenderStates& states)
 {
     bgfx::setVertexBuffer(0, bgfx::DynamicVertexBufferHandle{ static_cast<std::uint16_t>(vertexBuffer.getNativeHandle()) }, firstVertex, vertexCount);
-    auto state = BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA;
+    auto state = BGFX_STATE_WRITE_RGB | BGFX_STATE_BLEND_ALPHA;
     auto type = vertexBuffer.getPrimitiveType();
     switch (type)
     {
@@ -471,8 +471,11 @@ void RenderTarget::setupDraw(bool useVertexCache, const RenderStates& states)
     }
 
     // Apply the view
+    // todo jonny: Why does this break stuff on emscripten?!
+    #ifndef SFML_SYSTEM_EMSCRIPTEN
     if (!m_cache.enable || m_cache.viewChanged)
         applyCurrentView();
+    #endif
 
     // Apply the blend mode
     if (!m_cache.enable || (states.blendMode != m_cache.lastBlendMode))

@@ -30,12 +30,14 @@ endfunction()
 function(sfml_set_common_ios_properties target)
     # enable automatic reference counting on iOS
     sfml_set_xcode_property(${target} CLANG_ENABLE_OBJC_ARC YES)
+    sfml_set_xcode_property(${target} IPHONEOS_DEPLOYMENT_TARGET "${SFML_IOS_DEPLOYMENT_TARGET}")
+    sfml_set_xcode_property(${target} CODE_SIGN_IDENTITY "${SFML_CODE_SIGN_IDENTITY}")
 
     get_target_property(target_type ${target} TYPE)
     if (target_type STREQUAL "EXECUTABLE")
         set_target_properties(${target} PROPERTIES
             MACOSX_BUNDLE TRUE # Bare executables are not usable on iOS, only bundle applications
-            MACOSX_BUNDLE_GUI_IDENTIFIER "org.sfml_dev.${target}" # If missing, trying to launch an example in simulator will make Xcode < 9.3 crash
+            MACOSX_BUNDLE_GUI_IDENTIFIER "org.sfml-dev.${target}" # If missing, trying to launch an example in simulator will make Xcode < 9.3 crash
             MACOSX_BUNDLE_BUNDLE_NAME "${target}"
             MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
         )
@@ -306,7 +308,7 @@ macro(sfml_add_example target)
         if (THIS_RESOURCES_DIR)
             set(EXTRA_FLAGS "${EXTRA_FLAGS} --preload-file ${THIS_RESOURCES_DIR}@/")
         endif()
-        set_target_properties(${target} PROPERTIES LINK_FLAGS "${EXTRA_FLAGS}")
+        set_target_properties(${target} PROPERTIES LINK_FLAGS "${EXTRA_FLAGS}" SUFFIX .html)
     endif()
 
 endmacro()

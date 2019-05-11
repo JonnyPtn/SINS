@@ -45,19 +45,19 @@ endif()
 file(GLOB FRAG_SHADERS resources/*.frag.sc)
 file(GLOB VERT_SHADERS resources/*.vert.sc)
 
-foreach(FRAG_SHADER ${FRAG_SHADERS})
-add_custom_command(TARGET shader POST_BUILD
-    COMMAND $<TARGET_FILE:shaderc> -f ${FRAG_SHADER} -o ${FRAG_SHADER}.bin --type fs ${SHADERC_FLAGS}
-    COMMENT "Compiling ${FRAG_SHADER}")
-endforeach()
+# Need to work out what to do for emscripten here
+# Have to generate the shader compiler using the host
+# platform/compiler, not the target
+if (NOT EMSCRIPTEN)
+    foreach(FRAG_SHADER ${FRAG_SHADERS})
+    add_custom_command(TARGET shader POST_BUILD
+        COMMAND $<TARGET_FILE:shaderc> -f ${FRAG_SHADER} -o ${FRAG_SHADER}.bin --type fs ${SHADERC_FLAGS}
+        COMMENT "Compiling ${FRAG_SHADER}")
+    endforeach()
 
-# Need to use different flag for vert shaders on DX11
-if (SFML_OS_WINDOWS)
-set(SHADERC_FLAGS --platform windows -p vs_5_0 -O 3)
+    foreach(VERT_SHADER ${VERT_SHADERS})
+    add_custom_command(TARGET shader POST_BUILD
+        COMMAND $<TARGET_FILE:shaderc> -f ${VERT_SHADER} -o ${VERT_SHADER}.bin --type vs ${SHADERC_FLAGS}
+        COMMENT "Compiling ${VERT_SHADER}")
+    endforeach()
 endif()
-
-foreach(VERT_SHADER ${VERT_SHADERS})
-add_custom_command(TARGET shader POST_BUILD
-    COMMAND $<TARGET_FILE:shaderc> -f ${VERT_SHADER} -o ${VERT_SHADER}.bin --type vs ${SHADERC_FLAGS}
-    COMMENT "Compiling ${VERT_SHADER}")
-endforeach()
