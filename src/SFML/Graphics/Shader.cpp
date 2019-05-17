@@ -61,14 +61,7 @@ namespace
         std::ifstream file(filename.c_str(), std::ios_base::binary);
         if (file)
         {
-            file.seekg(0, std::ios_base::end);
-            std::streamsize size = file.tellg();
-            if (size > 0)
-            {
-                file.seekg(0, std::ios_base::beg);
-                buffer.resize(static_cast<std::size_t>(size));
-                file.read(reinterpret_cast<char*>(buffer.data()), size);
-            }
+            buffer = {std::istreambuf_iterator<char>(file), {}};
             return true;
         }
         else
@@ -188,10 +181,11 @@ m_uniforms      ()
 ////////////////////////////////////////////////////////////
 Shader::~Shader()
 {
-
     // Destroy effect program
-    if (m_shaderProgram)
-        bgfx::destroy(bgfx::ShaderHandle{ m_shaderProgram });
+    if ( bgfx::isValid( bgfx::ShaderHandle( { m_shaderProgram } ) ) )
+    {
+        bgfx::destroy( bgfx::ShaderHandle{ m_shaderProgram } );
+    }
 }
 
 
