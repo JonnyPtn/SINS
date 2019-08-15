@@ -345,11 +345,10 @@ private:
     ////////////////////////////////////////////////////////////
     /// \brief Setup environment for drawing
     ///
-    /// \param useVertexCache Are we going to use the vertex cache?
     /// \param states         Render states to use for drawing
     ///
     ////////////////////////////////////////////////////////////
-    void setupDraw(bool useVertexCache, const RenderStates& states);
+    void setupDraw(const RenderStates& states);
 
     ////////////////////////////////////////////////////////////
     /// \brief Draw the primitives

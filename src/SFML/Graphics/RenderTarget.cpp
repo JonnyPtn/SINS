@@ -94,9 +94,9 @@ RenderTarget::~RenderTarget()
 void RenderTarget::clear(const Color& color)
 {
     const auto rect = getViewport(getView());
+    bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
     bgfx::setViewRect(0, rect.left, rect.top, rect.width, rect.height);
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, color.toInteger());
-    bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
 }
 
 
@@ -194,7 +194,7 @@ void RenderTarget::draw(const Drawable& drawable, const RenderStates& states)
 void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     PrimitiveType type, const RenderStates& states)
 {
-    setupDraw(false, states);
+    setupDraw(states);
 
     if (vertexCount == 0)
         return;
@@ -462,17 +462,13 @@ void RenderTarget::applyShader(const Shader* shader)
 
 
 ////////////////////////////////////////////////////////////
-void RenderTarget::setupDraw(bool useVertexCache, const RenderStates& states)
+void RenderTarget::setupDraw(const RenderStates& states)
 {
-
-    if (!useVertexCache)
-    {
-        applyTransform(states.transform);
-    }
+    applyTransform(states.transform);
 
     // Apply the view
-    // todo jonny: Why does this break stuff on emscripten?!
-    #ifndef SFML_SYSTEM_EMSCRIPTEN
+    // todo jonny: Why does this break stuff on emscripten and macos?!
+    #if !SFML_SYSTEM_EMSCRIPTEN && !SFML_SYSTEM_MACOS
     if (!m_cache.enable || m_cache.viewChanged)
         applyCurrentView();
     #endif
