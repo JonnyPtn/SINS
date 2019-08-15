@@ -36,25 +36,36 @@ namespace sf
 ////////////////////////////////////////////////////////////
 Sprite::Sprite() :
 m_texture    (nullptr),
-m_textureRect()
+m_textureRect(),
+m_verticesBuffer(TriangleStrip, VertexBuffer::Stream)
 {
+    if (VertexBuffer::isAvailable())
+        m_verticesBuffer.create(4);
 }
 
 
 ////////////////////////////////////////////////////////////
 Sprite::Sprite(const Texture& texture) :
+m_verticesBuffer(TriangleStrip, VertexBuffer::Stream),
 m_texture    (nullptr),
 m_textureRect()
 {
+    if (VertexBuffer::isAvailable())
+        m_verticesBuffer.create(4);
+
     setTexture(texture);
 }
 
 
 ////////////////////////////////////////////////////////////
 Sprite::Sprite(const Texture& texture, const IntRect& rectangle) :
+m_verticesBuffer(TriangleStrip, VertexBuffer::Stream),
 m_texture    (nullptr),
 m_textureRect()
 {
+    if (VertexBuffer::isAvailable())
+        m_verticesBuffer.create(4);
+
     setTexture(texture);
     setTextureRect(rectangle);
 }
@@ -80,6 +91,10 @@ void Sprite::setTextureRect(const IntRect& rectangle)
         m_textureRect = rectangle;
         updatePositions();
         updateTexCoords();
+
+        // Update the vertex buffer if it is being used
+        if (VertexBuffer::isAvailable())
+            m_verticesBuffer.update(m_vertices);
     }
 }
 
@@ -92,6 +107,10 @@ void Sprite::setColor(const Color& color)
     m_vertices[1].color = color;
     m_vertices[2].color = color;
     m_vertices[3].color = color;
+
+    // Update the vertex buffer if it is being used
+    if (VertexBuffer::isAvailable())
+        m_verticesBuffer.update(m_vertices);
 }
 
 
@@ -140,7 +159,14 @@ void Sprite::draw(RenderTarget& target, RenderStates states) const
     {
         states.transform *= getTransform();
         states.texture = m_texture;
-        target.draw(m_vertices, 4, PrimitiveType::TriangleStrip, states);
+        if (VertexBuffer::isAvailable())
+        {
+            target.draw(m_verticesBuffer, states);
+        }
+        else
+        {
+            target.draw(m_vertices, 4, TriangleStrip, states);
+        }
     }
 }
 
