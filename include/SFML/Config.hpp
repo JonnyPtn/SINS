@@ -41,7 +41,7 @@
 #if defined(_WIN32)
 
     // Windows
-    #define SFML_SYSTEM_WINDOWS
+    #define SFML_SYSTEM_WINDOWS 1
     #ifndef NOMINMAX
         #define NOMINMAX
     #endif
@@ -54,12 +54,12 @@
     #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 
         // iOS
-        #define SFML_SYSTEM_IOS
+        #define SFML_SYSTEM_IOS 1
 
     #elif TARGET_OS_MAC
 
         // MacOS
-        #define SFML_SYSTEM_MACOS
+        #define SFML_SYSTEM_MACOS 1
 
     #else
 
@@ -74,27 +74,27 @@
     #if defined(__ANDROID__)
 
         // Android
-        #define SFML_SYSTEM_ANDROID
+        #define SFML_SYSTEM_ANDROID 1
 
     #elif defined(__linux__)
 
          // Linux
-        #define SFML_SYSTEM_LINUX
+        #define SFML_SYSTEM_LINUX 1
 
     #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 
         // FreeBSD
-        #define SFML_SYSTEM_FREEBSD
+        #define SFML_SYSTEM_FREEBSD 1
 
     #elif defined(__OpenBSD__)
 
         // OpenBSD
-        #define SFML_SYSTEM_OPENBSD
+        #define SFML_SYSTEM_OPENBSD 1
 
     #elif defined(__EMSCRIPTEN__)
 
         // Emscripten
-        #define SFML_SYSTEM_EMSCRIPTEN
+        #define SFML_SYSTEM_EMSCRIPTEN 1
         
     #else
 
@@ -116,7 +116,7 @@
 ////////////////////////////////////////////////////////////
 #if !defined(NDEBUG)
 
-    #define SFML_DEBUG
+    #define SFML_DEBUG 1
 
 #endif
 
@@ -126,7 +126,7 @@
 ////////////////////////////////////////////////////////////
 #if !defined(SFML_STATIC)
 
-    #if defined(SFML_SYSTEM_WINDOWS)
+    #if SFML_SYSTEM_WINDOWS
 
         // Windows compilers need specific (and different) keywords for export and import
         #define SFML_API_EXPORT __declspec(dllexport)
@@ -181,7 +181,7 @@
 #if defined(SFML_NO_DEPRECATED_WARNINGS)
 
     // User explicitly requests to disable deprecation warnings
-    #define SFML_DEPRECATED
+    #define SFML_DEPRECATED 1
 
 #else
 
