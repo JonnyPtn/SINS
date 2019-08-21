@@ -28,8 +28,10 @@
 #include <SFML/Audio/SoundStream.hpp>
 #include <SFML/Audio/AudioDevice.hpp>
 #include <SFML/Audio/ALCheck.hpp>
-#include <SFML/System/Sleep.hpp>
 #include <SFML/System/Err.hpp>
+#include <chrono>
+#include <thread>
+using namespace std::chrono_literals;
 
 #ifdef _MSC_VER
     #pragma warning(disable: 4355) // 'this' used in base member initializer list
@@ -394,7 +396,9 @@ void SoundStream::streamData()
 
         // Leave some time for the other threads if the stream is still playing
         if (SoundSource::getStatus() != Status::Stopped)
-            sleep(milliseconds(10));
+        {
+            std::this_thread::sleep_for(10ms);
+        }
     }
 
     // Stop the playback

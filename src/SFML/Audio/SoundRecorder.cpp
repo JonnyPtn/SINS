@@ -28,7 +28,6 @@
 #include <SFML/Audio/SoundRecorder.hpp>
 #include <SFML/Audio/AudioDevice.hpp>
 #include <SFML/Audio/ALCheck.hpp>
-#include <SFML/System/Sleep.hpp>
 #include <SFML/System/Err.hpp>
 #include <cstring>
 #include <cassert>
@@ -48,7 +47,7 @@ namespace sf
 ////////////////////////////////////////////////////////////
 SoundRecorder::SoundRecorder() :
 m_sampleRate        (0),
-m_processingInterval(milliseconds(100)),
+m_processingInterval(100),
 m_isCapturing       (false),
 m_deviceName        (getDefaultDevice()),
 m_channelCount      (1)
@@ -261,7 +260,7 @@ bool SoundRecorder::isAvailable()
 
 
 ////////////////////////////////////////////////////////////
-void SoundRecorder::setProcessingInterval(Time interval)
+void SoundRecorder::setProcessingInterval(std::chrono::milliseconds interval)
 {
     m_processingInterval = interval;
 }
@@ -291,7 +290,7 @@ void SoundRecorder::record()
         processCapturedSamples();
 
         // Don't bother the CPU while waiting for more captured data
-        sleep(m_processingInterval);
+        std::this_thread::sleep_for(m_processingInterval);
     }
 
     // Capture is finished: clean up everything

@@ -3,6 +3,10 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Window.hpp>
 #include <iostream>
+#include <thread>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 #ifdef SFML_SYSTEM_IOS
 #include <SFML/Main.hpp>
@@ -91,7 +95,8 @@ int main()
                 break;
             }
         }
+        
+        std::this_thread::sleep_for(10ms);
     }
-
     return 0;
 }

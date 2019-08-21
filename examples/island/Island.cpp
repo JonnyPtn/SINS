@@ -13,6 +13,8 @@
 #include <cmath>
 #include <thread>
 #include <mutex>
+#include <chrono>
+using namespace std::chrono_literals;
 
 #ifdef SFML_SYSTEM_IOS
 #include <SFML/Main.hpp>
@@ -541,7 +543,7 @@ void threadFunction()
         // If we didn't receive a new work item, keep looping
         if (!workItem.targetBuffer)
         {
-            sf::sleep(sf::milliseconds(10));
+            std::this_thread::sleep_for(10ms);
 
             continue;
         }
@@ -577,7 +579,7 @@ void generateTerrain(sf::Vertex* buffer)
                 break;
         }
 
-        sf::sleep(sf::milliseconds(10));
+        std::this_thread::sleep_for(10ms);
     }
 
     // Queue all the new work items

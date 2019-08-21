@@ -4,6 +4,8 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Audio.hpp>
 #include <iostream>
+#include <chrono>
+using namespace std::chrono_literals;
 
 
 ////////////////////////////////////////////////////////////
@@ -79,7 +81,7 @@ int main()
             std::cout << std::flush;
 
             // Leave some CPU time for other threads
-            sf::sleep(sf::milliseconds(100));
+            std::this_thread::sleep_for(100ms);
         }
     }
 

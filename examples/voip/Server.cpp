@@ -8,6 +8,8 @@
 #include <iostream>
 #include <iterator>
 #include <mutex>
+#include <chrono>
+using namespace std::chrono_literals;
 
 
 const sf::Uint8 audioData   = 1;
@@ -79,7 +81,9 @@ private:
 
         // No new data has arrived since last update: wait until we get some
         while ((m_offset >= m_samples.size()) && !m_hasFinished)
-            sf::sleep(sf::milliseconds(10));
+        {
+            std::this_thread::sleep_for(10ms);
+        }
 
         // Copy samples into a local buffer to avoid synchronization problems
         // (don't forget that we run in two separate threads)
@@ -180,7 +184,7 @@ void doServer(unsigned short port)
     while (audioStream.getStatus() != sf::SoundStream::Status::Stopped)
     {
         // Leave some CPU time for other threads
-        sf::sleep(sf::milliseconds(100));
+        std::this_thread::sleep_for(100ms);
     }
 
     std::cin.ignore(10000, '\n');
@@ -196,6 +200,6 @@ void doServer(unsigned short port)
     while (audioStream.getStatus() != sf::SoundStream::Status::Stopped)
     {
         // Leave some CPU time for other threads
-        sf::sleep(sf::milliseconds(100));
+        std::this_thread::sleep_for(100ms);
     }
 }

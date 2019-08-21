@@ -27,7 +27,6 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Window/Window.hpp>
 #include <SFML/Window/WindowImpl.hpp>
-#include <SFML/System/Sleep.hpp>
 #include <SFML/System/Err.hpp>
 
 

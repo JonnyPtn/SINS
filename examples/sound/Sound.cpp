@@ -5,6 +5,8 @@
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include <string>
+#include <chrono>
+using namespace std::chrono_literals;
 
 
 ////////////////////////////////////////////////////////////
@@ -32,7 +34,7 @@ void playSound()
     while (sound.getStatus() == sf::Sound::Status::Playing)
     {
         // Leave some CPU time for other processes
-        sf::sleep(sf::milliseconds(100));
+        std::this_thread::sleep_for(100ms);
 
         // Display the playing position
         std::cout << "\rPlaying... " << sound.getPlayingOffset().asSeconds() << " sec        ";
@@ -66,7 +68,7 @@ void playMusic(const std::string& filename)
     while (music.getStatus() == sf::Music::Status::Playing)
     {
         // Leave some CPU time for other processes
-        sf::sleep(sf::milliseconds(100));
+        std::this_thread::sleep_for(100ms);
 
         // Display the playing position
         std::cout << "\rPlaying... " << music.getPlayingOffset().asSeconds() << " sec        ";

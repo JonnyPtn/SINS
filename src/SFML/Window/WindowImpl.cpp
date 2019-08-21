@@ -29,9 +29,11 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/JoystickManager.hpp>
 #include <SFML/Window/SensorManager.hpp>
-#include <SFML/System/Sleep.hpp>
 #include <algorithm>
 #include <cmath>
+#include <thread>
+#include <chrono>
+using namespace std::chrono_literals;
 
 #if defined(SFML_SYSTEM_WINDOWS)
 
@@ -135,7 +137,7 @@ bool WindowImpl::popEvent(Event& event, bool block)
             // events (which require polling)
             while (m_events.empty())
             {
-                sleep(milliseconds(10));
+                std::this_thread::sleep_for(10ms);
                 processJoystickEvents();
                 processSensorEvents();
                 processEvents();

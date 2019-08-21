@@ -33,6 +33,8 @@
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
 
+#include <thread>
+
 namespace sf
 {
 ////////////////////////////////////////////////////////////
@@ -93,7 +95,7 @@ void RenderWindow::display()
     // Limit the framerate if needed
     if (m_frameTimeLimit != Time::Zero)
     {
-        sleep(m_frameTimeLimit - m_clock.getElapsedTime());
+        std::this_thread::sleep_for(std::chrono::milliseconds(m_frameTimeLimit.asMilliseconds() - m_clock.getElapsedTime().asMilliseconds()));
         m_clock.restart();
     }
 }
