@@ -31,7 +31,6 @@
 #include <SFML/Window/Unix/InputImpl.hpp>
 #include <SFML/System/Utf.hpp>
 #include <SFML/System/Err.hpp>
-#include <SFML/System/Sleep.hpp>
 #include <X11/Xlibint.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -47,6 +46,8 @@
 #include <string>
 #include <mutex>
 #include <cstring>
+#include <chrono>
+using namespace std::chrono_literals;
 
 ////////////////////////////////////////////////////////////
 // Private data
@@ -1128,7 +1129,7 @@ void WindowImplX11::setMouseCursorGrabbed(bool grabbed)
             }
 
             // The cursor grab failed, trying again after a small sleep
-            sf::sleep(sf::milliseconds(50));
+            std::this_thread::sleep_for(50ms);
         }
 
         if (!m_cursorGrabbed)
