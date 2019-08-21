@@ -28,7 +28,6 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTextureImplFBO.hpp>
-#include <SFML/System/Sleep.hpp>
 
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
