@@ -8,8 +8,8 @@ addons:
     - libopenal-dev
     - libflac-dev
     - libvorbis-dev
-    - g++-4.9
-    - clang-3.6
+    - g++
+    - clang
     - libgl1-mesa-dev
 
 before_script:
@@ -24,28 +24,28 @@ matrix:
 
   - name: "Linux gcc Dynamic"
     os: linux
-    dist: xenial
+    dist: bionic
     compiler: gcc
     env:
       - CMAKE_FLAGS="-DSFML_BUILD_TEST_SUITE=TRUE"
   
   - name: "Linux gcc Static"
     os: linux
-    dist: xenial
+    dist: bionic
     compiler: gcc
     env:
       - CMAKE_FLAGS="-DBUILD_SHARED_LIBS=FALSE -DSFML_BUILD_TEST_SUITE=TRUE"
 
   - name: "Linux clang Dynamic"
     os: linux
-    dist: xenial
+    dist: bionic
     compiler: clang
     env:
       - CMAKE_FLAGS="-DSFML_BUILD_TEST_SUITE=TRUE"
 
   - name: "Linux clang Static"
     os: linux
-    dist: xenial
+    dist: bionic
     compiler: clang
     env:
       - CMAKE_FLAGS="-DBUILD_SHARED_LIBS=FALSE -DSFML_BUILD_TEST_SUITE=TRUE"
@@ -58,7 +58,7 @@ matrix:
 
   - name: "macOS Xcode 10 Static"
     os: osx
-    osx_image: xcode10
+    osx_image: xcode10g
     env:
      - CMAKE_FLAGS="-DSFML_DEPENDENCIES_INSTALL_PREFIX=../install -DSFML_BUILD_TEST_SUITE=TRUE -DBUILD_SHARED_LIBS=FALSE"
 
