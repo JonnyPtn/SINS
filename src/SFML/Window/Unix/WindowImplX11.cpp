@@ -1729,7 +1729,7 @@ bool WindowImplX11::processEvent(XEvent& windowEvent)
                     }
 
                     // The cursor grab failed, trying again after a small sleep
-                    sf::sleep(sf::milliseconds(50));
+                    std::this_thread::sleep_for(50ms);
                 }
 
                 if (!m_cursorGrabbed)
