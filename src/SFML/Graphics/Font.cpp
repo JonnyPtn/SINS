@@ -574,16 +574,16 @@ Glyph Font::loadGlyph(Uint32 codePoint, unsigned int characterSize, bool bold, f
 
     if ((width > 0) && (height > 0))
     {
-        // Leave a small padding around characters, so that filtering doesn't
-        // pollute them with pixels from neighbors
-        const unsigned int padding = 1;
-
-        width += 2 * padding;
-        height += 2 * padding;
-
         // Get the glyphs page corresponding to the character size
         Page& page = m_pages[characterSize];
 
+        // Leave a small padding around characters, so that filtering doesn't
+        // pollute them with pixels from neighbors
+        const float padding = 1.f / page.texture.getSize().x;
+        
+        width += 2 * padding;
+        height += 2 * padding;
+        
         // Find a good position for the new glyph into the texture
         glyph.textureRect = findGlyphRect(page, width, height);
 
@@ -625,7 +625,7 @@ Glyph Font::loadGlyph(Uint32 codePoint, unsigned int characterSize, bool bold, f
                 {
                     // The color channels remain white, just fill the alpha channel
                     std::size_t index = x + y * width;
-                    m_pixelBuffer[index * 4 + 3] = ((pixels[(x - padding) / 8]) & (1 << (7 - ((x - padding) % 8)))) ? 255 : 0;
+                    m_pixelBuffer[index * 4 + 3] = ((pixels[(x - static_cast<unsigned int>(padding)) / 8]) & (1 << (7 - ((x - static_cast<unsigned int>(padding)) % 8)))) ? 255 : 0;
                 }
                 pixels += bitmap.pitch;
             }
@@ -639,17 +639,17 @@ Glyph Font::loadGlyph(Uint32 codePoint, unsigned int characterSize, bool bold, f
                 {
                     // The color channels remain white, just fill the alpha channel
                     std::size_t index = x + y * width;
-                    m_pixelBuffer[index * 4 + 3] = pixels[x - padding];
+                    m_pixelBuffer[index * 4 + 3] = pixels[x - static_cast<unsigned int>(padding)];
                 }
                 pixels += bitmap.pitch;
             }
         }
 
         // Write the pixels to the texture
-        unsigned int x = glyph.textureRect.left - padding;
-        unsigned int y = glyph.textureRect.top - padding;
-        unsigned int w = glyph.textureRect.width + 2 * padding;
-        unsigned int h = glyph.textureRect.height + 2 * padding;
+        unsigned int x = (glyph.textureRect.left - padding) * page.texture.getSize().x;
+        unsigned int y = (glyph.textureRect.top - padding) * page.texture.getSize().y;
+        unsigned int w = (glyph.textureRect.width + 2.f * padding) * page.texture.getSize().x;
+        unsigned int h = (glyph.textureRect.height + 2.f * padding) * page.texture.getSize().y;
         page.texture.update(m_pixelBuffer.data(), w, h, x, y);
     }
 
@@ -662,7 +662,7 @@ Glyph Font::loadGlyph(Uint32 codePoint, unsigned int characterSize, bool bold, f
 
 
 ////////////////////////////////////////////////////////////
-IntRect Font::findGlyphRect(Page& page, unsigned int width, unsigned int height) const
+FloatRect Font::findGlyphRect(Page& page, unsigned int width, unsigned int height) const
 {
     // Find the line that fits well the glyph
     Row* row = nullptr;
@@ -710,7 +710,7 @@ IntRect Font::findGlyphRect(Page& page, unsigned int width, unsigned int height)
             {
                 // Oops, we've reached the maximum texture size...
                 err() << "Failed to add a new character to the font: the maximum texture size has been reached" << std::endl;
-                return IntRect(0, 0, 2, 2);
+                return {0.f, 0.f, 2.f, 2.f};
             }
         }
 
@@ -721,7 +721,11 @@ IntRect Font::findGlyphRect(Page& page, unsigned int width, unsigned int height)
     }
 
     // Find the glyph's rectangle on the selected row
-    IntRect rect(row->width, row->top, width, height);
+    // and normalise it
+    auto textureSize = page.texture.getSize();
+    float textureWidth = textureSize.x;
+    float textureHeight = textureSize.y;
+    FloatRect rect(row->width/textureWidth, row->top/textureHeight, width/textureWidth, height/textureHeight);
 
     // Update the row informations
     row->width += width;

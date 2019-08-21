@@ -327,7 +327,7 @@ private:
     /// \return Found rectangle within the texture
     ///
     ////////////////////////////////////////////////////////////
-    IntRect findGlyphRect(Page& page, unsigned int width, unsigned int height) const;
+    FloatRect findGlyphRect(Page& page, unsigned int width, unsigned int height) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Make sure that the given size is the current one

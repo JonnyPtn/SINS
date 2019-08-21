@@ -114,7 +114,10 @@ m_impl(std::make_unique<impl>())
 ////////////////////////////////////////////////////////////
 VertexBuffer::~VertexBuffer()
 {
-    bgfx::destroy(m_impl->handle);
+    if (bgfx::isValid(m_impl->handle))
+    {
+        bgfx::destroy(m_impl->handle);
+    }
 }
 
 

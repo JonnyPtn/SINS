@@ -48,9 +48,9 @@ namespace
     }
 
     // Add a glyph quad to the vertex array
-    void addGlyphQuad(sf::VertexArray& vertices, sf::Vector2f position, const sf::Color& color, const sf::Glyph& glyph, float italicShear, float outlineThickness = 0)
+    void addGlyphQuad(sf::VertexArray& vertices, sf::Vector2f position, sf::Vector2u textureSize, const sf::Color& color, const sf::Glyph& glyph, float italicShear, float outlineThickness = 0)
     {
-        float padding = 1.0;
+        float padding = 1.f / textureSize.x;
 
         float left   = glyph.bounds.left - padding;
         float top    = glyph.bounds.top - padding;
@@ -556,7 +556,7 @@ void Text::ensureGeometryUpdate() const
             float bottom = glyph.bounds.top  + glyph.bounds.height;
 
             // Add the outline glyph to the vertices
-            addGlyphQuad(m_outlineVertices, Vector2f(x, y), m_outlineColor, glyph, italicShear, m_outlineThickness);
+            addGlyphQuad(m_outlineVertices, Vector2f(x, y), m_font->getTexture(m_characterSize).getSize(), m_outlineColor, glyph, italicShear, m_outlineThickness);
 
             // Update the current bounds with the outlined glyph bounds
             minX = std::min(minX, x + left   - italicShear * bottom - m_outlineThickness);
@@ -569,7 +569,7 @@ void Text::ensureGeometryUpdate() const
         const Glyph& glyph = m_font->getGlyph(curChar, m_characterSize, isBold);
 
         // Add the glyph to the vertices
-        addGlyphQuad(m_vertices, Vector2f(x, y), m_fillColor, glyph, italicShear);
+        addGlyphQuad(m_vertices, Vector2f(x, y), m_font->getTexture(m_characterSize).getSize(), m_fillColor, glyph, italicShear);
 
         // Update the current bounds with the non outlined glyph bounds
         if (m_outlineThickness == 0)
