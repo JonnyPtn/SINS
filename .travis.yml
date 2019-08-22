@@ -11,6 +11,9 @@ addons:
     - g++
     - clang
     - libgl1-mesa-dev
+  homebrew:
+    packages:
+    - cmake
 
 before_script:
 - mkdir build && cd build
