@@ -27,7 +27,7 @@ sfml_add_example(shader GUI_APP
                  RESOURCES_DIR resources)
 
 if(SFML_OS_LINUX OR SFML_OS_FREEBSD)
-	target_link_libraries(shader PRIVATE pthread dl GL ${CMAKE_BINARY_DIR}/bgfx-install/lib/libbx.a)
+	target_link_libraries(shader PRIVATE pthread dl GL)
 endif()
 
 # Platform specific flags for shaderc
