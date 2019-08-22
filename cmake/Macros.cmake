@@ -263,13 +263,13 @@ macro(sfml_add_example target)
 
     # add the install rule
     install(TARGETS ${target}
-            RUNTIME DESTINATION ${target_install_dir} COMPONENT examples
-            BUNDLE DESTINATION ${target_install_dir} COMPONENT examples
-			RESOURCE DESTINATION ${target_install_dir} COMPONENT examples)
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT examples
+            BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT examples
+			RESOURCE DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT examples)
 
     # install the example's source code
     install(FILES ${THIS_SOURCES}
-            DESTINATION ${target_install_dir}
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
             COMPONENT examples)
 
     if (THIS_RESOURCES_DIR AND NOT IOS)
@@ -280,7 +280,7 @@ macro(sfml_add_example target)
             message(FATAL_ERROR "Given resources directory to install does not exist: ${THIS_RESOURCES_DIR}")
         endif()
         install(DIRECTORY ${THIS_RESOURCES_DIR}
-                DESTINATION ${target_install_dir}
+                DESTINATION ${CMAKE_INSTALL_BINDIR}
                 COMPONENT examples)
 
         # add the resource to the binary dir
