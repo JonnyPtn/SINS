@@ -14,8 +14,7 @@ if (SFML_OS_IOS)
         ${CMAKE_CURRENT_SOURCE_DIR}/resources/devices.png
         ${CMAKE_CURRENT_SOURCE_DIR}/resources/logo.png
         ${CMAKE_CURRENT_SOURCE_DIR}/resources/sfml.png
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources/text-background.png
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources/pixelate.frag.sc.bin)
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/text-background.png)
     set_source_files_properties(${RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 endif()
 

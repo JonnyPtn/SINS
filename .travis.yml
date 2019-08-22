@@ -13,7 +13,8 @@ addons:
     - libgl1-mesa-dev
   homebrew:
     packages:
-    - cmake
+     - cmake
+    update: true
 
 before_script:
 - mkdir build && cd build
