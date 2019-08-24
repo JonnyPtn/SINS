@@ -62,7 +62,7 @@ matrix:
 
   - name: "macOS Xcode 10 Static"
     os: osx
-    osx_image: xcode10g
+    osx_image: xcode10
     env:
      - CMAKE_FLAGS="-DSFML_BUILD_TEST_SUITE=TRUE -DBUILD_SHARED_LIBS=FALSE"
 
@@ -70,7 +70,7 @@ matrix:
     os: osx
     osx_image: xcode10
     env:
-     - CMAKE_FLAGS="-GXcode -DCMAKE_SYSTEM_NAME=iOS"
+     - CMAKE_FLAGS="-GXcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphonesimulator"
 
   - name: "Visual studio 15 2017 Dynamic"
     os: windows

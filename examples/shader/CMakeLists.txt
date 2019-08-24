@@ -44,10 +44,10 @@ endif()
 file(GLOB FRAG_SHADERS resources/*.frag.sc)
 file(GLOB VERT_SHADERS resources/*.vert.sc)
 
-# Need to work out what to do for emscripten here
-# Have to generate the shader compiler using the host
-# platform/compiler, not the target
-if (NOT EMSCRIPTEN)
+# Need to work out what to do when cross-compiling
+# We ideally need to compile the shaders on the host system
+# but that means a complete bgfx rebuild (or including the shaderc binary)
+if (NOT CMAKE_CROSSCOMPILING)
     foreach(FRAG_SHADER ${FRAG_SHADERS})
     add_custom_command(TARGET shader POST_BUILD
         COMMAND $<TARGET_FILE:shaderc> -f ${FRAG_SHADER} -o ${FRAG_SHADER}.bin --type fs ${SHADERC_FLAGS}
