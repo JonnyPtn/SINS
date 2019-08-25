@@ -375,39 +375,6 @@ install(FILES license.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
 install(FILES readme.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 if(SFML_OS_MACOSX)
-    # install extlibs dependencies only when used
-    if(SFML_BUILD_GRAPHICS)
-        if(FREETYPE_LIBRARY STREQUAL "${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks/freetype.framework")
-            install(DIRECTORY extlibs/libs-osx/Frameworks/freetype.framework DESTINATION ${CMAKE_INSTALL_LIBDIR})
-        endif()
-    endif()
-
-    if(SFML_BUILD_AUDIO)
-        if(FLAC_LIBRARY STREQUAL "${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks/FLAC.framework")
-            install(DIRECTORY extlibs/libs-osx/Frameworks/FLAC.framework DESTINATION ${CMAKE_INSTALL_LIBDIR})
-        endif()
-
-        if(OGG_LIBRARY STREQUAL "${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks/ogg.framework")
-            install(DIRECTORY extlibs/libs-osx/Frameworks/ogg.framework DESTINATION ${CMAKE_INSTALL_LIBDIR})
-        endif()
-
-        if(VORBIS_LIBRARY STREQUAL "${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks/vorbis.framework")
-            install(DIRECTORY extlibs/libs-osx/Frameworks/vorbis.framework DESTINATION ${CMAKE_INSTALL_LIBDIR})
-        endif()
-
-        if(VORBISENC_LIBRARY STREQUAL "${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks/vorbisenc.framework")
-            install(DIRECTORY extlibs/libs-osx/Frameworks/vorbisenc.framework DESTINATION ${CMAKE_INSTALL_LIBDIR})
-        endif()
-
-        if(VORBISFILE_LIBRARY STREQUAL "${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks/vorbisfile.framework")
-            install(DIRECTORY extlibs/libs-osx/Frameworks/vorbisfile.framework DESTINATION ${CMAKE_INSTALL_LIBDIR})
-        endif()
-
-        if(OPENAL_LIBRARY STREQUAL "${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks/OpenAL.framework")
-            install(DIRECTORY "${OPENAL_LIBRARY}" DESTINATION ${CMAKE_INSTALL_LIBDIR})
-        endif()
-    endif()
-
     # install the Xcode templates if requested
     if(SFML_INSTALL_XCODE_TEMPLATES)
         # configure the templates plist files
@@ -424,25 +391,8 @@ if(SFML_OS_MACOSX)
     endif()
 
 elseif(SFML_OS_IOS)
-
     # fix CMake install rules broken for iOS (see http://public.kitware.com/Bug/view.php?id=12506)
     install(DIRECTORY "${CMAKE_BINARY_DIR}/lib/\$ENV{CONFIGURATION}/" DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-    if(NOT SFML_USE_SYSTEM_DEPS)
-        # since the iOS libraries are built as static, we must install the SFML dependencies
-        # too so that the end user can easily link them to its final application
-        if(SFML_BUILD_GRAPHICS)
-            install(FILES extlibs/libs-ios/libfreetype.a DESTINATION lib)
-        endif()
-
-        if(SFML_BUILD_AUDIO)
-            install(FILES extlibs/libs-ios/libflac.a
-                          extlibs/libs-ios/libvorbis.a
-                          extlibs/libs-ios/libogg.a
-                          DESTINATION lib)
-        endif()
-    endif()
-
 elseif(SFML_OS_ANDROID)
 
     if(NOT SFML_USE_SYSTEM_DEPS)
