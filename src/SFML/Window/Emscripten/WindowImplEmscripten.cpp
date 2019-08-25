@@ -30,7 +30,6 @@
 #include <SFML/Window/Emscripten/InputImpl.hpp>
 #include <SFML/System/Utf.hpp>
 #include <SFML/System/Err.hpp>
-#include <SFML/System/Sleep.hpp>
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <sys/types.h>

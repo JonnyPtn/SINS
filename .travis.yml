@@ -106,5 +106,17 @@ matrix:
       - CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Android -DSFML_BUILD_TEST_SUITE=FALSE -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r18b -DCMAKE_ANDROID_ARCH_ABI=x86 -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_ANDROID_API=26"
     install: *androidInstall
 
+  - name: "Emscripten"
+    os: linux
+    dist: bionic
+    language: node_js
+    services:
+      - docker
+    before_script: 
+      - docker run -dit --name emscripten -v $(pwd):/src trzeci/emscripten:sdk-incoming-64bit bash
+    script:
+      - docker exec -it emscripten emconfigure cmake . -DSFML_BUILD_EXAMPLES=TRUE -DBGFX_BUILD_TOOLS=OFF
+      - docker exec -it emscripten emmake make
+
 notifications:
   email: false
