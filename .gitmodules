@@ -1,5 +1,5 @@
 [submodule "bgfx.cmake"]
-	path = bgfx.cmake
+	path = extlibs/bgfx.cmake/bgfx.cmake
 	url = https://github.com/JoshuaBrookover/bgfx.cmake
 [submodule "extlibs/SFML-dependencies"]
 	path = extlibs/SFML-dependencies
