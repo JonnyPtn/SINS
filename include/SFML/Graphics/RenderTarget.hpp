@@ -301,6 +301,7 @@ protected:
     void initialize();
 
     sf::ContextSettings m_contextSettings;
+    Uint64              m_id;          ///< Unique number that identifies the RenderTarget
 
 private:
 
@@ -392,8 +393,6 @@ private:
     View        m_defaultView; ///< Default view
     View        m_view;        ///< Current view
     StatesCache m_cache;       ///< Render states cache
-    Uint64      m_id;          ///< Unique number that identifies the RenderTarget
-
 };
 
 } // namespace sf

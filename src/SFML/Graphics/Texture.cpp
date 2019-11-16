@@ -157,6 +157,13 @@ bool Texture::create(unsigned int width, unsigned int height)
     return true;
 }
 
+////////////////////////////////////////////////////////////
+bool Texture::create(uint16_t nativeHandle, unsigned int width, unsigned int height)
+{
+    m_impl->texture = {nativeHandle};
+    m_size = {width, height};
+    return bgfx::isValid(m_impl->texture);
+}
 
 ////////////////////////////////////////////////////////////
 bool Texture::loadFromFile(const std::string& filename, const IntRect& area)

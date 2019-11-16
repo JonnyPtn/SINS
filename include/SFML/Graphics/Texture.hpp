@@ -94,6 +94,18 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     bool create(unsigned int width, unsigned int height);
+    
+    ////////////////////////////////////////////////////////////
+    /// \brief Create the texture
+    ///
+    /// If this function fails, the texture is left unchanged.
+    ///
+    /// \param nativeHandle The native handle of an existing texture
+    ///
+    /// \return True if creation was successful
+    ///
+    ////////////////////////////////////////////////////////////
+    bool create(uint16_t nativeHandle, unsigned int width, unsigned int height);
 
     ////////////////////////////////////////////////////////////
     /// \brief Load the texture from a file on disk
