@@ -7,7 +7,7 @@ endif()
 
 # add bgfx 
 set(BGFX_BUILD_EXAMPLES OFF CACHE BOOL "")
-add_subdirectory(bgfx.cmake)
+add_subdirectory(extlibs/bgfx.cmake)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
