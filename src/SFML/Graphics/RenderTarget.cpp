@@ -51,7 +51,7 @@ namespace
     {
         std::lock_guard<std::mutex> lock(mutex);
 
-        static sf::Uint64 id = 1; // start at 1, zero is "no RenderTarget"
+        static bgfx::ViewId id = 0;
 
         return id++;
     }
@@ -94,9 +94,9 @@ RenderTarget::~RenderTarget()
 void RenderTarget::clear(const Color& color)
 {
     const auto rect = getViewport(getView());
-    bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
-    bgfx::setViewRect(0, rect.left, rect.top, rect.width, rect.height);
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, color.toInteger());
+    bgfx::setViewMode(m_id, bgfx::ViewMode::Sequential);
+    bgfx::setViewRect(m_id, rect.left, rect.top, rect.width, rect.height);
+    bgfx::setViewClear(m_id, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, color.toInteger());
 }
 
 
@@ -214,7 +214,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
         data[i].texCoords.x /= textureSize.x;
         data[i].texCoords.y /= textureSize.y;
     }
-    bgfx::setVertexBuffer(0, &tvb);
+    bgfx::setVertexBuffer(m_id, &tvb);
 
     auto state = BGFX_STATE_WRITE_RGB;
 
@@ -291,11 +291,11 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     }
     if ( states.shader )
     {
-        bgfx::submit( 0, { states.shader->getNativeHandle() } );
+        bgfx::submit( m_id, { states.shader->getNativeHandle() } );
     }
     else
     {
-        bgfx::submit( 0, { sf::Shader::getDefaultShaderProgramHandle( states.texture != nullptr ) } );
+        bgfx::submit( m_id, { sf::Shader::getDefaultShaderProgramHandle( states.texture != nullptr ) } );
     }
 }
 
@@ -384,7 +384,7 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
         bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
         bgfx::setTexture(0, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
     }
-    bgfx::submit(0, {sf::Shader::getDefaultShaderProgramHandle(states.texture != nullptr)});
+    bgfx::submit(m_id, {sf::Shader::getDefaultShaderProgramHandle(states.texture != nullptr)});
 }
 
 ////////////////////////////////////////////////////////////
@@ -394,35 +394,39 @@ void RenderTarget::initialize()
     // whether it is active within a specific context
     m_id = getUniqueId();
 
-    // Initialise bgfx
-    bgfx::Init init;
-    init.resolution.width = getSize().x;
-    init.resolution.height = getSize().y;
-    init.resolution.reset = BGFX_RESET_VSYNC | BGFX_RESET_HIDPI;
-
-    switch (m_contextSettings.backend)
+    // If it's the first thing to be initialised, we need to initialise bgfx
+    if (m_id == 0)
     {
-    case ContextSettings::Backend::OpenGL:
-        init.type = bgfx::RendererType::OpenGL;
-        break;
+        // Initialise bgfx
+        bgfx::Init init;
+        init.resolution.width = getSize().x;
+        init.resolution.height = getSize().y;
+        init.resolution.reset = BGFX_RESET_VSYNC | BGFX_RESET_HIDPI;
 
-    case ContextSettings::Backend::DX9:
-        init.type = bgfx::RendererType::Direct3D9;
-        break;
+        switch (m_contextSettings.backend)
+        {
+        case ContextSettings::Backend::OpenGL:
+            init.type = bgfx::RendererType::OpenGL;
+            break;
 
-    case ContextSettings::Backend::DX11:
-        init.type = bgfx::RendererType::Direct3D11;
-        break;
+        case ContextSettings::Backend::DX9:
+            init.type = bgfx::RendererType::Direct3D9;
+            break;
 
-    case ContextSettings::Backend::DX12:
-        init.type = bgfx::RendererType::Direct3D12;
-        break;
+        case ContextSettings::Backend::DX11:
+            init.type = bgfx::RendererType::Direct3D11;
+            break;
 
-    default:
-        break;
+        case ContextSettings::Backend::DX12:
+            init.type = bgfx::RendererType::Direct3D12;
+            break;
+
+        default:
+            break;
+        }
+
+        bgfx::init(init);
     }
-
-    bgfx::init(init);
 
     //bgfx::setDebug(BGFX_DEBUG_STATS);
 
@@ -430,7 +434,7 @@ void RenderTarget::initialize()
     m_defaultView.reset(FloatRect(0, 0, static_cast<float>(getSize().x), static_cast<float>(getSize().y)));
     m_view = m_defaultView;
     applyCurrentView();
-    bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
+    bgfx::setViewMode(m_id, bgfx::ViewMode::Sequential);
 
     // As I'm using the bgfx debug shaders for now, the colour it expects is 4 floats
     defaultVertexDecl
@@ -451,11 +455,11 @@ void RenderTarget::applyCurrentView()
 {
     // Set the viewport
     const auto viewport = m_view.getViewport();
-    bgfx::setViewRect(0, viewport.left, viewport.top, viewport.width, viewport.height);
+    bgfx::setViewRect(m_id, viewport.left, viewport.top, viewport.width, viewport.height);
 
     // And the view transform
     const auto transform = m_view.getTransform();
-    bgfx::setViewTransform(0, transform.getMatrix(), /* wat dis */ 0);
+    bgfx::setViewTransform(m_id, transform.getMatrix(), /* wat dis */ 0);
 
     m_cache.viewChanged = false;
 }

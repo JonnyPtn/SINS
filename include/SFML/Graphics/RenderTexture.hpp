@@ -200,8 +200,9 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    std::unique_ptr<priv::RenderTextureImpl> m_impl;    ///< Platform/hardware specific implementation
-    Texture                                  m_texture; ///< Target texture to draw on
+    struct impl;
+    std::unique_ptr<impl>   m_impl;    ///< Platform/hardware specific implementation
+    Texture                 m_texture;
 };
 
 } // namespace sf
