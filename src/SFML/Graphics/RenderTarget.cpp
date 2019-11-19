@@ -287,7 +287,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     if (states.texture)
     {
         bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
-        bgfx::setTexture(m_id, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
+        bgfx::setTexture(0, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
     }
     if ( states.shader )
     {
@@ -303,7 +303,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
 ////////////////////////////////////////////////////////////
 void RenderTarget::draw(const VertexBuffer& vertexBuffer, const RenderStates& states)
 {
-    draw(vertexBuffer, m_id, vertexBuffer.getVertexCount(), states);
+    draw(vertexBuffer, 0, vertexBuffer.getVertexCount(), states);
 }
 
 
@@ -394,35 +394,39 @@ void RenderTarget::initialize()
     // whether it is active within a specific context
     m_id = getUniqueId();
 
-    // Initialise bgfx
-    bgfx::Init init;
-    init.resolution.width = getSize().x;
-    init.resolution.height = getSize().y;
-    init.resolution.reset = BGFX_RESET_VSYNC | BGFX_RESET_HIDPI;
-
-    switch (m_contextSettings.backend)
+    // If it's the first thing to be initialised, we need to initialise bgfx
+    if (m_id == 0)
     {
-    case ContextSettings::Backend::OpenGL:
-        init.type = bgfx::RendererType::OpenGL;
-        break;
+        // Initialise bgfx
+        bgfx::Init init;
+        init.resolution.width = getSize().x;
+        init.resolution.height = getSize().y;
+        init.resolution.reset = BGFX_RESET_VSYNC | BGFX_RESET_HIDPI;
 
-    case ContextSettings::Backend::DX9:
-        init.type = bgfx::RendererType::Direct3D9;
-        break;
+        switch (m_contextSettings.backend)
+        {
+        case ContextSettings::Backend::OpenGL:
+            init.type = bgfx::RendererType::OpenGL;
+            break;
 
-    case ContextSettings::Backend::DX11:
-        init.type = bgfx::RendererType::Direct3D11;
-        break;
+        case ContextSettings::Backend::DX9:
+            init.type = bgfx::RendererType::Direct3D9;
+            break;
 
-    case ContextSettings::Backend::DX12:
-        init.type = bgfx::RendererType::Direct3D12;
-        break;
+        case ContextSettings::Backend::DX11:
+            init.type = bgfx::RendererType::Direct3D11;
+            break;
 
-    default:
-        break;
+        case ContextSettings::Backend::DX12:
+            init.type = bgfx::RendererType::Direct3D12;
+            break;
+
+        default:
+            break;
+        }
+
+        bgfx::init(init);
     }
-
-    bgfx::init(init);
 
     //bgfx::setDebug(BGFX_DEBUG_STATS);
 

@@ -291,7 +291,14 @@ void Texture::update(const Uint8* pixels, unsigned int width, unsigned int heigh
         if (bgfx::isValid(newTexture))
         {
             bgfx::updateTexture2D(newTexture, 0, 0, 0, 0, width, height, bgfx::copy(pixels, size));
-            bgfx::blit(0, m_impl->texture, x, y, newTexture);
+            if (bgfx::getCaps()->supported & BGFX_CAPS_TEXTURE_BLIT)
+            {
+                bgfx::blit(0, m_impl->texture, x, y, newTexture);
+            }
+            else
+            {
+                sf::err() << "Texture blits not supported :(";
+            }
         }
     
         m_hasMipmap = false;
