@@ -115,9 +115,9 @@ matrix:
     before_script: 
       - docker run -dit --name emscripten -v $(pwd):/src trzeci/emscripten:sdk-incoming-64bit bash
     script:
-      - docker exec -it emscripten mkdir build && cd build
-      - docker exec -it emscripten emconfigure cmake .. -DSFML_BUILD_EXAMPLES=TRUE -DBGFX_BUILD_TOOLS=OFF
-      - docker exec -it emscripten emmake make
+      - docker exec -it emscripten mkdir build
+      - docker exec -it emscripten cd build && emconfigure cmake .. -DSFML_BUILD_EXAMPLES=TRUE -DBGFX_BUILD_TOOLS=OFF
+      - docker exec -it emscripten cd build && emmake make
 
 notifications:
   email: false
