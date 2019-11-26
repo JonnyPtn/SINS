@@ -287,19 +287,7 @@ void Texture::update(const Uint8* pixels, unsigned int width, unsigned int heigh
     if (pixels && bgfx::isValid(m_impl->texture))
     {
         const auto size = width * height * 4;
-        auto newTexture = bgfx::createTexture2D(width, height, false, 1, bgfx::TextureFormat::RGBA8);
-        if (bgfx::isValid(newTexture))
-        {
-            bgfx::updateTexture2D(newTexture, 0, 0, 0, 0, width, height, bgfx::copy(pixels, size));
-            if (bgfx::getCaps()->supported & BGFX_CAPS_TEXTURE_BLIT)
-            {
-                bgfx::blit(0, m_impl->texture, x, y, newTexture);
-            }
-            else
-            {
-                sf::err() << "Texture blits not supported :(";
-            }
-        }
+        bgfx::updateTexture2D(m_impl->texture, 0, 0, x, y, width, height, bgfx::copy(pixels, size));
     
         m_hasMipmap = false;
         m_pixelsFlipped = false;
