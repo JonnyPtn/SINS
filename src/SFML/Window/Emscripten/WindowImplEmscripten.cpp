@@ -244,6 +244,7 @@ void WindowImplEmscripten::initialize()
                         case 39: ev.key.code = sf::Keyboard::Key::Right; break;
                         case 40: ev.key.code = sf::Keyboard::Key::Down; break;
                         case ' ': ev.key.code = sf::Keyboard::Key::Space; break;
+                        default: ev.key.code = static_cast<sf::Keyboard::Key>(e->keyCode); break;
                     }
                     static_cast<WindowImplEmscripten*>(windowptr)->m_events.emplace_back(ev);
                     return true;
@@ -267,9 +268,43 @@ void WindowImplEmscripten::initialize()
         }
         return false;
     };
+
     emscripten_set_keypress_callback(NULL, this, true, keyCb);
     emscripten_set_keydown_callback(NULL, this, true, keyCb);
     emscripten_set_keyup_callback(NULL, this, true, keyCb); 
+
+    auto mouseCb = [](int eventType, const EmscriptenMouseEvent *e, void* windowptr)->int
+    {
+        if (e)
+        {
+            switch(eventType)
+            {
+                case EMSCRIPTEN_EVENT_MOUSEDOWN:
+                {
+                    sf::Event ev;
+                    ev.type = sf::Event::MouseButtonPressed;
+                    ev.mouseButton.button = static_cast<sf::Mouse::Button>(e->button);
+                    ev.mouseButton.x = e->clientX;
+                    ev.mouseButton.y = e->clientY;
+                    static_cast<WindowImplEmscripten*>(windowptr)->m_events.emplace_back(ev);
+                    return true;
+                }
+                case EMSCRIPTEN_EVENT_MOUSEUP:
+                {    
+                    sf::Event ev;
+                    ev.type = sf::Event::MouseButtonReleased;
+                    ev.mouseButton.button = static_cast<sf::Mouse::Button>(e->button);
+                    ev.mouseButton.x = e->clientX;
+                    ev.mouseButton.y = e->clientY;
+                    static_cast<WindowImplEmscripten*>(windowptr)->m_events.emplace_back(ev);
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+    
+    emscripten_set_mousedown_callback(NULL, this, true, mouseCb);
 }
 
 
