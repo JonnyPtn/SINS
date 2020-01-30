@@ -61,8 +61,8 @@ namespace
     typedef std::map<sf::Uint64, sf::Uint64> ContextRenderTargetMap;
     ContextRenderTargetMap contextRenderTargetMap;
 
-    // A bgfx vertexdecl to match our vertex types
-    bgfx::VertexDecl defaultVertexDecl;
+    // A bgfx vertex layout to match our vertex types
+    bgfx::VertexLayout defaultVertexLayout;
 }
 
 
@@ -200,7 +200,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
         return;
     
     bgfx::TransientVertexBuffer tvb;
-    bgfx::allocTransientVertexBuffer(&tvb, vertexCount, defaultVertexDecl);
+    bgfx::allocTransientVertexBuffer(&tvb, vertexCount, defaultVertexLayout);
     sf::Vector2u textureSize = { 1,1 };
     if (states.texture)
     {
@@ -286,7 +286,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount,
     bgfx::setTransform(states.transform.getMatrix());
     if (states.texture)
     {
-        bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
+        bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Sampler);
         bgfx::setTexture(0, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
     }
     if ( states.shader )
@@ -381,7 +381,7 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
     bgfx::setTransform(states.transform.getMatrix());
     if (states.texture)
     {
-        bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
+        bgfx::UniformHandle texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Sampler);
         bgfx::setTexture(0, texUniform, { static_cast<std::uint16_t>(states.texture->getNativeHandle()) });
     }
     
@@ -428,8 +428,12 @@ void RenderTarget::initialize()
         case ContextSettings::Backend::DX12:
             init.type = bgfx::RendererType::Direct3D12;
             break;
+                
+        case ContextSettings::Backend::Vulkan:
+            init.type = bgfx::RendererType::Vulkan;
+            break;
 
-        default:
+        case ContextSettings::Backend::Default:
             break;
         }
 
@@ -445,7 +449,7 @@ void RenderTarget::initialize()
     bgfx::setViewMode(m_id, bgfx::ViewMode::Sequential);
 
     // As I'm using the bgfx debug shaders for now, the colour it expects is 4 floats
-    defaultVertexDecl
+    defaultVertexLayout
         .begin()
         .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
         .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)

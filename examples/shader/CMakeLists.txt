@@ -50,7 +50,7 @@ file(GLOB VERT_SHADERS resources/*.vert.sc)
 if (NOT CMAKE_CROSSCOMPILING)
     foreach(FRAG_SHADER ${FRAG_SHADERS})
     add_custom_command(TARGET shader POST_BUILD
-        COMMAND $<TARGET_FILE:shaderc> -f ${FRAG_SHADER} -o ${FRAG_SHADER}.bin --type fs ${SHADERC_FLAGS}
+        COMMAND $<TARGET_FILE:shaderc> -f ${FRAG_SHADER} -o ${FRAG_SHADER}.bin --type fragment ${SHADERC_FLAGS}
         COMMENT "Compiling ${FRAG_SHADER}")
     endforeach()
 
@@ -61,7 +61,7 @@ if (NOT CMAKE_CROSSCOMPILING)
 
     foreach(VERT_SHADER ${VERT_SHADERS})
     add_custom_command(TARGET shader POST_BUILD
-        COMMAND $<TARGET_FILE:shaderc> -f ${VERT_SHADER} -o ${VERT_SHADER}.bin --type vs ${SHADERC_FLAGS}
+        COMMAND $<TARGET_FILE:shaderc> -f ${VERT_SHADER} -o ${VERT_SHADER}.bin --type vertex ${SHADERC_FLAGS}
         COMMENT "Compiling ${VERT_SHADER}")
     endforeach()
 endif()

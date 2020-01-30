@@ -53,6 +53,7 @@ namespace sf
         DX9,
         DX11,
         DX12,
+        Vulkan,
 
         Default
     };
