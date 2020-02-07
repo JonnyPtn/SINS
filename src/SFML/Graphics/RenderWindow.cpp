@@ -107,7 +107,7 @@ void RenderWindow::onCreate()
     pd.nwh = (void*)getSystemHandle();
     pd.ndt = NULL;
     bgfx::setPlatformData(pd);
-    //bgfx::renderFrame();
+    bgfx::renderFrame(); // Calling before initialize makes it single threaded
     RenderTarget::initialize();
 }
 

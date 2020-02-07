@@ -135,7 +135,7 @@ bool VertexBuffer::create(std::size_t vertexCount)
             .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
             .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
             .end();
-        m_impl->handle = bgfx::createDynamicVertexBuffer(vertexCount, vertexLayout);
+        m_impl->handle = bgfx::createDynamicVertexBuffer(vertexCount, vertexLayout, BGFX_BUFFER_ALLOW_RESIZE);
     }
 
     if (!bgfx::isValid(m_impl->handle))
@@ -178,12 +178,14 @@ bool VertexBuffer::update(const Vertex* vertices, std::size_t vertexCount, unsig
         return false;
 
     // Check if we need to resize or orphan the buffer
-    if (vertexCount >= m_size)
+    if (vertexCount != m_size)
     {
         m_size = vertexCount;
+        bgfx::destroy(m_impl->handle);
+        create(vertexCount);
     }
-
-    bgfx::update(m_impl->handle, offset, bgfx::makeRef(vertices, vertexCount * sizeof(Vertex)));
+    
+    bgfx::update(m_impl->handle, offset, bgfx::copy(vertices, vertexCount * sizeof(Vertex)));
 
     return true;
 }

@@ -9,7 +9,7 @@ uniform vec4 storm_inner_radius;
 
 void main()
 {
-    vec4 vertex = mul(u_modelView, vec4(a_position, 0.0) );
+    vec4 vertex = mul(u_modelView, vec4(a_position, 1.0) );
     vec2 offset = vertex.xy - storm_position.xy;
     float len = length(offset);
     if (len < storm_total_radius[0])

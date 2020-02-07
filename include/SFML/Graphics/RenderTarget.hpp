@@ -349,7 +349,7 @@ private:
     /// \param states         Render states to use for drawing
     ///
     ////////////////////////////////////////////////////////////
-    void setupDraw(const RenderStates& states);
+    uint64_t setupDraw(const RenderStates& states, sf::PrimitiveType type);
 
     ////////////////////////////////////////////////////////////
     /// \brief Draw the primitives

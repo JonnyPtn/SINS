@@ -147,19 +147,21 @@ public:
     bool onLoad()
     {
         // Create the points
+        std::array<sf::Vertex,40000> vertices;
+        m_points.create(vertices.size());
         m_points.setPrimitiveType(sf::PrimitiveType::Points);
-        for (int i = 0; i < 40000; ++i)
+        for (auto& vertex : vertices)
         {
-            float x = static_cast<float>(std::rand() % 800);
-            float y = static_cast<float>(std::rand() % 600);
-            sf::Uint8 r = std::rand() % 255;
-            sf::Uint8 g = std::rand() % 255;
-            sf::Uint8 b = std::rand() % 255;
-            m_points.append(sf::Vertex(sf::Vector2f(x, y), sf::Color(r, g, b)));
+            vertex.position.x = static_cast<float>(std::rand() % 800);
+            vertex.position.y = static_cast<float>(std::rand() % 600);
+            vertex.color.r = std::rand() % 255;
+            vertex.color.g = std::rand() % 255;
+            vertex.color.b = std::rand() % 255;
         }
+        m_points.update(vertices.data());
 
         // Load the shader
-        if (!m_shader.loadFromFile(resourcesDir() + "storm.vert.sc.bin", resourcesDir() + "blink.frag.sc.bin"))
+        if (!m_shader.loadFromFile(resourcesDir() + "storm.vert.sc.bin",  resourcesDir() + "blink.frag.sc.bin"))
             return false;
 
         return true;
@@ -182,7 +184,7 @@ public:
 
 private:
 
-    sf::VertexArray m_points;
+    sf::VertexBuffer m_points;
     sf::Shader m_shader;
 };
 
@@ -288,7 +290,7 @@ public:
     {
         // Check if geometry shaders are supported
         //if (!sf::Shader::isGeometryAvailable())
-        //    return false;
+            return false;
 
         // Move the points in the point cloud to random positions
         for (std::size_t i = 0; i < 10000; i++)

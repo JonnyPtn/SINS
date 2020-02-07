@@ -33,6 +33,11 @@ public:
     void load()
     {
         m_isLoaded = sf::Shader::isAvailable() && onLoad();
+        
+        m_error.setFont(getFont());
+        m_error.setString("Shader not\nsupported");
+        m_error.setPosition(320.f, 200.f);
+        m_error.setCharacterSize(36);
     }
 
     void update(float time, float x, float y)
@@ -49,10 +54,7 @@ public:
         }
         else
         {
-            sf::Text error("Shader not\nsupported", getFont());
-            error.setPosition(320.f, 200.f);
-            error.setCharacterSize(36);
-            target.draw(error, states);
+            target.draw(m_error, states);
         }
     }
 
@@ -81,6 +83,7 @@ private:
 
     std::string m_name;
     bool m_isLoaded;
+    sf::Text m_error;
 
     static const sf::Font* s_font;
 };
