@@ -44,24 +44,27 @@ endif()
 file(GLOB FRAG_SHADERS resources/*.frag.sc)
 file(GLOB VERT_SHADERS resources/*.vert.sc)
 
-# Need to work out what to do when cross-compiling
 # We ideally need to compile the shaders on the host system
-# but that means a complete bgfx rebuild (or including the shaderc binary)
-if (NOT CMAKE_CROSSCOMPILING)
-    foreach(FRAG_SHADER ${FRAG_SHADERS})
-    add_custom_command(TARGET shader POST_BUILD
-        COMMAND $<TARGET_FILE:shaderc> -f ${FRAG_SHADER} -o ${FRAG_SHADER}.bin --type fragment ${SHADERC_FLAGS}
-        COMMENT "Compiling ${FRAG_SHADER}")
-    endforeach()
-
-    # Need to use different flag for vert shaders on DX11
-    if (SFML_OS_WINDOWS)
-        set(SHADERC_FLAGS --platform windows -p vs_5_0 -O 3)
-    endif()
-
-    foreach(VERT_SHADER ${VERT_SHADERS})
-    add_custom_command(TARGET shader POST_BUILD
-        COMMAND $<TARGET_FILE:shaderc> -f ${VERT_SHADER} -o ${VERT_SHADER}.bin --type vertex ${SHADERC_FLAGS}
-        COMMENT "Compiling ${VERT_SHADER}")
-    endforeach()
+if (NOT SFML_OS_EMSCRIPTEN)
+    set(SHADERC_COMMAND $<TARGET_FILE:shaderc>)
+else()
+    # On emscripten we look for a preinstalled shaderc and use that
+    find_program(SHADERC_COMMAND shaderc)
 endif()
+
+foreach(FRAG_SHADER ${FRAG_SHADERS})
+add_custom_command(TARGET shader POST_BUILD
+    COMMAND ${SHADERC_COMMAND} -f ${FRAG_SHADER} -o ${FRAG_SHADER}.bin --type fragment ${SHADERC_FLAGS}
+    COMMENT "Compiling ${FRAG_SHADER}")
+endforeach()
+
+# Need to use different flag for vert shaders on DX11
+if (SFML_OS_WINDOWS)
+    set(SHADERC_FLAGS --platform windows -p vs_5_0 -O 3)
+endif()
+
+foreach(VERT_SHADER ${VERT_SHADERS})
+add_custom_command(TARGET shader POST_BUILD
+    COMMAND ${SHADERC_COMMAND} -f ${VERT_SHADER} -o ${VERT_SHADER}.bin --type vertex ${SHADERC_FLAGS}
+    COMMENT "Compiling ${VERT_SHADER}")
+endforeach()
