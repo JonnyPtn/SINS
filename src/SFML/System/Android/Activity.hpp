@@ -29,7 +29,6 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Window/Event.hpp>
-#include <SFML/Window/EglContext.hpp>
 #include <android/native_activity.h>
 #include <android/configuration.h>
 #include <EGL/egl.h>
@@ -64,7 +63,6 @@ struct ActivityStates
     AConfiguration* config;
 
     EGLDisplay display;
-    EglContext* context;
 
     void* savedState;
     size_t savedStateSize;
