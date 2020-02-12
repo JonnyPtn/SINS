@@ -128,3 +128,12 @@ target_compile_definitions(sfml-graphics PRIVATE "STBI_FAILURE_USERMSG")
 if(SFML_COMPILER_GCC)
     set_source_files_properties(${SRCROOT}/ImageLoader.cpp PROPERTIES COMPILE_FLAGS -fno-strict-aliasing)
 endif()
+
+# Add btrshaderc source (the tool which compiles bgfx shaders at runtime)
+target_sources(sfml-graphics PRIVATE ${CMAKE_SOURCE_DIR}/extlibs/brtshaderc/tools/brtshaderc/brtshaderc.cpp)
+target_include_directories(sfml-graphics PRIVATE ${CMAKE_SOURCE_DIR}/extlibs/brtshaderc/tools/brtshaderc
+                                                 ${CMAKE_SOURCE_DIR}/extlibs/bgfx.cmake/bgfx/3rdparty/fcpp
+                                                 ${CMAKE_SOURCE_DIR}/extlibs/bgfx.cmake/bgfx/3rdparty/glsl-optimizer/src/glsl)
+get_target_property(SHADERC_SOURCE shaderc SOURCES)
+target_sources(sfml-graphics PRIVATE ${SHADERC_SOURCE})
+target_link_libraries(sfml-graphics PRIVATE glsl-optimizer glslang spirv-cross spirv-tools fcpp)

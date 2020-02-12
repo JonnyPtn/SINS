@@ -730,21 +730,6 @@ public:
 private:
 
     ////////////////////////////////////////////////////////////
-    /// \brief Compile the shader(s) and create the program
-    ///
-    /// If one of the arguments is nullptr, the corresponding shader
-    /// is not created.
-    ///
-    /// \param vertexShaderCode   Source code of the vertex shader
-    /// \param geometryShaderCode Source code of the geometry shader
-    /// \param fragmentShaderCode Source code of the fragment shader
-    ///
-    /// \return True on success, false if any error happened
-    ///
-    ////////////////////////////////////////////////////////////
-    bool compile(const std::string& vertexShaderCode, const std::string& geometryShaderCode, const std::string& fragmentShaderCode);
-
-    ////////////////////////////////////////////////////////////
     /// \brief Bind all the textures used by the shader
     ///
     /// This function each texture to a different unit, and

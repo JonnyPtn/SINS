@@ -37,6 +37,7 @@
 
 #include <bgfx/bgfx.h>
 #include <bgfx/embedded_shader.h>
+#include <brtshaderc.h>
 
 #include "fs_debugdraw_lines.bin.h"
 #include "vs_debugdraw_lines.bin.h"
@@ -192,16 +193,21 @@ Shader::~Shader()
 ////////////////////////////////////////////////////////////
 bool Shader::loadFromFile(const std::string& filename, Type type)
 {
-    // Read the file
-    std::string shader;
-    if (!getFileContents(filename, shader))
+    shaderc::ShaderType bgfx_type{};
+    switch(type)
     {
-        err() << "Failed to open shader file \"" << filename << "\"" << std::endl;
-        return false;
+        case Type::Fragment:
+            bgfx_type = shaderc::ShaderType::ST_FRAGMENT;
+            break;
+            
+        case Type::Vertex:
+            bgfx_type = shaderc::ShaderType::ST_VERTEX;
+            break;
     }
     
-    //TODO: Copy necessary?
-    auto handle = bgfx::createShader(bgfx::copy(shader.data(), shader.size()));
+    const auto* shader_memory = shaderc::compileShader(bgfx_type, filename.c_str());
+    
+    auto handle = bgfx::createShader(shader_memory);
     
     if (!bgfx::isValid(handle))
     {
@@ -230,24 +236,19 @@ bool Shader::loadFromFile(const std::string& filename, Type type)
 ////////////////////////////////////////////////////////////
 bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::string& fragmentShaderFilename)
 {
-    // Read the vertex shader file
-    std::string vertexShader;
-    if (!getFileContents(vertexShaderFilename, vertexShader))
+    const auto* vert_shader_memory = shaderc::compileShader(shaderc::ST_VERTEX, vertexShaderFilename.c_str());
+    const auto* frag_shader_memory = shaderc::compileShader(shaderc::ST_FRAGMENT, fragmentShaderFilename.c_str());
+    
+    if (vert_shader_memory && frag_shader_memory)
     {
-        err() << "Failed to open vertex shader file \"" << vertexShaderFilename << "\"" << std::endl;
-        return false;
-    }
+        auto vert_shader = bgfx::createShader(vert_shader_memory);
+        auto frag_shader = bgfx::createShader(frag_shader_memory);
 
-    // Read the fragment shader file
-    std::string fragmentShader;
-    if (!getFileContents(fragmentShaderFilename, fragmentShader))
-    {
-        err() << "Failed to open fragment shader file \"" << fragmentShaderFilename << "\"" << std::endl;
-        return false;
+        m_shaderProgram = bgfx::createProgram(vert_shader, frag_shader).idx;
+        
+        return bgfx::isValid(bgfx::ProgramHandle({m_shaderProgram}));
     }
-
-    // Compile the shader program
-    return compile(vertexShader, {}, fragmentShader);
+    return false;
 }
 
 
@@ -279,7 +280,8 @@ bool Shader::loadFromFile(const std::string& vertexShaderFilename, const std::st
     }
 
     // Compile the shader program
-    return compile(vertexShader, geometryShader, fragmentShader);
+    //return compile(vertexShader, geometryShader, fragmentShader);
+    return false; //TODO
 }
 
 
@@ -327,12 +329,13 @@ bool Shader::loadFromStream(InputStream& stream, Type type)
     }
 
     // Compile the shader program
-    if (type == Type::Vertex)
-        return compile(shader, {}, {});
-    else if (type == Type::Geometry)
-        return compile({}, shader, {});
-    else
-        return compile({}, {}, shader);
+//    if (type == Type::Vertex)
+//        return compile(shader, {}, {});
+//    else if (type == Type::Geometry)
+//        return compile({}, shader, {});
+//    else
+//        return compile({}, {}, shader);
+    return false; //TODO
 }
 
 
@@ -356,7 +359,8 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& fragme
     }
 
     // Compile the shader program
-    return compile(vertexShader, {}, fragmentShader);
+    //return compile(vertexShader, {}, fragmentShader);
+    return false; //TODO
 }
 
 
@@ -388,7 +392,8 @@ bool Shader::loadFromStream(InputStream& vertexShaderStream, InputStream& geomet
     }
 
     // Compile the shader program
-    return compile(vertexShader, geometryShader, fragmentShader);
+    //return compile(vertexShader, geometryShader, fragmentShader);
+    return false; //TODO
 }
 
 
@@ -636,24 +641,6 @@ bool Shader::isAvailable()
     auto caps = bgfx::getCaps();
 
     return true;
-}
-
-////////////////////////////////////////////////////////////
-bool Shader::compile(const std::string& vertexShaderCode, const std::string& geometryShaderCode, const std::string& fragmentShaderCode)
-{
-    bgfx::ShaderHandle vertShader = defaultVertexShader, fragShader = defaultFragmentShader;
-    if (vertexShaderCode.size())
-    {
-        vertShader = bgfx::createShader( bgfx::copy(vertexShaderCode.data(), vertexShaderCode.size() ));
-    }
-    if (fragmentShaderCode.size())
-    {
-        fragShader = bgfx::createShader( bgfx::copy( fragmentShaderCode.data(), fragmentShaderCode.size() ) );
-    }
-
-    m_shaderProgram = bgfx::createProgram(vertShader, fragShader).idx;
-    
-    return bgfx::isValid(bgfx::ProgramHandle({m_shaderProgram}));
 }
 
 
