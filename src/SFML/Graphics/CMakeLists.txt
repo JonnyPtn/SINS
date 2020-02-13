@@ -108,8 +108,6 @@ if(SFML_OS_ANDROID)
     target_link_libraries(sfml-graphics PRIVATE z)
 endif()
 
-target_link_libraries(sfml-graphics PUBLIC bgfx)
-
 # We use Metal on apple
 if(APPLE AND NOT IOS)
     target_link_libraries(sfml-graphics PRIVATE "-framework Metal -framework Quartzcore -framework Foundation -framework Appkit")
@@ -129,11 +127,12 @@ if(SFML_COMPILER_GCC)
     set_source_files_properties(${SRCROOT}/ImageLoader.cpp PROPERTIES COMPILE_FLAGS -fno-strict-aliasing)
 endif()
 
-# Add btrshaderc source (the tool which compiles bgfx shaders at runtime)
-target_sources(sfml-graphics PRIVATE ${CMAKE_SOURCE_DIR}/extlibs/brtshaderc/tools/brtshaderc/brtshaderc.cpp)
-target_include_directories(sfml-graphics PRIVATE ${CMAKE_SOURCE_DIR}/extlibs/brtshaderc/tools/brtshaderc
-                                                 ${CMAKE_SOURCE_DIR}/extlibs/bgfx.cmake/bgfx/3rdparty/fcpp
-                                                 ${CMAKE_SOURCE_DIR}/extlibs/bgfx.cmake/bgfx/3rdparty/glsl-optimizer/src/glsl)
+# Add btrshaderc target (the tool which compiles bgfx shaders at runtime)
+add_library(brtshaderc ${CMAKE_SOURCE_DIR}/extlibs/brtshaderc/tools/brtshaderc/brtshaderc.cpp)
+target_include_directories( brtshaderc INTERFACE ${CMAKE_SOURCE_DIR}/extlibs/brtshaderc/tools/brtshaderc/)
 get_target_property(SHADERC_SOURCE shaderc SOURCES)
-target_sources(sfml-graphics PRIVATE ${SHADERC_SOURCE})
-target_link_libraries(sfml-graphics PRIVATE glsl-optimizer glslang spirv-cross spirv-tools fcpp)
+list(FILTER SHADERC_SOURCE EXCLUDE REGEX shaderc.cpp)
+target_sources(brtshaderc PRIVATE ${SHADERC_SOURCE})
+target_link_libraries(brtshaderc PUBLIC bx bgfx glsl-optimizer glslang fcpp spirv-cross spirv-tools)
+
+target_link_libraries(sfml-graphics PUBLIC brtshaderc)

@@ -207,29 +207,31 @@ bool Shader::loadFromFile(const std::string& filename, Type type)
     
     const auto* shader_memory = shaderc::compileShader(bgfx_type, filename.c_str());
     
-    auto handle = bgfx::createShader(shader_memory);
-    
-    if (!bgfx::isValid(handle))
+    if (shader_memory)
     {
-        return false;
-    }
-
-    switch(type)
-    {
-        case Type::Vertex:
-            m_shaderProgram = bgfx::createProgram(handle, {defaultFragmentShaderWithTexture}).idx;
-            break;
+        auto handle = bgfx::createShader(shader_memory);
         
-        case Type::Fragment:
-            m_shaderProgram = bgfx::createProgram({defaultVertexShaderWithTexture}, handle).idx;
-            break;
+        if (!bgfx::isValid(handle))
+        {
+            return false;
+        }
+        
+        bgfx::setName(handle, filename.c_str());
+
+        switch(type)
+        {
+            case Type::Vertex:
+                m_shaderProgram = bgfx::createProgram(handle, {defaultFragmentShaderWithTexture}).idx;
+                break;
+            
+            case Type::Fragment:
+                m_shaderProgram = bgfx::createProgram({defaultVertexShaderWithTexture}, handle).idx;
+                break;
+        }
+        
+        return bgfx::isValid(bgfx::ProgramHandle({m_shaderProgram}));
     }
-    
-    const auto maxHandles = 12; // why 12? who knows...
-    std::array<bgfx::UniformHandle, maxHandles> uniforms{};
-    auto count = bgfx::getShaderUniforms(handle, uniforms.data(), maxHandles);
-    
-    return bgfx::isValid(bgfx::ProgramHandle({m_shaderProgram}));
+    return false;
 }
 
 
