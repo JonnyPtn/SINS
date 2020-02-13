@@ -6,4 +6,4 @@
 	url = https://github.com/eXpl0it3r/SFML-dependencies
 [submodule "extlibs/brtshaderc"]
 	path = extlibs/brtshaderc
-	url = https://github.com/fredakilla/brtshaderc
+	url = https://github.com/jonnyptn/brtshaderc
