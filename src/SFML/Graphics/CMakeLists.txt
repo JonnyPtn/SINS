@@ -130,8 +130,6 @@ endif()
 # Add btrshaderc target (the tool which compiles bgfx shaders at runtime)
 add_library(brtshaderc ${CMAKE_SOURCE_DIR}/extlibs/brtshaderc/tools/brtshaderc/brtshaderc.cpp)
 target_include_directories( brtshaderc INTERFACE ${CMAKE_SOURCE_DIR}/extlibs/brtshaderc/tools/brtshaderc/)
-get_target_property(SHADERC_SOURCE shaderc SOURCES)
-list(FILTER SHADERC_SOURCE EXCLUDE REGEX shaderc.cpp|shaderc_spirv.cpp)
 target_sources(brtshaderc PRIVATE ${SHADERC_SOURCE})
 target_link_libraries(brtshaderc PUBLIC bx bgfx glsl-optimizer glslang fcpp spirv-cross spirv-tools)
 
