@@ -127,7 +127,7 @@ int main()
     {
         statusText.setString("Shaders and/or Vertex Buffers Unsupported");
     }
-    else if (!terrainShader.loadFromFile("resources/terrain.vert.sc.bin", "resources/terrain.frag.sc.bin"))
+    else if (!terrainShader.loadFromFile("resources/terrain.vert.sc", "resources/terrain.frag.sc"))
     {
         prerequisitesSupported = false;
 
