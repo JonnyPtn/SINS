@@ -45,6 +45,8 @@
 #include <mutex>
 #include <thread>
 #include <cstring>
+#include <chrono>
+using namespace std::chrono_literals;
 
 
 extern int main(int argc, char *argv[]);
@@ -123,7 +125,7 @@ void* main(ActivityStates* states)
     // Initialize the thread before giving the hand
     initializeMain(states);
 
-    sleep(seconds(0.5));
+    std::this_thread::sleep_for(500ms);
     ::main(0, nullptr);
 
     // Terminate properly the main thread and wait until it's done
@@ -309,7 +311,7 @@ static void onDestroy(ANativeActivity* activity)
     while (!states->terminated)
     {
         states->mutex.unlock();
-        sf::sleep(sf::milliseconds(20));
+        std::this_thread::sleep_for(20ms);
         states->mutex.lock();
     }
 
@@ -347,7 +349,7 @@ static void onNativeWindowCreated(ANativeActivity* activity, ANativeWindow* wind
     while(!(states->updated | states->terminated))
     {
         states->mutex.unlock();
-        sf::sleep(sf::milliseconds(10));
+        std::this_thread::sleep_for(10ms);
         states->mutex.lock();
     }
 }
@@ -372,7 +374,7 @@ static void onNativeWindowDestroyed(ANativeActivity* activity, ANativeWindow* wi
     while(!(states->updated | states->terminated))
     {
         states->mutex.unlock();
-        sf::sleep(sf::milliseconds(10));
+        std::this_thread::sleep_for(10ms);
         states->mutex.lock();
     }
 }
@@ -555,7 +557,7 @@ JNIEXPORT void ANativeActivity_onCreate(ANativeActivity* activity, void* savedSt
     while (!(states->initialized | states->terminated))
     {
         states->mutex.unlock();
-        sf::sleep(sf::milliseconds(20));
+        std::this_thread::sleep_for(20ms);
         states->mutex.lock();
     }
 
