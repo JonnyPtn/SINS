@@ -59,7 +59,7 @@ WindowImplAndroid::WindowImplAndroid(WindowHandle handle)
 
 
 ////////////////////////////////////////////////////////////
-WindowImplAndroid::WindowImplAndroid(VideoMode mode, const String& title, unsigned long style, const ContextSettings& settings)
+WindowImplAndroid::WindowImplAndroid(VideoMode mode, const String& title, unsigned long style)
 : m_size(mode.width, mode.height)
 , m_windowBeingCreated(false)
 , m_windowBeingDestroyed(false)

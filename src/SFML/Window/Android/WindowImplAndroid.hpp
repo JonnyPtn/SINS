@@ -60,10 +60,9 @@ public:
     /// \param mode     Video mode to use
     /// \param title    Title of the window
     /// \param style    Window style (resizable, fixed, or fullscren)
-    /// \param settings Additional settings for the underlying OpenGL context
     ///
     ////////////////////////////////////////////////////////////
-    WindowImplAndroid(VideoMode mode, const String& title, unsigned long style, const ContextSettings& settings);
+    WindowImplAndroid(VideoMode mode, const String& title, unsigned long style);
 
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
