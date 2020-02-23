@@ -108,13 +108,15 @@ void WindowImplAndroid::processEvents()
 
     if (m_windowBeingCreated)
     {
-        states->context->createSurface(states->window);
+        //TODO
+        //states->context->createSurface(states->window);
         m_windowBeingCreated = false;
     }
 
     if (m_windowBeingDestroyed)
     {
-        states->context->destroySurface();
+        //TODO
+        //states->context->destroySurface();
         m_windowBeingDestroyed = false;
     }
 
